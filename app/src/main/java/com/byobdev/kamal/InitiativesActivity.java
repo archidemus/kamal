@@ -8,15 +8,11 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -57,17 +53,14 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-
             }
         };
 
@@ -82,7 +75,8 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
         }
 
         Location start = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Log.d("GPS", start.toString());
+
+        //Dummy points
         interested = new LatLng(start.getLatitude(),start.getLongitude());
         initiative1 = new LatLng(start.getLatitude()-0.005000,start.getLongitude()+0.005000);
         initiative2 = new LatLng(start.getLatitude()+0.005500,start.getLongitude()-0.004000);
@@ -95,25 +89,18 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
         mMap.setOnMarkerClickListener( new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
-                //Hago aparecer fregment
-                final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.shortDescriptionFragment, new shortDescriptionFragment());
-                ft.addToBackStack(null);
-                ft.commit();
-                //Log
-                Log.d("MAP", "Entro a " + marker.getTitle());
-
+                //Hago aparecer fragment
+                if (!marker.getTitle().equals("interested")){
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.shortDescriptionFragment, new shortDescriptionFragment());
+                    ft.addToBackStack(null);
+                    ft.commit();
+                    //Log
+                    Log.d("MAP", "Entro a " + marker.getTitle());
+                }
                 return false;
             }
         });
     }
-    public void switchContent(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().
-                remove(getSupportFragmentManager().findFragmentById(R.id.shortDescriptionFragment)).commit();
-        Fragment mContent = fragment;
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.shortDescriptionFragment, fragment)
-                .commit();
-    }
+
 }

@@ -7,8 +7,6 @@
           android:layout_height="match_parent"
           tools:context="com.byobdev.kamal.InitiativesActivity">
 
-
-
     <FrameLayout
         android:id="@+id/shortDescriptionFragment"
         android:layout_width="match_parent"
