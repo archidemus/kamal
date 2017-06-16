@@ -10,6 +10,8 @@
     <FrameLayout
         android:id="@+id/shortDescriptionFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </FrameLayout>
+        android:layout_height="400dp"
+        android:background="#E2E2E2"
+        android:layout_gravity="bottom"
+        android:translationY="400dp"/>
 </fragment>

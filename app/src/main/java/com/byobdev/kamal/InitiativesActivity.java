@@ -1,6 +1,7 @@
 package com.byobdev.kamal;
 
 import android.Manifest;
+import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -13,6 +14,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.Property;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,26 +28,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class InitiativesActivity extends FragmentActivity implements OnMapReadyCallback {
+public class InitiativesActivity extends FragmentActivity implements OnMapReadyCallback, View.OnTouchListener {
 
-    private GoogleMap mMap;
-    GoogleMap.OnMarkerClickListener clickListener;
+    GoogleMap initiativesMap;
     Marker interestedMarker;
+    FrameLayout shortDescriptionFragment;
+    private float mLastPosY;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiatives);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
+        shortDescriptionFragment.setOnTouchListener(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        LatLng interested, initiative1, initiative2, initiative3;
+        initiativesMap = googleMap;
+        final LatLng interested, initiative1;
+
 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
@@ -50,18 +60,12 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
                     interestedMarker.setPosition(new LatLng(location.getLatitude(),location.getLongitude()));
                 }
             }
-
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
             @Override
-            public void onProviderEnabled(String provider) {
-            }
-
+            public void onProviderEnabled(String provider) {}
             @Override
-            public void onProviderDisabled(String provider) {
-            }
+            public void onProviderDisabled(String provider) {}
         };
 
         if (Build.VERSION.SDK_INT < 23) {
@@ -79,23 +83,26 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
         //Dummy points
         interested = new LatLng(start.getLatitude(),start.getLongitude());
         initiative1 = new LatLng(start.getLatitude()-0.005000,start.getLongitude()+0.005000);
-        initiative2 = new LatLng(start.getLatitude()+0.005500,start.getLongitude()-0.004000);
-        initiative3 = new LatLng(start.getLatitude()-0.005400,start.getLongitude()+0.003000);
-        interestedMarker = mMap.addMarker(new MarkerOptions().position(interested).title("interested"));
-        mMap.addMarker(new MarkerOptions().position(initiative1).title("initiative1"));
-        mMap.addMarker(new MarkerOptions().position(initiative2).title("initiative2"));
-        mMap.addMarker(new MarkerOptions().position(initiative3).title("initiative3"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
-        mMap.setOnMarkerClickListener( new GoogleMap.OnMarkerClickListener(){
+        interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
+        initiativesMap.addMarker(new MarkerOptions().position(initiative1).title("initiative1"));
+        initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
+
+        initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
+
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.shortDescriptionFragment, new shortDescriptionFragment());
-                    ft.addToBackStack(null);
-                    ft.commit();
+                    FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                    trans.replace(R.id.shortDescriptionFragment, new shortDescriptionFragment());
                     //Log
+                    if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
+                        OvershootInterpolator interpolator;
+                        interpolator = new OvershootInterpolator(5);
+                        shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-200).setDuration(500);
+                    }
+                    trans.addToBackStack(null);
+                    trans.commit();
                     Log.d("MAP", "Entro a " + marker.getTitle());
                 }
                 return false;
@@ -103,4 +110,26 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
         });
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mLastPosY = event.getY();
+                return true;
+            case (MotionEvent.ACTION_MOVE):
+                float currentPosition = event.getY();
+                float deltaY = mLastPosY - currentPosition;
+                float transY = View.TRANSLATION_Y.get(v);
+                transY -= deltaY;
+
+                if (transY < 0){
+                    transY = 0;
+                }
+                v.setTranslationY(transY);
+                return true;
+            default:
+                return v.onTouchEvent(event);
+        }
+    }
 }
+
