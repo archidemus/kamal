@@ -1,106 +1,63 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.byobdev.kamal.shortDescriptionFragment">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFFFFF">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF">
-
-        <EditText
-            android:id="@+id/descriptionTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/initiativeImage"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/transparent"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Descripción"/>
-
-        <EditText
-            android:id="@+id/manager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/editText6"
-            android:layout_alignStart="@+id/editText6"
-            android:layout_below="@+id/editText6"
-            android:layout_marginTop="11dp"
-            android:background="@android:color/transparent"
-            android:ems="10"
-            android:inputType="textMultiLine"
-            android:text="Av. Vicuña Mackenna 8553, San Joaquin"
-            />
-
-        <EditText
-            android:id="@+id/editText6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/editText5"
-            android:layout_alignStart="@+id/editText5"
-            android:layout_below="@+id/editText5"
-            android:layout_marginTop="17dp"
-            android:background="@android:color/transparent"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="14:00 - 15:00"/>
-
-        <EditText
-            android:id="@+id/editText5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:ems="9"
-            android:inputType="textPersonName"
-            android:text="Gabriel Molina"
-            android:layout_below="@+id/initiativeName"
-            android:layout_alignLeft="@+id/initiativeName"
-            android:layout_alignStart="@+id/initiativeName"/>
-
-        <EditText
-            android:id="@+id/initiativeName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@android:color/transparent"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Calistenia"
-            android:layout_marginLeft="28dp"
-            android:layout_marginStart="28dp"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/initiativeImage"
-            android:layout_toEndOf="@+id/initiativeImage"/>
-
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="6dp">
         <ImageView
-            android:id="@+id/initiativeImage"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:id="@+id/inImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/kamal_logo"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true" />
+        <TextView
+            android:id="@+id/inTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Titulo"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:id="@+id/inOrganizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Organizador"
+            android:layout_below="@id/inTitle"/>
+
+        <RatingBar
+            android:id="@+id/inRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/ratingBarStyleSmall"
+            android:numStars="5"
+            android:stepSize="0.1"
+            android:isIndicator="true"
+            android:layout_alignTop="@+id/inOrganizer"
+            android:layout_toRightOf="@+id/inOrganizer"
+            android:layout_toEndOf="@+id/inOrganizer"/>
+
+        <TextView
+            android:id="@+id/inPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lugar"
+            android:layout_below="@id/inOrganizer"/>
+
+        <TextView
+            android:id="@+id/inShortDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shortasdfdasf askdfsajdf m sljf asjod fojashd fojas dojf asojhf asodh fousad fouas dfouasd fuas fuoa sof asofha sasdif asid  ksajdf asdif saidf oas dfas df"
+            android:layout_below="@+id/inPlace"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:src="@drawable/initiative_image"/>
-
-        <EditText
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="46dp"
-            android:background="@android:color/transparent"
-            android:ems="10"
-            android:gravity="left"
-            android:inputType="textMultiLine"
-            android:maxLines="20"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-            android:layout_below="@+id/descriptionTitle"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
-
-
+            android:layout_toLeftOf="@+id/inImage"
+            android:layout_toStartOf="@+id/inImage"/>
     </RelativeLayout>
-
-</FrameLayout>
+</LinearLayout>
