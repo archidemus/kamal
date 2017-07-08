@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "195011822090",
+    "firebase_url": "https://prime-boulevard-168121.firebaseio.com",
+    "project_id": "prime-boulevard-168121",
+    "storage_bucket": "prime-boulevard-168121.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195011822090:android:74c074845917b89c",
+        "android_client_info": {
+          "package_name": "com.byobdev.kamal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "195011822090-b1k5db5hvkds5b18c9ch3or8l8d8ea5o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "899e362e012723b62c15dc8e87125095c5f34b1a"
+          }
+        },
+        {
+          "client_id": "195011822090-7v6jofg5ar1qac0r50od01krir03g2de.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOWPbpwwqktLJX4fbJj0Vk9s3uSud0LOM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "195011822090-7v6jofg5ar1qac0r50od01krir03g2de.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

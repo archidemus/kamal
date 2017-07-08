@@ -21,14 +21,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Titulo"
-            android:textColor="#000000"/>
+            android:textColor="#000000"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/inImage"
+            android:layout_toStartOf="@+id/inImage"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"/>
 
         <TextView
             android:id="@+id/inOrganizer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organizador"
-            android:layout_below="@id/inTitle"/>
+            android:text="Organizador sdfs adfs daf asd fsdf"
+            android:layout_marginRight="6dp"
+            android:layout_below="@id/inTitle"
+            android:layout_marginTop="2dp"/>
 
         <RatingBar
             android:id="@+id/inRating"
@@ -38,26 +46,33 @@
             android:numStars="5"
             android:stepSize="0.1"
             android:isIndicator="true"
-            android:layout_alignTop="@+id/inOrganizer"
-            android:layout_toRightOf="@+id/inOrganizer"
-            android:layout_toEndOf="@+id/inOrganizer"/>
+            android:layout_below="@id/inOrganizer"
+            android:layout_marginBottom="2dp"/>
 
         <TextView
             android:id="@+id/inPlace"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lugar"
-            android:layout_below="@id/inOrganizer"/>
+            android:layout_below="@id/inRating"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/inImage"
+            android:layout_toStartOf="@+id/inImage"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"/>
 
         <TextView
             android:id="@+id/inShortDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shortasdfdasf askdfsajdf m sljf asjod fojashd fojas dojf asojhf asodh fousad fouas dfouasd fuas fuoa sof asofha sasdif asid  ksajdf asdif saidf oas dfas df"
+            android:text="sd fuas fuoa sof asofha sasdif asid  ksajdf asdif saidf oas dfas df"
             android:layout_below="@+id/inPlace"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/inImage"
-            android:layout_toStartOf="@+id/inImage"/>
+            android:layout_toStartOf="@+id/inImage"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"/>
     </RelativeLayout>
 </LinearLayout>
