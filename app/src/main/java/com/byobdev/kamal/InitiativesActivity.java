@@ -1,7 +1,6 @@
 package com.byobdev.kamal;
 
 import android.Manifest;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -13,8 +12,8 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Property;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -28,7 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class InitiativesActivity extends FragmentActivity implements OnMapReadyCallback, View.OnTouchListener {
+public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener {
 
     GoogleMap initiativesMap;
     Marker interestedMarker;
@@ -94,7 +93,7 @@ public class InitiativesActivity extends FragmentActivity implements OnMapReadyC
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
                     FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                    trans.replace(R.id.shortDescriptionFragment, new shortDescriptionFragment());
+                    trans.replace(R.id.shortDescriptionFragment, new DescriptionFragment());
                     //Log
                     if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
                         OvershootInterpolator interpolator;
