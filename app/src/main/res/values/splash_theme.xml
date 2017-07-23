@@ -3,4 +3,5 @@
     <style name="SplashTheme" parent="@style/AppTheme">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
+    <style name="Theme.AppCompat.NoActionBar"/>
 </resources>
