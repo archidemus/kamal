@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Kamal</string>
+    <string name="title_activity_initiatives">Map</string>
+    <string name="log_in_with">Log in with</string>
+    <string name="or">Or</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <!-- Edit initiatives-->
+    <string name="in_name">Name</string>
+    <string name="in_short_desc">Short Description</string>
+    <string name="in_desc">Description</string>
+    <string name="in_images">Images</string>
+    <string name="in_where">Where</string>
+    <string name="in_save">Save</string>
+
+</resources>
