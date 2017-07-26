@@ -191,7 +191,9 @@ public class LocationGPS extends Service implements LocationListener{
 
     @Override
     public void onLocationChanged(android.location.Location location) {
-
+        if (isBetterLocation(location, mobileLocation)){
+            getGPS();
+        }
     }
 
     @Override
