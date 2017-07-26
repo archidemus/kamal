@@ -183,6 +183,17 @@ public class LocationGPS extends Service implements LocationListener{
         return this.canGetLoc;
     }
 
+
+    /**
+     *
+     * Obtener pines cercanos (dentro del cuadrado)
+     * Va a la base de datos
+     * Obtiene los pines de la categoria
+     * Selecciona aquellos dentro de cuadrado
+     * Retorna el array de pines
+     */
+
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

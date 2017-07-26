@@ -1,5 +1,6 @@
 package com.byobdev.kamal;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
@@ -47,7 +49,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mPlanetTitles));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
         shortDescriptionFragment.setOnTouchListener(this);
@@ -65,7 +67,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
         initiativesMap.addMarker(new MarkerOptions().position(initiative1).title("initiative1"));
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
-
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -110,3 +111,4 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
     }
 }
+
