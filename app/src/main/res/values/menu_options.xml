@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+        name="menu_options">
+        <item>Log In</item>
+        <item>Crear Iniciativa</item>
+        <item>Modificar Intereses</item>
+    </string-array>
+</resources>

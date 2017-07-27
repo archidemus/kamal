@@ -1,7 +1,5 @@
 package com.byobdev.kamal;
 
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -30,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
     //Maps
@@ -56,6 +55,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
         shortDescriptionFragment.setOnTouchListener(this);
+
         //Menu
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -64,6 +64,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -154,9 +155,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
                 startActivityForResult(login,0);
             case R.id.initiates_logout:
-                break;
+                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+                    Intent intentMain3 = new Intent(this, LoginActivity.class);
+                    this.startActivity(intentMain3);
+                    break;
+                }
+                else{
+                    Intent intentMain2 = new Intent(this, CreateInitiativeActivity.class);
+                    this.startActivity(intentMain2);
+                    break;
+                }
             case R.id.initiates_initiative:
-                break;
+                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+                    Intent intentMain3 = new Intent(this, LoginActivity.class);
+                    this.startActivity(intentMain3);
+                    break;
+                }
+                else{
+                    Intent intentMain2 = new Intent(this, SetInterestsActivity.class);
+                    this.startActivity(intentMain2);
+                    break;
+                }
             case R.id.initiates_manage:
                 break;
             case R.id.initiates_settings:

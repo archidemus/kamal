@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser()!=null){
-                    AfterLogin.setClassName("com.byobdev.kamal","com.byobdev.kamal.salirgoogle");
+                    AfterLogin.setClassName("com.byobdev.kamal","com.byobdev.kamal.InitiativesActivity");
                     startActivityForResult(AfterLogin,0);
                     finish();
                 }
