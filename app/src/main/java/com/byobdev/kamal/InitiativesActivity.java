@@ -1,10 +1,15 @@
 package com.byobdev.kamal;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import com.byobdev.kamal.helpers.DrawerItemClickListener;
 import com.byobdev.kamal.helpers.LocationGPS;
+import com.byobdev.kamal.helpers.Notificaciones;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,11 +41,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     Marker interestedMarker;
     FrameLayout shortDescriptionFragment;
     private float mLastPosY;
+    //int notificationID = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiatives);
+        NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // Cancelamos la Notificacion que hemos comenzado
+        //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
+        nm2.cancelAll();
 
         //Maps
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -110,5 +121,42 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return v.onTouchEvent(event);
         }
     }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        //Borrar notificacion
+
+
+
+
+    }
+
+
+    /*****CODIGO NOTIFICACIONES *******/
+    public void notificacion(View view){
+        NotificationCompat.Builder notificacion = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.kamal_logo) // icono en la barra de notificaciones
+                .setLargeIcon((((BitmapDrawable) getResources()
+                        .getDrawable(R.drawable.kamal_logo)).getBitmap())) // icono cuando extiendes las notificaciones
+                .setContentTitle("Iniciativa de interes cercana") // titulo notificacion
+                .setContentText("Apreta aqui para ir a la iniciativa") // descripcion notificacion
+                .setTicker("Iniciativa cercana")
+                .setVibrate(new long [] {100, 1000}); // tiempo antes de vibrar y por cuanto tiempo vibra
+
+
+        Intent inotificacion = new Intent(this, InitiativesActivity.class); // se genera el intente
+        //inotificacion.putExtra("notificationID", notificationID); //Para rescatar la id despues
+        PendingIntent intentePendiente = PendingIntent.getActivity(this,0,inotificacion,0); // se deja como pendiente
+
+        notificacion.setContentIntent(intentePendiente);
+
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        //El 10 es la id, se puede poner cualquiera, deberiamos poner que sea
+        nm.notify(10,notificacion.build());// se construye la notificacion
+
+
+    }
+
 }
 

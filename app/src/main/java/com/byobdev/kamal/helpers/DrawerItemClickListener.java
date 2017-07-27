@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.byobdev.kamal.LoginActivity;
 
 /**
@@ -19,6 +18,7 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener{
         mActivity = activity;
     }
 
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
@@ -26,6 +26,7 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener{
                 Intent intentMain = new Intent(mActivity, LoginActivity.class);
                 mActivity.startActivity(intentMain);
                 break;
+
         }
     }
 }
