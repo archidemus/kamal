@@ -3,7 +3,7 @@
     <string-array
         name="menu_options">
         <item>Log In</item>
-        <item>Opcion2</item>
-        <item>Opcion3</item>
+        <item>Crear Iniciativa</item>
+        <item>Modificar Intereses</item>
     </string-array>
 </resources>

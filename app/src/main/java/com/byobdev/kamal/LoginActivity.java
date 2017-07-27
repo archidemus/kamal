@@ -142,8 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                // Google Sign In failed, update UI appropriately
-                // ...
+                Toast.makeText(this,"asdfwef",Toast.LENGTH_LONG).show();
             }
         }
         ///////////////////////////////////////////FACEBOOK/////////////////////////
