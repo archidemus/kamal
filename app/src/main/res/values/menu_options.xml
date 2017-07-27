@@ -2,8 +2,8 @@
 <resources>
     <string-array
         name="menu_options">
-        <item>Opcion1</item>
-        <item>Opcion2</item>
-        <item>Opcion3</item>
+        <item>Intereses</item>
+        <item>Crear iniciativa</item>
+        <item>Salir</item>
     </string-array>
 </resources>

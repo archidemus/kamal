@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import static android.location.LocationManager.GPS_PROVIDER;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener {
+
     //Menu
     private String[] mPlanetTitles;
     private DrawerLayout mDrawerLayout;
