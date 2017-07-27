@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "195011822090-0v8mttugoknnsfqcvqp1r9a28s7h366v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "60521df9bafbf07538716b33782be7ca59005e7c"
+          }
+        },
+        {
           "client_id": "195011822090-jef7cob6sg9gtvirhji7q1lkt356amht.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

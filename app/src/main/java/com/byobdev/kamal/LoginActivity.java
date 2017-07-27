@@ -35,8 +35,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
-
-    //////////////////////////////////////GBM///////////
     private SignInButton mGoogleBtn;
     private static final int RC_SIGN_IN = 1;
     private GoogleApiClient mGoogleApiClient;
@@ -54,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        /////////////////////////////////////////////FACEBOOK////////////////////////
+        /////////////////////////////////////////////FACEBOOK MODULE////////////////////////
         callbackManager = CallbackManager.Factory.create();
         mFacebookBtn = (LoginButton) findViewById(R.id.facebookBtn);
         mFacebookBtn.setReadPermissions(Arrays.asList("email"));
@@ -74,8 +72,9 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),R.string.com_facebook_internet_permission_error_message, Toast.LENGTH_SHORT).show();
             }
         });
-        ///////////////////////////////////////////FACEBOOK/////////////////////////
-        //////////////////////////////////////////GOOGLE///////////////////////////
+        ///////////////////////////////////////////FACEBOOK MODULE/////////////////////////
+
+        //////////////////////////////////////////GOOGLE MODULE///////////////////////////
         mGoogleBtn = (SignInButton)findViewById(R.id.googleBtn);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -108,17 +107,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        //////////////////////////////////////////GOOGLE///////////////////////////
-    }
-
-    private void handleFacebookAccesToken(AccessToken accessToken) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                //mensaje de error de login
-            }
-        });
+        //////////////////////////////////////////GOOGLE MODULE///////////////////////////
     }
 
 
@@ -142,6 +131,8 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
+                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
@@ -149,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
         ///////////////////////////////////////////FACEBOOK/////////////////////////
         callbackManager.onActivityResult(requestCode,resultCode,data);
 
-        ///////////////////////////////////////////FACEBOOK/////////////////////////
     }
 
     @Override
@@ -157,6 +147,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onStop();
         mAuth.removeAuthStateListener(mAuthListener);
     }
+
+    /*
+    Funcion encargada de verificar el login de Google y su conexion a Firebase
+     */
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
@@ -183,5 +177,19 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+    /*
+    Funcion encargada de verificar el login correcto por facebook
+     */
+    private void handleFacebookAccesToken(AccessToken accessToken) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
 }
