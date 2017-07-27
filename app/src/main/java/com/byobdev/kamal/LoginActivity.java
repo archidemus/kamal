@@ -1,18 +1,17 @@
 package com.byobdev.kamal;
 
-import android.*;
-import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.content.pm.Signature;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -34,24 +33,43 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
-    private static final String TAG = "LOGIN_ACTIVITY";
-    private static final int RC_SIGN_IN = 1;
     private SignInButton mGoogleBtn;
-    private FirebaseAuth mAuth;
-    private LoginButton mFacebookBtn;
+    private static final int RC_SIGN_IN = 1;
     private GoogleApiClient mGoogleApiClient;
+    private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private static final String TAG = "LOGIN_ACTIVITY";
     CallbackManager callbackManager;
+    private LoginButton mFacebookBtn;
     Intent AfterLogin = new Intent();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.byobdev.kamal",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (NoSuchAlgorithmException e) {
+
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         /////////////////////////////////////////////FACEBOOK MODULE////////////////////////
         callbackManager = CallbackManager.Factory.create();
         mFacebookBtn = (LoginButton) findViewById(R.id.facebookBtn);
@@ -191,16 +209,5 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                } else {
-                    startActivity(new Intent(LoginActivity.this, InitiativesActivity.class));
-                    finish();
-                }
-            }
-        }
-    }
+
 }
