@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import com.byobdev.kamal.InitiativesActivity;
-import com.byobdev.kamal.Login;
+import com.byobdev.kamal.LoginActivity;
 
 /**
  * Created by nano on 7/23/17.
@@ -25,7 +24,7 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener{
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
-                Intent intentMain = new Intent(mActivity, InitiativesActivity.class);
+                Intent intentMain = new Intent(mActivity, LoginActivity.class);
                 mActivity.startActivity(intentMain);
                 break;
         }

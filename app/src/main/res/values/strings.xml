@@ -13,5 +13,7 @@
     <string name="in_images">Images</string>
     <string name="in_where">Where</string>
     <string name="in_save">Save</string>
+    <string name="facebook_app_id">333536560434984</string>
+    <string name="fb_login_protocol_scheme">fb333536560434984</string>
 
 </resources>
