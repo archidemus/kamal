@@ -11,6 +11,10 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,8 +24,13 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-
 import com.byobdev.kamal.helpers.DrawerItemClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import com.byobdev.kamal.helpers.DrawerItemClickListener;
+import com.byobdev.kamal.helpers.LocationGPS;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,44 +62,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         //Maps
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                if (interestedMarker != null) {
-                    interestedMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        if (Build.VERSION.SDK_INT < 23) {
-            locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, locationListener);
-            mapFragment.getMapAsync(this);
-        } else {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            } else {
-                locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, locationListener);
-                mapFragment.getMapAsync(this);
-            }
-        }
+        mapFragment.getMapAsync(this);
         //Menu
         mPlanetTitles = getResources().getStringArray(R.array.menu_options);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mPlanetTitles));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
         shortDescriptionFragment.setOnTouchListener(this);
@@ -98,38 +76,25 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, locationListener);
-                        mapFragment.getMapAsync(this);
-                    }
-                } else {
-                    finish();
-                }
-            }
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         initiativesMap = googleMap;
+        LocationGPS start = new LocationGPS(getApplicationContext());
         final LatLng interested, initiative1;
-        Location start = new Location(GPS_PROVIDER);
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            start = locationManager.getLastKnownLocation(GPS_PROVIDER);
-        }
 
         //Dummy points
-        interested = new LatLng(start.getLatitude(),start.getLongitude());
-        initiative1 = new LatLng(start.getLatitude()-0.005000,start.getLongitude()+0.005000);
+        interested = new LatLng(start.getLatitud(),start.getLongitud());
+        initiative1 = new LatLng(start.getLatitud()-0.005000,start.getLongitud()+0.005000);
         interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
         initiativesMap.addMarker(new MarkerOptions().position(initiative1).title("initiative1"));
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
-
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
