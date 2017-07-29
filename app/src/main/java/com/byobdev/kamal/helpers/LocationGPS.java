@@ -184,6 +184,7 @@ public class LocationGPS extends Service implements LocationListener{
     }
 
 
+
     /**
      *
      * Obtener pines cercanos (dentro del cuadrado)
@@ -192,7 +193,6 @@ public class LocationGPS extends Service implements LocationListener{
      * Selecciona aquellos dentro de cuadrado
      * Retorna el array de pines
      */
-
 
     @Nullable
     @Override
@@ -205,6 +205,7 @@ public class LocationGPS extends Service implements LocationListener{
         if (isBetterLocation(location, mobileLocation)){
             getGPS();
         }
+
     }
 
     @Override

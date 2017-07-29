@@ -5,7 +5,8 @@
     >
 
     <RelativeLayout
-        android:layout_height="238dp"
+
+        android:layout_height="223dp"
         android:layout_width="wrap_content"
         android:padding="6dp">
         <ImageView
@@ -79,12 +80,15 @@
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="37dp"
-            android:layout_marginLeft="29dp"
-            android:layout_marginStart="29dp"
-            android:text="Ir a iniciativa" />
+            android:layout_below="@+id/inShortDesc"
+            android:layout_marginLeft="41dp"
+            android:layout_marginStart="41dp"
+            android:layout_marginTop="19dp"
+            android:onClick="notificacion"
+            android:text="Notificacion" />
+
+
     </RelativeLayout>
 </LinearLayout>

@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.content.Intent;
 
-public class DescriptionFragment extends Fragment{
 
+public class DescriptionFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,7 +24,5 @@ public class DescriptionFragment extends Fragment{
 
         super.onCreate(savedInstanceState);
     }
-
-
 
 }

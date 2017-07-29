@@ -2,8 +2,14 @@
 <resources>
     <string-array
         name="menu_options">
+<<<<<<< HEAD
         <item>Intereses</item>
         <item>Crear iniciativa</item>
         <item>Salir</item>
+=======
+        <item>Log In</item>
+        <item>Crear Iniciativa</item>
+        <item>Modificar Intereses</item>
+>>>>>>> 86d44e98c328b5cf77e2e5ecc7b783f14f77c4c6
     </string-array>
 </resources>
