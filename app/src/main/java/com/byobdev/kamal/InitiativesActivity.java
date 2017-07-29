@@ -7,18 +7,19 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.ListView;
-import com.byobdev.kamal.helpers.DrawerItemClickListener;
 import com.byobdev.kamal.helpers.LocationGPS;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,12 +28,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener {
-    //Menu
-    private String[] mPlanetTitles;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+
+public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
+
     //Maps
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
@@ -54,15 +54,19 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //Maps
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        //Menu
-        mPlanetTitles = getResources().getStringArray(R.array.menu_options);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mPlanetTitles));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
         shortDescriptionFragment.setOnTouchListener(this);
+
+        //Menu
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -122,13 +126,68 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     }
 
     @Override
-    public void onRestart(){
-        super.onRestart();
-        //Borrar notificacion
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 
+    @Override
+    public void onPause(){
+        super.onPause();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
-
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.initiates_search:
+                break;
+            case  R.id.initiates_login:
+                Intent login = new Intent();
+                login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
+                startActivityForResult(login,0);
+            case R.id.initiates_logout:
+                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+                    Intent intentMain3 = new Intent(this, LoginActivity.class);
+                    this.startActivity(intentMain3);
+                    break;
+                }
+                else{
+                    Intent intentMain2 = new Intent(this, CreateInitiativeActivity.class);
+                    this.startActivity(intentMain2);
+                    break;
+                }
+            case R.id.initiates_initiative:
+                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+                    Intent intentMain3 = new Intent(this, LoginActivity.class);
+                    this.startActivity(intentMain3);
+                    break;
+                }
+                else{
+                    Intent intentMain2 = new Intent(this, SetInterestsActivity.class);
+                    this.startActivity(intentMain2);
+                    break;
+                }
+            case R.id.initiates_manage:
+                break;
+            case R.id.initiates_settings:
+                break;
+            case R.id.initiates_recent:
+                break;
+            default:
+                return false;
+        }
+        return false;
     }
 
 
@@ -156,6 +215,5 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
     }
-
 }
 

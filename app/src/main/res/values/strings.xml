@@ -13,5 +13,11 @@
     <string name="in_images">Images</string>
     <string name="in_where">Where</string>
     <string name="in_save">Save</string>
-
+    <!-- Navegation Drawer-->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <!-- Facebook -->
+    <string name="facebook_app_id">333536560434984</string>
+    <string name="fb_login_protocol_scheme">fb333536560434984</string>
 </resources>

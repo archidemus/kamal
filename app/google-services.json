@@ -15,6 +15,46 @@
       },
       "oauth_client": [
         {
+          "client_id": "195011822090-4porne0al6ma9c4c6gr4g7oqb7b3vd10.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "e2a93896feeb6577f45655b8358fcf48d2997135"
+          }
+        },
+        {
+          "client_id": "195011822090-0v8mttugoknnsfqcvqp1r9a28s7h366v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "60521df9bafbf07538716b33782be7ca59005e7c"
+          }
+        },
+        {
+          "client_id": "195011822090-jef7cob6sg9gtvirhji7q1lkt356amht.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "22c7a2d31289437a0fdef5bd116368068bc622b4"
+          }
+        },
+        {
+          "client_id": "195011822090-ohhvsbpqqhoqmc024729pf0g8fgbhnp1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "b4638cba349fc595be0145a1adca113255c50a82"
+          }
+        },
+        {
+          "client_id": "195011822090-d28j8sdmiur08rv9p6638smuc1qheh73.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.byobdev.kamal",
+            "certificate_hash": "84cd214a010424357a6b587f29773a0d1c35464d"
+          }
+        },
+        {
           "client_id": "195011822090-b1k5db5hvkds5b18c9ch3or8l8d8ea5o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

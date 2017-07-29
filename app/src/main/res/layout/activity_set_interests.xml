@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+
+    <CheckBox
+        android:id="@+id/checkboxComida"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Comida" />
+
+    <CheckBox
+        android:id="@+id/checkboxDeporte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Deporte" />
+
+    <CheckBox
+        android:id="@+id/checkboxArte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Arte" />
+
+    <Button
+        android:id="@+id/createInitiativeButtonFinal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:onClick="SaveInterests"
+        android:text="Guardar" />
+
+</LinearLayout>
