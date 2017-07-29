@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import com.byobdev.kamal.helpers.Notificaciones;
 
 public class DescriptionFragment extends Fragment {
     @Override

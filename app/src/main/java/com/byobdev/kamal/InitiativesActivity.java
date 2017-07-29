@@ -20,7 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import com.byobdev.kamal.helpers.DrawerItemClickListener;
 import com.byobdev.kamal.helpers.LocationGPS;
-import com.byobdev.kamal.helpers.Notificaciones;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
