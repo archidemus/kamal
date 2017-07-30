@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
  */
 
 public class Initiative {
+    String Titulo;
     String Nombre;
     String Descripcion;
     Double Latitud;
@@ -25,7 +26,8 @@ public class Initiative {
 
 
 
-    public Initiative(String nombre, String descripcion, Double latitud, Double longitud, String uid){
+    public Initiative(String titulo, String nombre, String descripcion, Double latitud, Double longitud, String uid){
+        this.Titulo = titulo;
         this.Nombre=nombre;
         this.Descripcion=descripcion;
         this.Latitud=latitud;

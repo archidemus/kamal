@@ -34,25 +34,31 @@ import android.widget.EditText;
  */
 
 public class CreateInitiativeActivity extends AppCompatActivity{
-    EditText name;
+    EditText titulo;
     EditText description;
+    Double latitud;
+    Double longitud;
     private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_initiative);
-        name   = (EditText)findViewById(R.id.nameInput);
+        titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
     }
 
     public void createInitiative(View view){
-        LocationGPS gps=new LocationGPS(this);
-        Double latitud=gps.getLatitud();
-        Double longitud=gps.getLongitud();
-        Initiative initiative=new Initiative(name.getText().toString(),description.getText().toString(),latitud,longitud,FirebaseAuth.getInstance().getCurrentUser().getUid());
+        String nombre = "Pepito";
+        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,FirebaseAuth.getInstance().getCurrentUser().getUid());
         mDatabase.push().setValue(initiative);
         finish();
+    }
+
+    public void obtenerGPS(View view){
+        LocationGPS gps=new LocationGPS(this);
+        latitud = gps.getLatitud();
+        longitud = gps.getLongitud();
     }
 }
