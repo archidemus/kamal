@@ -20,7 +20,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import com.byobdev.kamal.helpers.LocationGPS;
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,6 +32,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
+import java.util.Vector;
+
+import static android.R.attr.data;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
     //Maps
@@ -39,6 +53,69 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     FrameLayout shortDescriptionFragment;
     private float mLastPosY;
     //int notificationID = 10;
+    private DatabaseReference userInterestsDB;
+    private DatabaseReference initiativesDB;
+    public Interests userInterests;
+    public List<Initiative> initiativeList;
+
+    //User Interests Listener
+    ValueEventListener userInterestslistener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            userInterests = dataSnapshot.getValue(Interests.class);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    };
+
+    //Initiatives Init Listener
+    ValueEventListener initiativesInitListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
+                Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
+                initiativeList.add(initiative);
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    };
+
+    //Initiatives Permanent Listener
+    ChildEventListener initiativesListener=new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            initiativeList.add(initiative);
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +142,19 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        //Read interests listener
+        userInterests=new Interests(false,false,false);
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+            userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            userInterestsDB.addValueEventListener(userInterestslistener);
+        }
+
+        //Read initiatives listener
+        initiativeList=new Vector<>();
+        initiativesDB=FirebaseDatabase.getInstance().getReference("Initiatives");
+        initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
+        initiativesDB.addChildEventListener(initiativesListener);
     }
 
     @Override
@@ -155,6 +245,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
                 startActivityForResult(login,0);
             case R.id.initiates_logout:
+                FirebaseAuth.getInstance().signOut();
+                break;
+            case R.id.initiates_initiative:
                 if(FirebaseAuth.getInstance().getCurrentUser()==null){
                     Intent intentMain3 = new Intent(this, LoginActivity.class);
                     this.startActivity(intentMain3);
@@ -165,7 +258,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     this.startActivity(intentMain2);
                     break;
                 }
-            case R.id.initiates_initiative:
+            case R.id.initiates_manage:
+                //Mostrar Intereses
                 if(FirebaseAuth.getInstance().getCurrentUser()==null){
                     Intent intentMain3 = new Intent(this, LoginActivity.class);
                     this.startActivity(intentMain3);
@@ -173,12 +267,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 else{
                     Intent intentMain2 = new Intent(this, SetInterestsActivity.class);
+                    intentMain2.putExtra("userInterests",userInterests);
                     this.startActivity(intentMain2);
                     break;
                 }
-            case R.id.initiates_manage:
-                break;
             case R.id.initiates_settings:
+                //CODIGO DE PRUEBA PARA LEER LA LISTA DE INICIATIVAS
+                for (Initiative initiativeListItem : initiativeList) {
+                    Toast.makeText(this,initiativeListItem.Nombre, Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.initiates_recent:
                 break;
