@@ -1,10 +1,12 @@
 package com.byobdev.kamal;
 
+import java.io.Serializable;
+
 /**
  * Created by carlos on 27-07-17.
  */
 
-public class Interests {
+public class Interests implements Serializable{
     boolean Deporte;
     boolean Comida;
     boolean Arte;
@@ -12,5 +14,8 @@ public class Interests {
         this.Deporte=deporte;
         this.Comida=comida;
         this.Arte=arte;
+    }
+    Interests(){
+
     }
 }
