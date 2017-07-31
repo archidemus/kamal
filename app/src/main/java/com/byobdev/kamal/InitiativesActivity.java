@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -241,7 +242,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.initiates_search:
-                Toast.makeText(this,"asdf", Toast.LENGTH_SHORT).show();
                 break;
             case  R.id.initiates_login:
                 Intent login = new Intent();
@@ -300,6 +300,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 break;
             case R.id.initiates_recent:
+                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+                    Log.d("nombre: ",FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    break;
+                }
                 break;
             default:
                 return false;
@@ -330,6 +334,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
             navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
         }
+
     }
 
     /*****CODIGO NOTIFICACIONES *******/

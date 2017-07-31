@@ -161,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
         ///////////////////////////////////////////FACEBOOK/////////////////////////
         callbackManager.onActivityResult(requestCode,resultCode,data);
 
+
     }
 
     @Override
