@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.byobdev.kamal.helpers.CheckConnectionHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -73,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
         /////////////////////////////////////////////FACEBOOK MODULE////////////////////////
         callbackManager = CallbackManager.Factory.create();
         mFacebookBtn = (LoginButton) findViewById(R.id.facebookBtn);
-        mFacebookBtn.setReadPermissions(Arrays.asList("email"));
+        mFacebookBtn.setReadPermissions(Arrays.asList("email","public_profile"));
         mFacebookBtn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -82,7 +84,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Toast.makeText(getApplicationContext(),R.string.com_facebook_smart_login_confirmation_cancel,Toast.LENGTH_LONG).show();
+                // Por opinion personal no coloque texto al calcelar la operacion.- Gabo
+                // Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -119,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser()!=null){
                     AfterLogin.setClassName("com.byobdev.kamal","com.byobdev.kamal.InitiativesActivity");
+                    Toast.makeText(LoginActivity.this, "login Successful", Toast.LENGTH_LONG).show();
                     startActivityForResult(AfterLogin,0);
                     finish();
                 }
@@ -149,8 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                Toast.makeText(LoginActivity.this, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
@@ -172,6 +175,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        final CheckConnectionHelper check = new CheckConnectionHelper();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -186,8 +190,12 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
+                                Toast.makeText(getApplicationContext(), "Internet is not avialable.", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            }
                             //updateUI(null);
                         }
 
