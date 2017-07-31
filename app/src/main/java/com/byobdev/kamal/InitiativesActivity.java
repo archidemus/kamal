@@ -169,7 +169,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public void onMapReady(GoogleMap googleMap) {
         initiativesMap = googleMap;
         LocationGPS start = new LocationGPS(getApplicationContext());
-        final LatLng interested, initiative1;
+        final LatLng interested;
 
 
 
@@ -177,19 +177,25 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         //Dummy points
         interested = new LatLng(start.getLatitud(),start.getLongitud());
-        initiative1 = new LatLng(start.getLatitud()-0.005000,start.getLongitud()+0.005000);
         interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
-        initiativesMap.addMarker(new MarkerOptions().position(initiative1).title("initiative1"));
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //Agrego datos del pin
                 Bundle bn = new Bundle();
-                bn.putString("Titulo",marker.getTitle());
-                bn.putString("imagen","");
-                bn.putString("Descripcion","asdasdasdasd");
-                bn.putString("Nombre","kamina");
+                for (Initiative initiative:initiativeList) {
+                    if(initiative.Titulo.equals(marker.getTitle())){
+                        bn.putString("Titulo",initiative.Titulo);
+                        bn.putString("imagen",initiative.image);
+                        bn.putString("Descripcion",initiative.Descripcion);
+                        bn.putString("Nombre",initiative.Nombre);
+                        break;
+                    }
+
+                }
+
+                //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
 

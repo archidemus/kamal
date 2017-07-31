@@ -14,13 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 
 public class DescriptionFragment extends Fragment {
 
     TextView Titulo;
     TextView Nombre;
     TextView Descripcion;
-    //String image;
+    ImageView Image;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,12 +40,18 @@ public class DescriptionFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+
         Titulo = (TextView) getView().findViewById(R.id.inTitle);
         Titulo.setText(getArguments().getString("Titulo"));
         Nombre = (TextView) getView().findViewById(R.id.inOrganizer);
         Nombre.setText("Organizador: "+getArguments().getString("Nombre"));
         Descripcion = (TextView) getView().findViewById(R.id.inShortDesc);
         Descripcion.setText(getArguments().getString("Descripcion"));
+        Image = (ImageView) getView().findViewById(R.id.inImage);
+        String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
+        Picasso.with(this.getContext())
+                .load(url)
+                .into(Image);
 
     }
 
