@@ -80,6 +80,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
                 Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
                 initiativeList.add(initiative);
+                initiativesMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                        .title(initiative.Titulo));
             }
         }
 
@@ -95,6 +98,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Initiative initiative=dataSnapshot.getValue(Initiative.class);
             initiativeList.add(initiative);
+            initiativesMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                    .title(initiative.Titulo));
 
         }
 
@@ -165,6 +171,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         LocationGPS start = new LocationGPS(getApplicationContext());
         final LatLng interested, initiative1;
 
+
+
+
+
         //Dummy points
         interested = new LatLng(start.getLatitud(),start.getLongitud());
         initiative1 = new LatLng(start.getLatitud()-0.005000,start.getLongitud()+0.005000);
@@ -174,10 +184,20 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
+                //Agrego datos del pin
+                Bundle bn = new Bundle();
+                bn.putString("Titulo",marker.getTitle());
+                bn.putString("imagen","");
+                bn.putString("Descripcion","asdasdasdasd");
+                bn.putString("Nombre","kamina");
+                DescriptionFragment DF = new DescriptionFragment();
+                DF.setArguments(bn);
+
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
                     FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                    trans.replace(R.id.shortDescriptionFragment, new DescriptionFragment());
+                    trans.replace(R.id.shortDescriptionFragment, DF);
+
                     //Log
                     if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
                         OvershootInterpolator interpolator;
