@@ -3,6 +3,7 @@ package com.byobdev.kamal;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -12,9 +13,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.byobdev.kamal.helpers.LocationGPS;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -135,13 +139,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         //Menu
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         //Read interests listener
         userInterests=new Interests(false,false,false);
@@ -239,13 +241,33 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.initiates_search:
+                Toast.makeText(this,"asdf", Toast.LENGTH_SHORT).show();
                 break;
             case  R.id.initiates_login:
                 Intent login = new Intent();
                 login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
                 startActivityForResult(login,0);
             case R.id.initiates_logout:
-                FirebaseAuth.getInstance().signOut();
+                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+                    new AlertDialog.Builder(this)
+                            .setTitle("Logout Confirmation")
+                            .setMessage("Do you Really Want To Logout?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    FirebaseAuth.getInstance().signOut();
+                                    LoginManager.getInstance().logOut();
+                                    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                                    navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                                    navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
+                                    navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
+                                    navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
+                                    navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
+                                    navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                                    navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+                }
                 break;
             case R.id.initiates_initiative:
                 if(FirebaseAuth.getInstance().getCurrentUser()==null){
@@ -285,6 +307,30 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         return false;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
+            navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+        }
+        else{
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
+            navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
+            navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
+            navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+        }
+    }
 
     /*****CODIGO NOTIFICACIONES *******/
     public void notificacion(View view){
@@ -310,5 +356,5 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
     }
-}
 
+}
