@@ -30,7 +30,7 @@ public class SetInterestsActivity extends AppCompatActivity{
         mDatabase = FirebaseDatabase.getInstance().getReference("Interests");
         Intent i=getIntent();
         Interests interests2=(Interests)i.getSerializableExtra("userInterests");
-        
+
         if(interests2.Deporte){
             deporte.setChecked(true);
         }
