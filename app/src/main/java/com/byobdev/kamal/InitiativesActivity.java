@@ -41,6 +41,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 import java.util.Vector;
@@ -63,6 +65,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     private DatabaseReference userDataDB;
     public Interests userInterests;
     public List<Initiative> initiativeList;
+    public int authListenerCounter=0;
 
     //User Auth Listener
     AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
@@ -71,19 +74,19 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
             if (currentUser != null) {
                 userDataDB = FirebaseDatabase.getInstance().getReference("Users");
-                User user=new User(currentUser.getDisplayName(),currentUser.getEmail(),currentUser.getPhotoUrl().toString());
+                User user=new User(currentUser.getDisplayName(),currentUser.getEmail(),currentUser.getPhotoUrl().toString(), FirebaseInstanceId.getInstance().getToken());
                 userDataDB.child(currentUser.getUid()).setValue(user);
                 //Add Read interests listener
-                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+                userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                userInterestsDB.addValueEventListener(userInterestslistener);
 
-                    userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    userInterestsDB.addValueEventListener(userInterestslistener);
-                }
+                authListenerCounter++;
             }
             else{
                 //Remove Read interests listener
-                if(userInterestslistener!=null){
+                if(authListenerCounter>0){
                     userInterestsDB.removeEventListener(userInterestslistener);
+                    authListenerCounter--;
                 }
 
             }
@@ -95,6 +98,32 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             userInterests = dataSnapshot.getValue(Interests.class);
+            if(userInterests!=null){
+                if(userInterests.Arte){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Arte");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Arte");
+                }
+
+                if(userInterests.Deporte){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Deporte");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Deporte");
+                }
+
+                if(userInterests.Comida){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Comida");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
+                }
+            }
+            else{
+                userInterests=new Interests(false,false,false);
+            }
+
         }
 
         @Override
@@ -159,6 +188,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiatives);
+        startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
+        startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
@@ -192,6 +223,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesDB=FirebaseDatabase.getInstance().getReference("Initiatives");
         initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
+
     }
 
     @Override

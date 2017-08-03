@@ -13,14 +13,13 @@ public class User {
     String Name;
     String Email;
     String ImageURL;
-    String notificationToken;
-    public User (String name, String email,String imageurl){
+    String NotificationToken;
+    public User(String name, String email,String imageurl,String notificationToken){
         this.Name=name;
         this.Email=email;
         this.ImageURL=imageurl;
-    }
-    public Uri getImageUri(){
-        return Uri.parse(ImageURL);
+        this.NotificationToken=notificationToken;
+
     }
     public User (){
 
