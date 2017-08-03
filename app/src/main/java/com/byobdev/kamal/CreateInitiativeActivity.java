@@ -69,7 +69,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     public void createInitiative(View view){
         String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),"Arte");
         mDatabase.child(key).setValue(initiative);
         finish();
     }
