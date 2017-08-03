@@ -206,8 +206,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Toast.makeText(LoginActivity.this, "Login Successful.",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Login Successful.", Toast.LENGTH_SHORT).show();
             }
         });
     }
