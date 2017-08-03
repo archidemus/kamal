@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.byobdev.kamal.helpers.LocationGPS;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.api.BooleanResult;
@@ -48,13 +49,18 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 import java.util.Vector;
 
 import static android.R.attr.data;
 
+
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
+
     //Maps
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
@@ -65,17 +71,77 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     private DatabaseReference initiativesDB;
+    private DatabaseReference userDataDB;
     public Interests userInterests;
     public List<Initiative> initiativeList;
+
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
     String msg = "Log in to enable other functions";
+
+    public int authListenerCounter=0;
+
+    //User Auth Listener
+    AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            if (currentUser != null) {
+                userDataDB = FirebaseDatabase.getInstance().getReference("Users");
+                User user=new User(currentUser.getDisplayName(),currentUser.getEmail(),currentUser.getPhotoUrl().toString(), FirebaseInstanceId.getInstance().getToken());
+                userDataDB.child(currentUser.getUid()).setValue(user);
+                //Add Read interests listener
+                userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                userInterestsDB.addValueEventListener(userInterestslistener);
+                txtv_user.setText(currentUser.getDisplayName());
+                txtv_mail.setText(currentUser.getEmail());
+                Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
+                authListenerCounter++;
+            }
+            else{
+                txtv_mail.setText(msg);
+                //Remove Read interests listener
+                if(authListenerCounter>0){
+
+                    userInterestsDB.removeEventListener(userInterestslistener);
+                    authListenerCounter--;
+                }
+
+            }
+        }
+    };
 
     //User Interests Listener
     ValueEventListener userInterestslistener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             userInterests = dataSnapshot.getValue(Interests.class);
+            if(userInterests!=null){
+                if(userInterests.Arte){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Arte");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Arte");
+                }
+
+                if(userInterests.Deporte){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Deporte");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Deporte");
+                }
+
+                if(userInterests.Comida){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Comida");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
+                }
+            }
+            else{
+                userInterests=new Interests(false,false,false);
+            }
+
         }
 
         @Override
@@ -89,8 +155,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
-              Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-              initiativeList.add(initiative);
+
+                Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
+                initiativeList.add(initiative);
+                initiativesMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                        .title(initiative.Titulo));
             }
         }
 
@@ -106,6 +176,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Initiative initiative=dataSnapshot.getValue(Initiative.class);
             initiativeList.add(initiative);
+            initiativesMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                    .title(initiative.Titulo));
 
         }
 
@@ -134,6 +207,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiatives);
+        startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
+        startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
@@ -153,6 +228,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         View view = navigationView.getHeaderView(0);
 
 
@@ -161,26 +237,32 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
 
+
+        userInterests=new Interests(false,false,false);
+
+
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //User Auth Listener
+        FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Read initiatives listener
-        initiativeList=new Vector<>();
-        initiativesDB=FirebaseDatabase.getInstance().getReference("Initiatives");
+        initiativeList = new Vector<>();
+        initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
         initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
+    }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //Read interests listener
-        userInterests=new Interests(false,false,false);
-        if(firebaseUser!=null){
-            userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInterestsDB.addValueEventListener(userInterestslistener);
-            //Set user & mail to header
-            txtv_user.setText(firebaseUser.getDisplayName());
-            txtv_mail.setText(firebaseUser.getEmail());
-            Picasso.with(this).load(firebaseUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
-
-        }
-        else{
-            txtv_mail.setText(msg);
+    @Override
+    public void onStop() {
+        super.onStop();
+        //User Auth Listener
+        if (authListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authListener);
         }
     }
 
@@ -188,21 +270,41 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public void onMapReady(GoogleMap googleMap) {
         initiativesMap = googleMap;
         LocationGPS start = new LocationGPS(getApplicationContext());
-        final LatLng interested, initiative1;
+        final LatLng interested;
+
+
+
+
 
         //Dummy points
         interested = new LatLng(start.getLatitud(),start.getLongitud());
-        initiative1 = new LatLng(start.getLatitud()-0.005000,start.getLongitud()+0.005000);
         interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
-        initiativesMap.addMarker(new MarkerOptions().position(initiative1).title("initiative1"));
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
+                //Agrego datos del pin
+                Bundle bn = new Bundle();
+                for (Initiative initiative:initiativeList) {
+                    if(initiative.Titulo.equals(marker.getTitle())){
+                        bn.putString("Titulo",initiative.Titulo);
+                        bn.putString("imagen",initiative.image);
+                        bn.putString("Descripcion",initiative.Descripcion);
+                        bn.putString("Nombre",initiative.Nombre);
+                        break;
+                    }
+
+                }
+
+                //le paso los datos al fragment
+                DescriptionFragment DF = new DescriptionFragment();
+                DF.setArguments(bn);
+
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
                     FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                    trans.replace(R.id.shortDescriptionFragment, new DescriptionFragment());
+                    trans.replace(R.id.shortDescriptionFragment, DF);
+
                     //Log
                     if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
                         OvershootInterpolator interpolator;
@@ -321,10 +423,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     break;
                 }
             case R.id.initiates_settings:
-                //CODIGO DE PRUEBA PARA LEER LA LISTA DE INICIATIVAS
-                for (Initiative initiativeListItem : initiativeList) {
-                    Toast.makeText(this,initiativeListItem.Nombre, Toast.LENGTH_SHORT).show();
-                }
                 break;
             case R.id.initiates_recent:
                 if(FirebaseAuth.getInstance().getCurrentUser()!=null){

@@ -15,22 +15,28 @@ import java.text.SimpleDateFormat;
  */
 
 public class Initiative {
+    String Titulo;
     String Nombre;
     String Descripcion;
     Double Latitud;
     Double Longitud;
     String Uid;
+    String image;
+    String Tipo;
     //SimpleDateFormat FechaInicio;
     //SimpleDateFormat FechaFin;
 
 
 
-    public Initiative(String nombre, String descripcion, Double latitud, Double longitud, String uid){
+    public Initiative(String titulo, String nombre, String descripcion, Double latitud, Double longitud, String image,String uid,String tipo){
+        this.Titulo = titulo;
         this.Nombre=nombre;
         this.Descripcion=descripcion;
         this.Latitud=latitud;
         this.Longitud=longitud;
+        this.image = image;
         this.Uid=uid;
+        this.Tipo=tipo;
         //this.FechaInicio=fechainicio;
         //this.FechaFin=fechafin;
     }

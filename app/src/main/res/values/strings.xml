@@ -7,6 +7,7 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <!-- Edit initiatives-->
+    <string name="in_title">Title</string>
     <string name="in_name">Name</string>
     <string name="in_short_desc">Short Description</string>
     <string name="in_desc">Description</string>
