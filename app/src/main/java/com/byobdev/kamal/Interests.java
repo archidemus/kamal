@@ -17,5 +17,5 @@ public class Interests implements Serializable{
         this.Arte=arte;
     }
 
-    Interests(){}
+    Interests(){ }
 }

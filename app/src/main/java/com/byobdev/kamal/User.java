@@ -9,7 +9,6 @@ public class User {
     public String Email;
     public String ImageURL;
     public String NotificationToken;
-
     public User(String name, String email,String imageurl,String notificationToken){
         this.Name=name;
         this.Email=email;
@@ -17,5 +16,5 @@ public class User {
         this.NotificationToken=notificationToken;
     }
 
-    public User(){}
+    public User (){}
 }

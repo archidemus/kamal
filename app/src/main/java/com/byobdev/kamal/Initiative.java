@@ -28,6 +28,5 @@ public class Initiative {
         //this.FechaInicio=fechainicio;
         //this.FechaFin=fechafin;
     }
-
-    public Initiative(){}
+    public Initiative(){ }
 }
