@@ -23,6 +23,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.byobdev.kamal.helpers.LocationGPS;
@@ -43,6 +45,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Vector;
@@ -62,12 +67,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     private DatabaseReference initiativesDB;
     public Interests userInterests;
     public List<Initiative> initiativeList;
+    TextView txtv_user, txtv_mail;
+    ImageView img_profile;
+    String msg = "Log in to enable other functions";
 
     //User Interests Listener
     ValueEventListener userInterestslistener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            userInterests = dataSnapshot.getValue(Interests.class);
+            //userInterests = dataSnapshot.getValue(Interests.class);
         }
 
         @Override
@@ -81,8 +89,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
-                Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-                initiativeList.add(initiative);
+              //Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
+               //initiativeList.add(initiative);
             }
         }
 
@@ -96,8 +104,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     ChildEventListener initiativesListener=new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Initiative initiative=dataSnapshot.getValue(Initiative.class);
-            initiativeList.add(initiative);
+            //Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            //initiativeList.add(initiative);
 
         }
 
@@ -145,19 +153,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View view = navigationView.getHeaderView(0);
 
-        //Read interests listener
-        userInterests=new Interests(false,false,false);
-        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInterestsDB.addValueEventListener(userInterestslistener);
-        }
+
+        //User & mail headers
+        txtv_user = (TextView)view.findViewById(R.id.initiates_user);
+        txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
+        img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
 
         //Read initiatives listener
         initiativeList=new Vector<>();
         initiativesDB=FirebaseDatabase.getInstance().getReference("Initiatives");
         initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //Read interests listener
+        userInterests=new Interests(false,false,false);
+        if(firebaseUser!=null){
+            userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            userInterestsDB.addValueEventListener(userInterestslistener);
+            //Set user & mail to header
+            txtv_user.setText(firebaseUser.getDisplayName());
+            txtv_mail.setText(firebaseUser.getEmail());
+            Picasso.with(this).load(firebaseUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
+
+        }
+        else{
+            txtv_mail.setText(msg);
+        }
     }
 
     @Override
@@ -265,6 +289,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                     navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
                                     navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                                     navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+                                    txtv_mail.setText(msg);
+                                    txtv_user.setText("");
+                                    img_profile.setImageResource(android.R.color.transparent);
                                 }})
                             .setNegativeButton(android.R.string.no, null).show();
                 }
@@ -333,6 +360,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
             navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
             navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+            txtv_mail.setText(msg);
+            txtv_user.setText("");
+            img_profile.setImageResource(android.R.color.transparent);
         }
 
     }
