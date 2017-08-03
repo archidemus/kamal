@@ -7,8 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,18 +17,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-
-
-import com.byobdev.kamal.helpers.LocationGPS;
+import com.byobdev.kamal.DBClasses.Initiative;
+import com.byobdev.kamal.DBClasses.Interests;
+import com.byobdev.kamal.DBClasses.User;
+import com.byobdev.kamal.NotificationServices.MyFirebaseInstanceIDService;
+import com.byobdev.kamal.NotificationServices.MyFirebaseMessagingService;
+import com.byobdev.kamal.AppHelpers.LocationGPS;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,14 +47,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
-
 import java.util.List;
 import java.util.Vector;
-
-import static android.R.attr.data;
 
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
@@ -69,6 +70,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     private DatabaseReference userDataDB;
     public Interests userInterests;
     public List<Initiative> initiativeList;
+
+    TextView txtv_user, txtv_mail;
+    ImageView img_profile;
+    String msg = "Log in to enable other functions";
+
     public int authListenerCounter=0;
 
     //User Auth Listener
@@ -83,12 +89,41 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Add Read interests listener
                 userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 userInterestsDB.addValueEventListener(userInterestslistener);
-
                 authListenerCounter++;
+
+                //Button visibility login
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+                //Menu Header
+                txtv_user.setText(currentUser.getDisplayName());
+                txtv_mail.setText(currentUser.getEmail());
+                Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
+
+
             }
             else{
+                //Button visibility logout
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
+                //Menu Header
+                txtv_mail.setText(msg);
+                txtv_user.setText("");
+                img_profile.setImageResource(android.R.color.transparent);
                 //Remove Read interests listener
                 if(authListenerCounter>0){
+
                     userInterestsDB.removeEventListener(userInterestslistener);
                     authListenerCounter--;
                 }
@@ -141,6 +176,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
+
                 Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
                 initiativeList.add(initiative);
                 initiativesMap.addMarker(new MarkerOptions()
@@ -213,7 +249,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View view = navigationView.getHeaderView(0);
+
+
+        //User & mail headers
+        txtv_user = (TextView)view.findViewById(R.id.initiates_user);
+        txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
+        img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
+
+
         userInterests=new Interests(false,false,false);
+
+
+
+
     }
 
     @Override
@@ -222,11 +272,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //User Auth Listener
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Read initiatives listener
-        initiativeList=new Vector<>();
-        initiativesDB=FirebaseDatabase.getInstance().getReference("Initiatives");
+        initiativeList = new Vector<>();
+        initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
         initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
-
     }
 
     @Override
@@ -356,14 +405,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     FirebaseAuth.getInstance().signOut();
                                     LoginManager.getInstance().logOut();
-                                    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                                    navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
-                                    navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
-                                    navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
-                                    navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
-                                    navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
-                                    navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-                                    navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+
                                 }})
                             .setNegativeButton(android.R.string.no, null).show();
                 }
@@ -409,27 +451,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
-            navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
-        }
-        else{
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-            navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
-            navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
-            navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
-            navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
-        }
-
     }
 
     /*****CODIGO NOTIFICACIONES *******/

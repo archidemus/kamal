@@ -1,4 +1,4 @@
-package com.byobdev.kamal;
+package com.byobdev.kamal.NotificationServices;
 
 import android.util.Log;
 

@@ -1,4 +1,4 @@
-package com.byobdev.kamal;
+package com.byobdev.kamal.NotificationServices;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +10,8 @@ import android.util.Log;
 import android.support.v4.app.NotificationCompat;
 
 
+import com.byobdev.kamal.InitiativesActivity;
+import com.byobdev.kamal.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

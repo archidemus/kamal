@@ -1,33 +1,24 @@
-package com.byobdev.kamal;
+package com.byobdev.kamal.DBClasses;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.ServerValue;
-
-import java.text.SimpleDateFormat;
-
+import static android.R.attr.src;
 
 /**
  * Created by carlos on 26-07-17.
  */
 
 public class Initiative {
-    String Titulo;
-    String Nombre;
-    String Descripcion;
-    Double Latitud;
-    Double Longitud;
-    String Uid;
-    String image;
-    String Tipo;
-    String Direccion;
+
+    public String Titulo;
+    public String Nombre;
+    public String Descripcion;
+    public Double Latitud;
+    public Double Longitud;
+    public String Uid;
+    public String image;
+    public String Tipo;
+    public String Direccion;
     //SimpleDateFormat FechaInicio;
     //SimpleDateFormat FechaFin;
-
-
 
     public Initiative(String titulo, String nombre, String descripcion, Double latitud, Double longitud, String image,String uid,String tipo, String direccion){
         this.Titulo = titulo;
@@ -42,7 +33,5 @@ public class Initiative {
         //this.FechaInicio=fechainicio;
         //this.FechaFin=fechafin;
     }
-    public Initiative(){
-
-    }
+    public Initiative(){ }
 }

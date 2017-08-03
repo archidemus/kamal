@@ -1,4 +1,4 @@
-package com.byobdev.kamal.helpers;
+package com.byobdev.kamal.AppHelpers;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
