@@ -7,15 +7,15 @@ import java.io.Serializable;
  */
 
 public class Interests implements Serializable{
-    boolean Deporte;
-    boolean Comida;
-    boolean Arte;
+    public boolean Deporte;
+    public boolean Comida;
+    public boolean Arte;
+
     Interests(boolean deporte, boolean comida, boolean arte){
         this.Deporte=deporte;
         this.Comida=comida;
         this.Arte=arte;
     }
-    Interests(){
 
-    }
+    Interests(){}
 }
