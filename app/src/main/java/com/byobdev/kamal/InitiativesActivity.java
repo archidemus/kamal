@@ -404,6 +404,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     FirebaseAuth.getInstance().signOut();
                                     LoginManager.getInstance().logOut();
+
                                 }})
                             .setNegativeButton(android.R.string.no, null).show();
                 }
