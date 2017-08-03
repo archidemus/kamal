@@ -1,4 +1,4 @@
-package com.byobdev.kamal;
+package com.byobdev.kamal.DBClasses;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ public class Interests implements Serializable{
     public boolean Comida;
     public boolean Arte;
 
-    Interests(boolean deporte, boolean comida, boolean arte){
+    public Interests(boolean deporte, boolean comida, boolean arte){
         this.Deporte=deporte;
         this.Comida=comida;
         this.Arte=arte;

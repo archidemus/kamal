@@ -1,4 +1,4 @@
-package com.byobdev.kamal;
+package com.byobdev.kamal.DBClasses;
 
 /**
  * Created by carlos on 31-07-17.
