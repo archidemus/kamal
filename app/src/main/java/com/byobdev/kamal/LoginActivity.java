@@ -11,7 +11,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import com.byobdev.kamal.Helpers.CheckConnectionHelper;
+import com.byobdev.kamal.AppHelpers.CheckConnectionHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;

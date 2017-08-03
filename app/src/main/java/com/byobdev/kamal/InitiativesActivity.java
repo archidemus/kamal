@@ -30,7 +30,7 @@ import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
 import com.byobdev.kamal.NotificationServices.MyFirebaseInstanceIDService;
 import com.byobdev.kamal.NotificationServices.MyFirebaseMessagingService;
-import com.byobdev.kamal.Helpers.LocationGPS;
+import com.byobdev.kamal.AppHelpers.LocationGPS;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;

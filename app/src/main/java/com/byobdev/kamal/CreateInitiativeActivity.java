@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
-import com.byobdev.kamal.Helpers.LocationGPS;
+import com.byobdev.kamal.AppHelpers.LocationGPS;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
