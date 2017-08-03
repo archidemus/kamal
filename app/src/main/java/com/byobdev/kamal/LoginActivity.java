@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         mFacebookBtn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                handleFacebookAccesToken(loginResult.getAccessToken());
+                handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
             @Override
@@ -139,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient);
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -201,15 +202,33 @@ public class LoginActivity extends AppCompatActivity {
     /*
     Funcion encargada de verificar el login correcto por facebook
      */
-    private void handleFacebookAccesToken(AccessToken accessToken) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                Toast.makeText(LoginActivity.this, "Login Successful.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+        final CheckConnectionHelper check = new CheckConnectionHelper();
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            //updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
+                                Toast.makeText(getApplicationContext(), "Internet is not avialable.", Toast.LENGTH_SHORT).show();
+                            }
+                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
     }
 
 
