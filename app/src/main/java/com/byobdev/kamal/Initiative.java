@@ -21,7 +21,7 @@ public class Initiative {
     Double Latitud;
     Double Longitud;
     String Uid;
-    String image;
+    String ImageURL;
     //SimpleDateFormat FechaInicio;
     //SimpleDateFormat FechaFin;
 
@@ -32,8 +32,8 @@ public class Initiative {
         this.Nombre=nombre;
         this.Descripcion=descripcion;
         this.Latitud=latitud;
-        this.image = image;
         this.Longitud=longitud;
+        this.ImageURL = image;
         this.Uid=uid;
         //this.FechaInicio=fechainicio;
         //this.FechaFin=fechafin;

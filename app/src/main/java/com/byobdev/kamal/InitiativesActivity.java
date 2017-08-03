@@ -22,6 +22,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+
 import com.byobdev.kamal.helpers.LocationGPS;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,12 +33,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 
 import java.util.List;
 import java.util.Vector;
@@ -57,8 +60,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     private DatabaseReference initiativesDB;
+    private DatabaseReference userDataDB;
     public Interests userInterests;
     public List<Initiative> initiativeList;
+
+    //User Auth Listener
+    AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            if (currentUser != null) {
+                userDataDB = FirebaseDatabase.getInstance().getReference("Users");
+                User user=new User(currentUser.getDisplayName(),currentUser.getEmail(),currentUser.getPhotoUrl().toString());
+                userDataDB.child(currentUser.getUid()).setValue(user);
+                //Add Read interests listener
+                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
+
+                    userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    userInterestsDB.addValueEventListener(userInterestslistener);
+                }
+            }
+            else{
+                //Remove Read interests listener
+                if(userInterestslistener!=null){
+                    userInterestsDB.removeEventListener(userInterestslistener);
+                }
+
+            }
+        }
+    };
 
     //User Interests Listener
     ValueEventListener userInterestslistener = new ValueEventListener() {
@@ -149,20 +179,28 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
-        //Read interests listener
         userInterests=new Interests(false,false,false);
-        if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-            userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInterestsDB.addValueEventListener(userInterestslistener);
-        }
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        //User Auth Listener
+        FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Read initiatives listener
         initiativeList=new Vector<>();
         initiativesDB=FirebaseDatabase.getInstance().getReference("Initiatives");
         initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //User Auth Listener
+        if (authListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(authListener);
+        }
     }
 
     @Override

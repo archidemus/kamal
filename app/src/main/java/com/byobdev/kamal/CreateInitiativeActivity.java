@@ -53,7 +53,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Uri filePath;
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
-
+    String key;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,17 +61,15 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
-
+        key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Uploading....");
     }
 
     public void createInitiative(View view){
         String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,imagen ,FirebaseAuth.getInstance().getCurrentUser().getUid());
-        mDatabase.push().setValue(initiative);
-
-
+        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid());
+        mDatabase.child(key).setValue(initiative);
         finish();
     }
 
@@ -93,7 +91,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         if(filePath != null) {
             pd.show();
 
-            StorageReference childRef = storageRef.child(filePath.getLastPathSegment());
+            StorageReference childRef = storageRef.child(key);
 
             //uploading the image
             final UploadTask uploadTask = childRef.putFile(filePath);
