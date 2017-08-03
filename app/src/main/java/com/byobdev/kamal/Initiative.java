@@ -23,12 +23,13 @@ public class Initiative {
     String Uid;
     String image;
     String Tipo;
+    String Direccion;
     //SimpleDateFormat FechaInicio;
     //SimpleDateFormat FechaFin;
 
 
 
-    public Initiative(String titulo, String nombre, String descripcion, Double latitud, Double longitud, String image,String uid,String tipo){
+    public Initiative(String titulo, String nombre, String descripcion, Double latitud, Double longitud, String image,String uid,String tipo, String direccion){
         this.Titulo = titulo;
         this.Nombre=nombre;
         this.Descripcion=descripcion;
@@ -37,6 +38,7 @@ public class Initiative {
         this.image = image;
         this.Uid=uid;
         this.Tipo=tipo;
+        this.Direccion = direccion;
         //this.FechaInicio=fechainicio;
         //this.FechaFin=fechafin;
     }

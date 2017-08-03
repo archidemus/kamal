@@ -263,6 +263,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         bn.putString("imagen",initiative.image);
                         bn.putString("Descripcion",initiative.Descripcion);
                         bn.putString("Nombre",initiative.Nombre);
+                        bn.putString("Direccion", initiative.Direccion);
                         break;
                     }
 

@@ -41,5 +41,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.wdullaer:materialdatetimepicker:3.2.2'
 }
 apply plugin: 'com.google.gms.google-services'
