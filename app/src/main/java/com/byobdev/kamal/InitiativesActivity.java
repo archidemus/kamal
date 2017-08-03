@@ -75,7 +75,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     ValueEventListener userInterestslistener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            //userInterests = dataSnapshot.getValue(Interests.class);
+            userInterests = dataSnapshot.getValue(Interests.class);
         }
 
         @Override
@@ -89,8 +89,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
-              //Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-               //initiativeList.add(initiative);
+              Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
+              initiativeList.add(initiative);
             }
         }
 
@@ -104,8 +104,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     ChildEventListener initiativesListener=new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            //Initiative initiative=dataSnapshot.getValue(Initiative.class);
-            //initiativeList.add(initiative);
+            Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            initiativeList.add(initiative);
 
         }
 
@@ -359,7 +359,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
             navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
             navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-            navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+            navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
             txtv_mail.setText(msg);
             txtv_user.setText("");
             img_profile.setImageResource(android.R.color.transparent);
