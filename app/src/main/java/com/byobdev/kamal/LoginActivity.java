@@ -11,7 +11,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import com.byobdev.kamal.helpers.CheckConnectionHelper;
+import com.byobdev.kamal.Helpers.CheckConnectionHelper;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -118,9 +118,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser()!=null){
-                    AfterLogin.setClassName("com.byobdev.kamal","com.byobdev.kamal.InitiativesActivity");
-                    Toast.makeText(LoginActivity.this, "login Successful", Toast.LENGTH_LONG).show();
-                    startActivityForResult(AfterLogin,0);
                     finish();
                 }
             }
