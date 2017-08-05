@@ -73,7 +73,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
-    String msg = "Log in to enable other functions";
+    String msg = "Inicia sesion para habilitar otras funciones";
 
     public int authListenerCounter=0;
 
@@ -398,8 +398,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             case R.id.initiates_logout:
                 if(FirebaseAuth.getInstance().getCurrentUser()!=null){
                     new AlertDialog.Builder(this)
-                            .setTitle("Logout Confirmation")
-                            .setMessage("Do you Really Want To Logout?")
+                            .setTitle("Confirmacion de cierre de sesion")
+                            .setMessage("Seguro que quieres cerrar sesion?")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {

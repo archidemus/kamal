@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
@@ -33,6 +34,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Double longitud;
     String imagen;
     Spinner spinner;
+    Button button;
     ArrayAdapter<CharSequence> adapter;
 
     private DatabaseReference mDatabase;
@@ -59,19 +61,35 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
-        pd.setMessage("Uploading....");
+        pd.setMessage("Cargando....");
 
     }
 
     public void createInitiative(View view){
-        String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        if( titulo.getText().toString().equals("")){
 
-        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString());
-        mDatabase.child(key).setValue(initiative);
-        finish();
+            /**
+             *   You can Toast a message here that the Username is Empty
+             **/
+
+            titulo.setError( "El titulo es requerido!" );
+
+        }else if(latitud == null){
+
+            Toast.makeText(CreateInitiativeActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString());
+            mDatabase.child(key).setValue(initiative);
+            finish();
+        }
+
     }
 
     public void obtenerGPS(View view){
@@ -91,39 +109,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_PICK);
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Seleccione imagen"), PICK_IMAGE_REQUEST);
+
 
     }
-    public void subirImagen(View v){
-        if(filePath != null) {
-            pd.show();
 
-            StorageReference childRef = storageRef.child(key);
-
-            //uploading the image
-            final UploadTask uploadTask = childRef.putFile(filePath);
-
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Upload Failed -> " + e, Toast.LENGTH_SHORT).show();
-                    imagen = null;
-                }
-            });
-        }
-        else {
-            Toast.makeText(CreateInitiativeActivity.this, "Select an image", Toast.LENGTH_SHORT).show();
-        }
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -138,9 +128,37 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
                 //Setting image to ImageView
                 imgView.setImageBitmap(bitmap);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if(filePath != null) {
+            pd.show();
+
+            StorageReference childRef = storageRef.child(key);
+
+            //uploading the image
+            final UploadTask uploadTask = childRef.putFile(filePath);
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    pd.dismiss();
+                    Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    pd.dismiss();
+                    Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                    imagen = null;
+                }
+            });
+        }
+        else {
+            Toast.makeText(CreateInitiativeActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
         }
     }
 
