@@ -324,6 +324,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
+                    if(shortDescriptionFragment.getVisibility() == View.GONE){
+                        shortDescriptionFragment.setVisibility(View.VISIBLE);
+                    }
+
                     FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                     trans.replace(R.id.shortDescriptionFragment, DF);
 
@@ -369,9 +373,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else if(shortDescriptionFragment.getVisibility() == View.VISIBLE){
+            shortDescriptionFragment.setVisibility(View.GONE);
+        }
+        else {
             super.onBackPressed();
         }
+
+
     }
 
 
@@ -382,8 +392,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (getFragmentManager().getBackStackEntryCount() == 0) {
+                super.onBackPressed();
+            } else {
+                getFragmentManager().popBackStack();
+            }
         }
+
     }
 
     @Override
