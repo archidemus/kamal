@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -104,10 +105,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
                 Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
-
-
-            }
-            else{
+            } else{
                 //Button visibility logout
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
@@ -127,7 +125,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     userInterestsDB.removeEventListener(userInterestslistener);
                     authListenerCounter--;
                 }
-
             }
         }
     };
@@ -261,9 +258,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         userInterests=new Interests(false,false,false);
 
-
-
-
     }
 
     @Override
@@ -292,10 +286,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap = googleMap;
         LocationGPS start = new LocationGPS(getApplicationContext());
         final LatLng interested;
-
-
-
-
 
         //Dummy points
         interested = new LatLng(start.getLatitud(),start.getLongitud());
