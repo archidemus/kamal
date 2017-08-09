@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimary">
+    android:background="@color/Primary">
 
     <ImageView
         android:id="@+id/logInLogo"
@@ -22,7 +22,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:text="@string/log_in_with"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/Accent"/>
 
         <View
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
             android:layout_toLeftOf="@id/logInSeparator"
-            android:background="@color/colorAccent"
+            android:background="@color/Accent"
             />
 
         <View
@@ -39,8 +39,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
             android:layout_toRightOf="@id/logInSeparator"
-            android:background="@color/colorAccent"
-            />
+            android:background="@color/Accent"/>
 
     </RelativeLayout>
 

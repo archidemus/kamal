@@ -99,13 +99,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
                 //Button visibility login
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+                //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
                 //Menu Header
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
@@ -113,13 +113,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             } else{
                 //Button visibility logout
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
-                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
+                //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
                 //Menu Header
                 txtv_mail.setText(msg);
                 txtv_user.setText("");
@@ -421,8 +421,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.initiates_search:
-                break;
+            //case R.id.initiates_search:
+            //    break;
             case  R.id.initiates_login:
                 Intent login = new Intent();
                 login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
@@ -469,10 +469,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     this.startActivity(intentMain2);
                     break;
                 }
-            case R.id.initiates_settings:
-                break;
-            case R.id.initiates_recent:
-                break;
+            //case R.id.initiates_settings:
+            //    break;
+            //case R.id.initiates_recent:
+            //    break;
             default:
                 return false;
         }
