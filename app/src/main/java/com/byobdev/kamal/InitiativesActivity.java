@@ -61,6 +61,7 @@ import java.util.Vector;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
 import static android.R.id.primary;
+import static android.os.Build.VERSION_CODES.M;
 
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
@@ -87,10 +88,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
 
-    public boolean comidaOn=false;
-    public boolean deporteOn=false;
-    public boolean teatroOn=false;
-    public boolean musicaOn=false;
+    public boolean comidaOn=true;
+    public boolean deporteOn=true;
+    public boolean teatroOn=true;
+    public boolean musicaOn=true;
 
 
     TextView txtv_user, txtv_mail;
@@ -196,68 +197,85 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
                 Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
                 initiativeList.add(initiative);
+                Marker aux;
                 if(initiative.Tipo.equals("Comida")){
                     if(comidaOn){
-                        comidaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
-                        ));
+                        );
+                        comidaMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
                     else{
-                        comidaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
                                 .visible(false)
-                        ));
+                        );
+                        comidaMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
 
 
                 }
                 else if(initiative.Tipo.equals("Deporte")){
                     if(deporteOn){
-                        deporteMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
-                        ));
+                        );
+                        deporteMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
                     else{
-                        deporteMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
                                 .visible(false)
-                        ));
+                        );
+                        deporteMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
 
                 }
                 else if(initiative.Tipo.equals("Teatro")){
                     if(teatroOn){
-                        teatroMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
-                        ));
+                        );
+                        teatroMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
                     else{
-                        teatroMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
                                 .visible(false)
-                        ));
+                        );
+                        teatroMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
 
                 }
                 else if(initiative.Tipo.equals("Musica")){
                     if(musicaOn){
-                        musicaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
-                        ));
+                        );
+                        musicaMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
                     else{
-                        musicaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                        aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .title(initiative.Titulo)
                                 .visible(false)
-                        ));
+                        );
+                        musicaMarkerList.add(aux);
+                        initiativeHashMap.put(aux.getId(),initiative);
                     }
                 }
             }
@@ -275,68 +293,85 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Initiative initiative=dataSnapshot.getValue(Initiative.class);
             initiativeList.add(initiative);
+            Marker aux;
             if(initiative.Tipo.equals("Comida")){
                 if(comidaOn){
-                    comidaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
-                    ));
+                    );
+                    comidaMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
                 else{
-                    comidaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
                             .visible(false)
-                    ));
+                    );
+                    comidaMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
 
 
             }
             else if(initiative.Tipo.equals("Deporte")){
                 if(deporteOn){
-                    deporteMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
-                    ));
+                    );
+                    deporteMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
                 else{
-                    deporteMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
                             .visible(false)
-                    ));
+                    );
+                    deporteMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
 
             }
             else if(initiative.Tipo.equals("Teatro")){
                 if(teatroOn){
-                    teatroMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
-                    ));
+                    );
+                    teatroMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
                 else{
-                    teatroMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
                             .visible(false)
-                    ));
+                    );
+                    teatroMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
 
             }
             else if(initiative.Tipo.equals("Musica")){
                 if(musicaOn){
-                    musicaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
-                    ));
+                    );
+                    musicaMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
                 else{
-                    musicaMarkerList.add(initiativesMap.addMarker(new MarkerOptions()
+                    aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .title(initiative.Titulo)
                             .visible(false)
-                    ));
+                    );
+                    musicaMarkerList.add(aux);
+                    initiativeHashMap.put(aux.getId(),initiative);
                 }
             }
         }
@@ -569,12 +604,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     }
 
                 }
+                Initiative initiative=(Initiative)initiativeHashMap.get(marker.getId());
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
 
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
+                    if(vista)
                     if(shortDescriptionFragment.getVisibility() == View.GONE){
                         shortDescriptionFragment.setVisibility(View.VISIBLE);
                     }
