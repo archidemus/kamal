@@ -125,7 +125,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 img_profile.setImageResource(android.R.color.transparent);
                 //Remove Read interests listener
                 if(authListenerCounter>0){
-
                     userInterestsDB.removeEventListener(userInterestslistener);
                     authListenerCounter--;
                 }
@@ -467,10 +466,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             case R.id.initiates_settings:
                 break;
             case R.id.initiates_recent:
-                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-                    Log.d("nombre: ",FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                    break;
-                }
                 break;
             default:
                 return false;
