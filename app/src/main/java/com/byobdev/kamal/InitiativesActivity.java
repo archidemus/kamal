@@ -404,16 +404,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
         if(comidaOn){
-            iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+            iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
         }
         if(deporteOn){
-            iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+            iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
         }
         if(teatroOn){
-            iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+            iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
         }
         if(musicaOn){
-            iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+            iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
         }
 
 
