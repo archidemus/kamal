@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
@@ -71,6 +72,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     private DatabaseReference userDataDB;
     public Interests userInterests;
     public List<Initiative> initiativeList;
+    View vista;
 
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
@@ -257,6 +259,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         userInterests=new Interests(false,false,false);
+        vista= (LinearLayout)findViewById(R.id.bottom_menu);
 
     }
 
@@ -314,6 +317,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
                 //Hago aparecer fragment
                 if (!marker.getTitle().equals("interested")){
+                    if(vista.getVisibility() == View.VISIBLE) {
+                        vista.setVisibility(View.GONE);
+                    }
+
                     if(shortDescriptionFragment.getVisibility() == View.GONE){
                         shortDescriptionFragment.setVisibility(View.VISIBLE);
                     }
@@ -341,6 +348,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastPosY = event.getY();
+
                 return true;
             case (MotionEvent.ACTION_MOVE):
                 float currentPosition = event.getY();
@@ -366,6 +374,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
         else if(shortDescriptionFragment.getVisibility() == View.VISIBLE){
             shortDescriptionFragment.setVisibility(View.GONE);
+            vista.setVisibility(View.VISIBLE);
         }
         else {
             super.onBackPressed();
