@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -89,9 +90,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public List<Marker> deporteMarkerList;
     public List<Marker> teatroMarkerList;
     public List<Marker> musicaMarkerList;
-
-
-
+    public static final String PREFS_NAME = "KamalPreferences";
     public boolean comidaOn=false;
     public boolean deporteOn=false;
     public boolean teatroOn=false;
@@ -395,6 +394,28 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
         nm2.cancelAll();
 
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        comidaOn = settings.getBoolean("comida", false);
+        deporteOn = settings.getBoolean("deporte", false);
+        teatroOn = settings.getBoolean("teatro", false);
+        musicaOn = settings.getBoolean("musica", false);
+        final View iniciativaDeportes = findViewById(R.id.botonDeportes);
+        final View iniciativaComida = findViewById(R.id.botonComida);
+        final View iniciativaTeatro = findViewById(R.id.botonTeatro);
+        final View iniciativaMusica = findViewById(R.id.botonMusica);
+        if(comidaOn){
+            iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+        }
+        if(deporteOn){
+            iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+        }
+        if(teatroOn){
+            iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+        }
+        if(musicaOn){
+            iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+        }
+
 
         initiativeList = new Vector<>();
         initiativeHashMap=new HashMap();
@@ -438,11 +459,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        final View iniciativaComida = findViewById(R.id.botonComida);
         iniciativaComida.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
                 if(comidaOn){
                     iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimary));
                     comidaOn=false;
@@ -461,7 +480,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        final View iniciativaDeportes = findViewById(R.id.botonDeportes);
+
         iniciativaDeportes.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -483,7 +502,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         iniciativaTeatro.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -505,7 +523,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         });
 
-        final View iniciativaMusica = findViewById(R.id.botonMusica);
         iniciativaMusica.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -560,6 +577,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         if (authListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(authListener);
         }
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("deporte", deporteOn);
+        editor.putBoolean("comida", comidaOn);
+        editor.putBoolean("teatro", teatroOn);
+        editor.putBoolean("musica", musicaOn);
+        editor.commit();
+
     }
 
     @Override
