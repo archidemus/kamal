@@ -46,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LOGIN_ACTIVITY";
     CallbackManager callbackManager;
     private LoginButton mFacebookBtn;
-    Intent AfterLogin = new Intent();
 
 
 

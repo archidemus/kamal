@@ -292,7 +292,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         //Dummy points
         interested = new LatLng(start.getLatitud(),start.getLongitud());
-        interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
+        interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("Yo"));
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
@@ -316,7 +316,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 DF.setArguments(bn);
 
                 //Hago aparecer fragment
-                if (!marker.getTitle().equals("interested")){
+                if (!marker.getTitle().equals("Yo")){
                     if(vista.getVisibility() == View.VISIBLE) {
                         vista.setVisibility(View.GONE);
                     }
