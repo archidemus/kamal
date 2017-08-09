@@ -6,7 +6,7 @@ admin.initializeApp(functions.config().firebase);
 
 
 // Listens for new messages added to messages/:pushId
-exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/Tipo').onWrite( event => {
+exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/').onWrite( event => {
 
     console.log('Push notification event triggered');
 
@@ -14,10 +14,10 @@ exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/Tipo').
     var valueObject = event.data.val();
   // Create a notification
     const payload = {
-        notification: {
-            title:valueObject,
-            body: valueObject,
-            sound: "default"
+        data: {
+            "titulo":valueObject.Titulo,
+            "tipo": valueObject.Tipo,
+            "descripcion": valueObject.Descripcion,
         },
     };
 
@@ -28,5 +28,5 @@ exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/Tipo').
     };
 
 
-    return admin.messaging().sendToTopic(valueObject, payload, options);
+    return admin.messaging().sendToTopic(valueObject.Tipo, payload, options);
 });
