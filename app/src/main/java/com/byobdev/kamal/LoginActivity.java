@@ -25,8 +25,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -48,9 +46,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LOGIN_ACTIVITY";
     CallbackManager callbackManager;
     private LoginButton mFacebookBtn;
-    Intent AfterLogin = new Intent();
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(getApplicationContext(),R.string.com_facebook_internet_permission_error_message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),R.string.autentication_error, Toast.LENGTH_SHORT).show();
             }
         });
         ///////////////////////////////////////////FACEBOOK MODULE/////////////////////////
@@ -104,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                 .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        Toast.makeText(LoginActivity.this, "Fallo en la Autentificación.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, R.string.autentication_error, Toast.LENGTH_LONG).show();
                     }
                 })
                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
@@ -151,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                Toast.makeText(LoginActivity.this, "Fallo en la Autentificación.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, R.string.autentication_error, Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
@@ -191,10 +186,10 @@ public class LoginActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
-                                Toast.makeText(getApplicationContext(), "Sin Conexión a Internet.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(LoginActivity.this, "Fallo en la Autentificación.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, R.string.autentication_error, Toast.LENGTH_SHORT).show();
                             }
                             //updateUI(null);
                         }
@@ -224,9 +219,9 @@ public class LoginActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
-                                Toast.makeText(getApplicationContext(), "Sin Conexión a Internet.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
-                            Toast.makeText(getApplicationContext(), "Fallo en la Autentificación.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), R.string.autentication_error, Toast.LENGTH_SHORT).show();
                             //updateUI(null);
                         }
 

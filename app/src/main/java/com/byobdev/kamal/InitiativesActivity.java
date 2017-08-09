@@ -321,6 +321,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         bn.putString("Descripcion",initiative.Descripcion);
                         bn.putString("Nombre",initiative.Nombre);
                         bn.putString("Direccion", initiative.Direccion);
+                        bn.putString("hInicio", initiative.hInicio);
+                        bn.putString("hFin", initiative.hTermino);
                         break;
                     }
 
