@@ -40,11 +40,11 @@ public class DescriptionFragment extends Fragment {
         Titulo = (TextView) getView().findViewById(R.id.inTitle);
         Titulo.setText(getArguments().getString("Titulo"));
         Nombre = (TextView) getView().findViewById(R.id.inOrganizer);
-        Nombre.setText("Organizador: "+getArguments().getString("Nombre"));
+        Nombre.setText(getArguments().getString("Nombre"));
         Descripcion = (TextView) getView().findViewById(R.id.inShortDesc);
         Descripcion.setText(getArguments().getString("Descripcion"));
         Lugar = (TextView) getView().findViewById(R.id.inPlace);
-        Lugar.setText("Lugar: "+getArguments().getString("Direccion"));
+        Lugar.setText(getArguments().getString("Direccion"));
         hInicio = (TextView) getView().findViewById(R.id.hI);
         hInicio.setText(getArguments().getString("hInicio"));
         hFin = (TextView) getView().findViewById(R.id.hT);

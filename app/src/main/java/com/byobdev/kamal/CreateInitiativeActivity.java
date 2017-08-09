@@ -97,8 +97,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-            DateFormat formatter = new SimpleDateFormat("hh:mm");
-            DateFormat formatterF = new SimpleDateFormat("hh:mm");
+            DateFormat formatter = new SimpleDateFormat("HH:mm");
+            DateFormat formatterF = new SimpleDateFormat("HH:mm");
             Date date =null;
             Date date1 = null;
             try{

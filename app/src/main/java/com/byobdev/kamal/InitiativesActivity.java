@@ -444,14 +444,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             public boolean onTouch(View v, MotionEvent event) {
 
                 if(comidaOn){
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimary));
+                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     comidaOn=false;
                     for (Marker marker:comidaMarkerList) {
                         marker.setVisible(false);
                     }
                 }
                 else{
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));
+                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     comidaOn=true;
                     for (Marker marker:comidaMarkerList) {
                         marker.setVisible(true);
@@ -466,14 +466,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(deporteOn){
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimary));
+                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     deporteOn=false;
                     for (Marker marker:deporteMarkerList) {
                         marker.setVisible(false);
                     }
                 }
                 else{
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));;
+                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
                     deporteOn=true;
                     for (Marker marker:deporteMarkerList) {
                         marker.setVisible(true);
@@ -488,14 +488,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(teatroOn){
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimary));
+                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     teatroOn=false;
                     for (Marker marker:teatroMarkerList) {
                         marker.setVisible(false);
                     }
                 }
                 else{
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));;
+                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
                     teatroOn=true;
                     for (Marker marker:teatroMarkerList) {
                         marker.setVisible(true);
@@ -510,14 +510,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(musicaOn){
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimary));
+                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     musicaOn=false;
                     for (Marker marker:musicaMarkerList) {
                         marker.setVisible(false);
                     }
                 }
                 else{
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.colorPrimaryDark));;
+                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
                     musicaOn=true;
                     for (Marker marker:musicaMarkerList) {
                         marker.setVisible(true);
@@ -612,7 +612,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
                     OvershootInterpolator interpolator;
                     interpolator = new OvershootInterpolator(5);
-                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-200).setDuration(500);
+                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-1000).setDuration(600);
                 }
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
