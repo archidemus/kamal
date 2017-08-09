@@ -5,10 +5,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -26,8 +28,10 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
@@ -88,15 +92,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
 
-    public boolean comidaOn=true;
-    public boolean deporteOn=true;
-    public boolean teatroOn=true;
-    public boolean musicaOn=true;
-
-
+    public boolean comidaOn=false;
+    public boolean deporteOn=false;
+    public boolean teatroOn=false;
+    public boolean musicaOn=false;
+    View vista;
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
-    String msg = "Log in to enable other functions";
+    String msg = "Inicia sesion para habilitar otras funciones";
 
     public int authListenerCounter=0;
 
@@ -202,7 +205,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(comidaOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                         );
                         comidaMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
@@ -210,7 +212,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                                 .visible(false)
                         );
                         comidaMarkerList.add(aux);
@@ -223,7 +224,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(deporteOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                         );
                         deporteMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
@@ -231,7 +231,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                                 .visible(false)
                         );
                         deporteMarkerList.add(aux);
@@ -243,7 +242,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(teatroOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                         );
                         teatroMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
@@ -251,7 +249,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                                 .visible(false)
                         );
                         teatroMarkerList.add(aux);
@@ -263,7 +260,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(musicaOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                         );
                         musicaMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
@@ -271,7 +267,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .title(initiative.Titulo)
                                 .visible(false)
                         );
                         musicaMarkerList.add(aux);
@@ -298,7 +293,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(comidaOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                     );
                     comidaMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
@@ -306,7 +300,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                             .visible(false)
                     );
                     comidaMarkerList.add(aux);
@@ -319,7 +312,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(deporteOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                     );
                     deporteMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
@@ -327,7 +319,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                             .visible(false)
                     );
                     deporteMarkerList.add(aux);
@@ -339,7 +330,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(teatroOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                     );
                     teatroMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
@@ -347,7 +337,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                             .visible(false)
                     );
                     teatroMarkerList.add(aux);
@@ -359,7 +348,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(musicaOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                     );
                     musicaMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
@@ -367,7 +355,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .title(initiative.Titulo)
                             .visible(false)
                     );
                     musicaMarkerList.add(aux);
@@ -551,6 +538,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         userInterests=new Interests(false,false,false);
+        vista= findViewById(R.id.bottom_menu);
 
     }
 
@@ -585,50 +573,50 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
 
         //Dummy points
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            initiativesMap.setMyLocationEnabled(true);
+        }
+
         interested = new LatLng(start.getLatitud(),start.getLongitud());
-        interestedMarker = initiativesMap.addMarker(new MarkerOptions().position(interested).title("interested"));
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested,15));
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //Agrego datos del pin
                 Bundle bn = new Bundle();
-                for (Initiative initiative:initiativeList) {
-                    if(initiative.Titulo.equals(marker.getTitle())){
-                        bn.putString("Titulo",initiative.Titulo);
-                        bn.putString("imagen",initiative.image);
-                        bn.putString("Descripcion",initiative.Descripcion);
-                        bn.putString("Nombre",initiative.Nombre);
-                        bn.putString("Direccion", initiative.Direccion);
-                        break;
-                    }
-
-                }
                 Initiative initiative=(Initiative)initiativeHashMap.get(marker.getId());
+                bn.putString("Titulo",initiative.Titulo);
+                bn.putString("imagen",initiative.image);
+                bn.putString("Descripcion",initiative.Descripcion);
+                bn.putString("Nombre",initiative.Nombre);
+                bn.putString("Direccion", initiative.Direccion);
+                bn.putString("hInicio", initiative.hInicio);
+                bn.putString("hFin", initiative.hTermino);
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
 
                 //Hago aparecer fragment
-                if (!marker.getTitle().equals("interested")){
-                    if(vista)
-                    if(shortDescriptionFragment.getVisibility() == View.GONE){
-                        shortDescriptionFragment.setVisibility(View.VISIBLE);
-                    }
-
-                    FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                    trans.replace(R.id.shortDescriptionFragment, DF);
-
-                    //Log
-                    if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
-                        OvershootInterpolator interpolator;
-                        interpolator = new OvershootInterpolator(5);
-                        shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-200).setDuration(500);
-                    }
-                    trans.addToBackStack(null);
-                    trans.commit();
-                    Log.d("MAP", "Entro a " + marker.getTitle());
+                if(vista.getVisibility() == View.VISIBLE) {
+                    vista.setVisibility(View.GONE);
                 }
+                marker.hideInfoWindow();
+                if(shortDescriptionFragment.getVisibility() == View.GONE){
+                    shortDescriptionFragment.setVisibility(View.VISIBLE);
+                }
+
+                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                trans.replace(R.id.shortDescriptionFragment, DF);
+
+                //Log
+                if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
+                    OvershootInterpolator interpolator;
+                    interpolator = new OvershootInterpolator(5);
+                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-200).setDuration(500);
+                }
+                trans.commit();
+                Log.d("MAP", "Entro a " + marker.getTitle());
+
                 return false;
             }
         });
@@ -639,6 +627,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastPosY = event.getY();
+
                 return true;
             case (MotionEvent.ACTION_MOVE):
                 float currentPosition = event.getY();
@@ -664,6 +653,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
         else if(shortDescriptionFragment.getVisibility() == View.VISIBLE){
             shortDescriptionFragment.setVisibility(View.GONE);
+            vista.setVisibility(View.VISIBLE);
         }
         else {
             super.onBackPressed();
@@ -702,13 +692,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             case R.id.initiates_logout:
                 if(FirebaseAuth.getInstance().getCurrentUser()!=null){
                     new AlertDialog.Builder(this)
-                            .setTitle("Logout Confirmation")
-                            .setMessage("Do you Really Want To Logout?")
+                            .setTitle("Confirmacion de cierre de sesion")
+                            .setMessage("Seguro que quieres cerrar sesion?")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    user.unlink(user.getProviderId());
                                     FirebaseAuth.getInstance().signOut();
                                     LoginManager.getInstance().logOut();
+
 
                                 }})
                             .setNegativeButton(android.R.string.no, null).show();
@@ -777,5 +770,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
     }
+
+
 
 }

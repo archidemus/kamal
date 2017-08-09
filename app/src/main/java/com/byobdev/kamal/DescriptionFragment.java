@@ -16,6 +16,8 @@ public class DescriptionFragment extends Fragment {
     TextView Descripcion;
     ImageView Image;
     TextView Lugar;
+    TextView hInicio;
+    TextView hFin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +45,10 @@ public class DescriptionFragment extends Fragment {
         Descripcion.setText(getArguments().getString("Descripcion"));
         Lugar = (TextView) getView().findViewById(R.id.inPlace);
         Lugar.setText("Lugar: "+getArguments().getString("Direccion"));
+        hInicio = (TextView) getView().findViewById(R.id.hI);
+        hInicio.setText(getArguments().getString("hInicio"));
+        hFin = (TextView) getView().findViewById(R.id.hT);
+        hFin.setText(getArguments().getString("hFin"));
         Image = (ImageView) getView().findViewById(R.id.inImage);
         String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
         Picasso.with(this.getContext())
