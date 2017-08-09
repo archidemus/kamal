@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
@@ -27,9 +28,16 @@ import android.provider.MediaStore;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class CreateInitiativeActivity extends AppCompatActivity{
     EditText titulo;
     EditText description;
+    EditText hInicio;
+    EditText hTermino;
     Double latitud;
     Double longitud;
     String imagen;
@@ -54,6 +62,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
+        hInicio = (EditText)findViewById(R.id.hInicio);
+        hTermino = (EditText)findViewById(R.id.hTermino);
+
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
         adapter = ArrayAdapter.createFromResource(this,
@@ -72,25 +83,42 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     public void createInitiative(View view){
         if( titulo.getText().toString().equals("")){
 
-            /**
-             *   You can Toast a message here that the Username is Empty
-             **/
 
             titulo.setError( "El titulo es requerido!" );
 
         }else if(latitud == null){
 
             Toast.makeText(CreateInitiativeActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
+        }else if(description.getText().toString().equals("")){
+
+            description.setError("La descripcion es requerida!");
+
         }
         else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString());
+            DateFormat formatter = new SimpleDateFormat("hh:mm");
+            DateFormat formatterF = new SimpleDateFormat("hh:mm");
+            Date date =null;
+            Date date1 = null;
+            try{
+                date = formatter.parse(hInicio.getText().toString());
+                 date1= formatter.parse(hTermino.getText().toString());
+            }catch (Exception e){
+
+            }
+
+
+            String feI = formatter.format(date);
+            String feT = formatterF.format(date1);
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString(), feI, feT);
             mDatabase.child(key).setValue(initiative);
             finish();
         }
 
     }
+
+
 
     public void obtenerGPS(View view){
         LocationGPS gps=new LocationGPS(this);
