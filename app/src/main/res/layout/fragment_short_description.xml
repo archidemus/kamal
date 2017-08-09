@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorPrimary"
     >
 
     <RelativeLayout
@@ -72,20 +73,6 @@
             android:layout_toStartOf="@+id/inImage"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"/>
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/inShortDesc"
-            android:layout_marginLeft="41dp"
-            android:layout_marginStart="41dp"
-            android:layout_marginTop="19dp"
-            android:onClick="notificacion"
-            android:text="Notificacion" />
-
 
     </RelativeLayout>
 </LinearLayout>

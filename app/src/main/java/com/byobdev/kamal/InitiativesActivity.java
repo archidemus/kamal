@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,6 +54,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.List;
 import java.util.Vector;
+import com.google.android.gms.maps.model.MapStyleOptions;
 
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
@@ -61,6 +62,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     //Maps
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
+    private static final String TAG = InitiativesActivity.class.getSimpleName();
     //Others
     Marker interestedMarker;
     FrameLayout shortDescriptionFragment;
@@ -240,12 +242,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         shortDescriptionFragment.setOnTouchListener(this);
 
         //Menu
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View search = findViewById(R.id.search);
+        search.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                drawer.openDrawer(Gravity.LEFT);
+                return false;
+            }
+        });
 
         View view = navigationView.getHeaderView(0);
 
@@ -286,6 +297,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap = googleMap;
         LocationGPS start = new LocationGPS(getApplicationContext());
         final LatLng interested;
+        boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
+        if (!success) {
+            Log.e(TAG, "Style parsing failed.");
+        }
 
         //Dummy points
         interested = new LatLng(start.getLatitud(),start.getLongitud());
@@ -374,6 +389,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             super.onBackPressed();
         }
     }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
