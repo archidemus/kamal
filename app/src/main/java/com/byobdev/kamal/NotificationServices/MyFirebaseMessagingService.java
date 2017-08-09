@@ -15,25 +15,34 @@ import com.byobdev.kamal.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "FirebaseMessagingServce";
-
+    String Titulo;
+    String Tipo;
+    String Descripcion;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
-        String notificationTitle = null, notificationBody = null;
-
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            notificationTitle = remoteMessage.getNotification().getTitle();
-            notificationBody = remoteMessage.getNotification().getBody();
+        for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if(key.equals("titulo")){
+                Titulo=value;
+            }
+            else if(key.equals("tipo")){
+                Tipo=value;
+            }
+            else if(key.equals("descripcion")){
+                Descripcion=value;
+            }
         }
-
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
-        sendNotification(notificationTitle, notificationBody);
+        String Title="Iniciativa de "+Tipo+" cercana!";
+        String Body=Titulo+": "+Descripcion;
+        sendNotification(Title, Body);
     }
 
 

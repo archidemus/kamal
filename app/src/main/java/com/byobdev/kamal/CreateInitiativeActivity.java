@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
@@ -26,13 +28,21 @@ import android.provider.MediaStore;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class CreateInitiativeActivity extends AppCompatActivity{
     EditText titulo;
     EditText description;
+    EditText hInicio;
+    EditText hTermino;
     Double latitud;
     Double longitud;
     String imagen;
     Spinner spinner;
+    Button button;
     ArrayAdapter<CharSequence> adapter;
 
     private DatabaseReference mDatabase;
@@ -52,6 +62,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
+        hInicio = (EditText)findViewById(R.id.hInicio);
+        hTermino = (EditText)findViewById(R.id.hTermino);
+
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
         adapter = ArrayAdapter.createFromResource(this,
@@ -59,20 +72,53 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
-        pd.setMessage("Uploading....");
+        pd.setMessage("Cargando...");
 
     }
 
     public void createInitiative(View view){
-        String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        if( titulo.getText().toString().equals("")){
 
-        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString());
-        mDatabase.child(key).setValue(initiative);
-        finish();
+
+            titulo.setError( "El titulo es requerido!" );
+
+        }else if(latitud == null){
+
+            Toast.makeText(CreateInitiativeActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
+        }else if(description.getText().toString().equals("")){
+
+            description.setError("La descripcion es requerida!");
+
+        }
+        else{
+            String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+            DateFormat formatter = new SimpleDateFormat("hh:mm");
+            DateFormat formatterF = new SimpleDateFormat("hh:mm");
+            Date date =null;
+            Date date1 = null;
+            try{
+                date = formatter.parse(hInicio.getText().toString());
+                 date1= formatter.parse(hTermino.getText().toString());
+            }catch (Exception e){
+
+            }
+
+
+            String feI = formatter.format(date);
+            String feT = formatterF.format(date1);
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString(), feI, feT);
+            mDatabase.child(key).setValue(initiative);
+            finish();
+        }
+
     }
+
+
 
     public void obtenerGPS(View view){
         LocationGPS gps=new LocationGPS(this);
@@ -91,39 +137,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_PICK);
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Seleccione imagen"), PICK_IMAGE_REQUEST);
+
 
     }
-    public void subirImagen(View v){
-        if(filePath != null) {
-            pd.show();
 
-            StorageReference childRef = storageRef.child(key);
-
-            //uploading the image
-            final UploadTask uploadTask = childRef.putFile(filePath);
-
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Upload Failed -> " + e, Toast.LENGTH_SHORT).show();
-                    imagen = null;
-                }
-            });
-        }
-        else {
-            Toast.makeText(CreateInitiativeActivity.this, "Select an image", Toast.LENGTH_SHORT).show();
-        }
-
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -138,9 +156,37 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
                 //Setting image to ImageView
                 imgView.setImageBitmap(bitmap);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if(filePath != null) {
+            pd.show();
+
+            StorageReference childRef = storageRef.child(key);
+
+            //uploading the image
+            final UploadTask uploadTask = childRef.putFile(filePath);
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    pd.dismiss();
+                    Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    pd.dismiss();
+                    Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                    imagen = null;
+                }
+            });
+        }
+        else {
+            Toast.makeText(CreateInitiativeActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
         }
     }
 

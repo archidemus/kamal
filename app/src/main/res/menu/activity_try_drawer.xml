@@ -6,17 +6,17 @@
         <item
             android:id="@+id/initiates_search"
             android:icon="@drawable/ic_search_black_24dp"
-            android:title="Search"
+            android:title="Buscar"
             app:actionViewClass="android.support.v7.widget.SearchView"
             />
         <item
             android:id="@+id/initiates_login"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Login" />
+            android:title="Iniciar Sesion" />
         <item
             android:id="@+id/initiates_logout"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Logout" />
+            android:title="Cerrar Sesion" />
         <item
             android:id="@+id/initiates_initiative"
             android:icon="@drawable/ic_menu_share"

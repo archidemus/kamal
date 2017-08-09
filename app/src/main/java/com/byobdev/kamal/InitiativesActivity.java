@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
@@ -75,10 +76,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public Interests userInterests;
     public List<Initiative> initiativeList;
     View vista;
+    private Marker mLastShownInfoWindowMarker = null;
 
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
-    String msg = "Log in to enable other functions";
+    String msg = "Inicia sesion para habilitar otras funciones";
 
     public int authListenerCounter=0;
 
@@ -125,7 +127,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 img_profile.setImageResource(android.R.color.transparent);
                 //Remove Read interests listener
                 if(authListenerCounter>0){
-
                     userInterestsDB.removeEventListener(userInterestslistener);
                     authListenerCounter--;
                 }
@@ -270,7 +271,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         userInterests=new Interests(false,false,false);
-        vista= (LinearLayout)findViewById(R.id.bottom_menu);
+        vista= findViewById(R.id.bottom_menu);
 
     }
 
@@ -321,6 +322,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         bn.putString("Descripcion",initiative.Descripcion);
                         bn.putString("Nombre",initiative.Nombre);
                         bn.putString("Direccion", initiative.Direccion);
+                        bn.putString("hInicio", initiative.hInicio);
+                        bn.putString("hFin", initiative.hTermino);
                         break;
                     }
 
@@ -390,6 +393,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         else if(shortDescriptionFragment.getVisibility() == View.VISIBLE){
             shortDescriptionFragment.setVisibility(View.GONE);
             vista.setVisibility(View.VISIBLE);
+            if(interestedMarker.isInfoWindowShown()){
+                interestedMarker.hideInfoWindow();
+            }
         }
         else {
             super.onBackPressed();
@@ -428,13 +434,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             case R.id.initiates_logout:
                 if(FirebaseAuth.getInstance().getCurrentUser()!=null){
                     new AlertDialog.Builder(this)
-                            .setTitle("Logout Confirmation")
-                            .setMessage("Do you Really Want To Logout?")
+                            .setTitle("Confirmacion de cierre de sesion")
+                            .setMessage("Seguro que quieres cerrar sesion?")
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
+                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                    user.unlink(user.getProviderId());
                                     FirebaseAuth.getInstance().signOut();
                                     LoginManager.getInstance().logOut();
+
 
                                 }})
                             .setNegativeButton(android.R.string.no, null).show();
@@ -467,10 +476,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             case R.id.initiates_settings:
                 break;
             case R.id.initiates_recent:
-                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-                    Log.d("nombre: ",FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                    break;
-                }
                 break;
             default:
                 return false;
@@ -507,5 +512,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
     }
+
+
 
 }

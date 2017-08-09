@@ -22,6 +22,8 @@
     <string name="facebook_app_id">333536560434984</string>
     <string name="fb_login_protocol_scheme">fb333536560434984</string>
     <!-- drop list -->
+    <string name="autentication_error">Fallo en la Autentificación.</string>
+    <string name="no_internet">Sin Conexión a Internet.</string>
     <string-array name="Tipo_Iniciativa">
         <item>Arte</item>
         <item>Deporte</item>
