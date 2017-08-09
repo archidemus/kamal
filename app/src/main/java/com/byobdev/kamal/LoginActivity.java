@@ -25,6 +25,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -102,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                 .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Fallo en la Autentificación.", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
@@ -124,6 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         //////////////////////////////////////////GOOGLE MODULE///////////////////////////
+
+
     }
 
 
@@ -147,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Fallo en la Autentificación.", Toast.LENGTH_SHORT).show();
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
@@ -173,6 +177,7 @@ public class LoginActivity extends AppCompatActivity {
         final CheckConnectionHelper check = new CheckConnectionHelper();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -186,10 +191,10 @@ public class LoginActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
-                                Toast.makeText(getApplicationContext(), "Internet is not avialable.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Sin Conexión a Internet.", Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Fallo en la Autentificación.", Toast.LENGTH_SHORT).show();
                             }
                             //updateUI(null);
                         }
@@ -197,6 +202,7 @@ public class LoginActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+
     }
     /*
     Funcion encargada de verificar el login correcto por facebook
@@ -204,7 +210,6 @@ public class LoginActivity extends AppCompatActivity {
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
         final CheckConnectionHelper check = new CheckConnectionHelper();
-
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -219,9 +224,9 @@ public class LoginActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
-                                Toast.makeText(getApplicationContext(), "Internet is not avialable.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Sin Conexión a Internet.", Toast.LENGTH_SHORT).show();
                             }
-                            Toast.makeText(getApplicationContext(), "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Fallo en la Autentificación.", Toast.LENGTH_SHORT).show();
                             //updateUI(null);
                         }
 
