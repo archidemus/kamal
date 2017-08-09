@@ -393,9 +393,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         else if(shortDescriptionFragment.getVisibility() == View.VISIBLE){
             shortDescriptionFragment.setVisibility(View.GONE);
             vista.setVisibility(View.VISIBLE);
-            if(interestedMarker.isInfoWindowShown()){
-                interestedMarker.hideInfoWindow();
-            }
         }
         else {
             super.onBackPressed();
