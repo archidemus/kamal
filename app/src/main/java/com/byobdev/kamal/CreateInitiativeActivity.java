@@ -1,10 +1,12 @@
 package com.byobdev.kamal;
 
+
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
@@ -22,6 +24,7 @@ import android.widget.EditText;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 public class CreateInitiativeActivity extends AppCompatActivity{
     EditText titulo;
@@ -29,14 +32,19 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Double latitud;
     Double longitud;
     String imagen;
+    Spinner spinner;
+    ArrayAdapter<CharSequence> adapter;
+
     private DatabaseReference mDatabase;
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
     StorageReference storageRef = mStoragebase.getReferenceFromUrl("gs://prime-boulevard-168121.appspot.com/Images");
     ProgressDialog pd;
     Uri filePath;
+    String direccion;
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +52,24 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
+        //para agregar la lista de tipo de iniciativa
+        spinner = (Spinner) findViewById(R.id.spinner);
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.Tipo_Iniciativa, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Uploading....");
+
     }
 
     public void createInitiative(View view){
         String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),"Arte");
+        Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString());
         mDatabase.child(key).setValue(initiative);
         finish();
     }
@@ -62,6 +78,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         LocationGPS gps=new LocationGPS(this);
         latitud = gps.getLatitud();
         longitud = gps.getLongitud();
+        try{
+            direccion = gps.getAddress(latitud, longitud);
+        }catch (Exception e){
+
+        }
+
         Toast.makeText(CreateInitiativeActivity.this, "Posicion obtenida", Toast.LENGTH_SHORT).show();
     }
 
@@ -121,5 +143,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             }
         }
     }
+
+
 
 }
