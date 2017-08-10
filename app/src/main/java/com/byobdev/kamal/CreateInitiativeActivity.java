@@ -111,7 +111,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
             String feI = formatter.format(date);
             String feT = formatterF.format(date1);
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),spinner.getSelectedItem().toString(), direccion.toString(), feI, feT);
+            String interest = spinner.getSelectedItem().toString();
+            if (interest.equals("Música")){
+                interest = "Musica";
+            }
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
             mDatabase.child(key).setValue(initiative);
             finish();
         }

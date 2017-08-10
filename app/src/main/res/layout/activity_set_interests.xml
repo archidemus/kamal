@@ -26,10 +26,16 @@
         android:textSize="18sp"/>
 
     <CheckBox
-        android:id="@+id/checkboxArte"
+        android:id="@+id/checkboxTeatro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Arte"
+        android:text="Teatro"
+        android:textSize="18sp"/>
+    <CheckBox
+        android:id="@+id/checkboxMusica"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Música"
         android:textSize="18sp"/>
 
     <Button

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -99,7 +101,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
     String msg = "Inicia sesion para habilitar otras funciones";
-
+    boolean opened_bottom;
     public int authListenerCounter=0;
 
     //User Auth Listener
@@ -158,11 +160,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onDataChange(DataSnapshot dataSnapshot) {
             userInterests = dataSnapshot.getValue(Interests.class);
             if(userInterests!=null){
-                if(userInterests.Arte){
-                    FirebaseMessaging.getInstance().subscribeToTopic("Arte");
+                if(userInterests.Musica){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Musica");
                 }
                 else{
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Arte");
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Musica");
                 }
 
                 if(userInterests.Deporte){
@@ -178,9 +180,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
                 }
+                if(userInterests.Teatro){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Teatro");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
+                }
             }
             else{
-                userInterests=new Interests(false,false,false);
+                userInterests=new Interests(false,false,false,false);
             }
 
         }
@@ -390,6 +398,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        opened_bottom = true;
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
         nm2.cancelAll();
@@ -554,7 +563,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
 
 
-        userInterests=new Interests(false,false,false);
+        userInterests=new Interests(false,false,false,false);
         vista= findViewById(R.id.bottom_menu);
 
     }
@@ -622,7 +631,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 DF.setArguments(bn);
 
                 //Hago aparecer fragment
-
                 if(vista.getVisibility() == View.VISIBLE) {
                     vista.setVisibility(View.GONE);
                 }
@@ -636,8 +644,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Log
                 if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()){
                     OvershootInterpolator interpolator;
-                    interpolator = new OvershootInterpolator(5);
-                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-1000).setDuration(600);
+                    interpolator = new OvershootInterpolator(1);
+                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
+                    vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                    opened_bottom = false;
                 }
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
@@ -649,21 +659,38 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        Display mdisp = getWindowManager().getDefaultDisplay();
+        Point mdispSize = new Point();
+        mdisp.getSize(mdispSize);
+        int maxX = mdispSize.x;
+        int maxY = mdispSize.y;
+        float currentPosition;
+        int fragment_pos[] = new int[2];
+        int bottom_pos[] = new int[2];
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastPosY = event.getY();
-
                 return true;
             case (MotionEvent.ACTION_MOVE):
-                float currentPosition = event.getY();
+                currentPosition = event.getY();
                 float deltaY = mLastPosY - currentPosition;
                 float transY = View.TRANSLATION_Y.get(v);
                 transY -= deltaY;
-
                 if (transY < 0){
                     transY = 0;
                 }
                 v.setTranslationY(transY);
+                return true;
+            case (MotionEvent.ACTION_UP):
+                v.getLocationOnScreen(fragment_pos);
+                if (fragment_pos[1] >= maxY-700){
+                    OvershootInterpolator interpolator;
+                    interpolator = new OvershootInterpolator(1);
+                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
+                    vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
+                    opened_bottom = false;
+                    return true;
+                }
                 return true;
             default:
                 return v.onTouchEvent(event);
@@ -676,9 +703,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
-        else if(shortDescriptionFragment.getVisibility() == View.VISIBLE){
-            shortDescriptionFragment.setVisibility(View.GONE);
-            vista.setVisibility(View.VISIBLE);
+        else if(!opened_bottom){
+            OvershootInterpolator interpolator;
+            interpolator = new OvershootInterpolator(1);
+            shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
+            vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
+            opened_bottom = true;
         }
         else {
             super.onBackPressed();
