@@ -9,12 +9,15 @@ import java.io.Serializable;
 public class Interests implements Serializable{
     public boolean Deporte;
     public boolean Comida;
-    public boolean Arte;
+    public boolean Musica;
+    public boolean Teatro;
 
-    public Interests(boolean deporte, boolean comida, boolean arte){
+
+    public Interests(boolean deporte, boolean comida, boolean teatro, boolean musica){
         this.Deporte=deporte;
         this.Comida=comida;
-        this.Arte=arte;
+        this.Musica=musica;
+        this.Teatro=teatro;
     }
 
     Interests(){ }

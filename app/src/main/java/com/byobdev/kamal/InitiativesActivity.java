@@ -158,11 +158,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onDataChange(DataSnapshot dataSnapshot) {
             userInterests = dataSnapshot.getValue(Interests.class);
             if(userInterests!=null){
-                if(userInterests.Arte){
-                    FirebaseMessaging.getInstance().subscribeToTopic("Arte");
+                if(userInterests.Musica){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Musica");
                 }
                 else{
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Arte");
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Musica");
                 }
 
                 if(userInterests.Deporte){
@@ -178,9 +178,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
                 }
+                if(userInterests.Teatro){
+                    FirebaseMessaging.getInstance().subscribeToTopic("Teatro");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
+                }
             }
             else{
-                userInterests=new Interests(false,false,false);
+                userInterests=new Interests(false,false,false,false);
             }
 
         }
@@ -554,7 +560,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
 
 
-        userInterests=new Interests(false,false,false);
+        userInterests=new Interests(false,false,false,false);
         vista= findViewById(R.id.bottom_menu);
 
     }

@@ -7,8 +7,8 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <!-- Edit initiatives-->
-    <string name="in_title">Title</string>
-    <string name="in_name">Name</string>
+    <string name="in_title">Titulo</string>
+    <string name="in_name">Nombre</string>
     <string name="in_short_desc">Short Description</string>
     <string name="in_desc">Description</string>
     <string name="in_images">Images</string>
@@ -25,7 +25,8 @@
     <string name="autentication_error">Fallo en la Autentificación.</string>
     <string name="no_internet">Sin Conexión a Internet.</string>
     <string-array name="Tipo_Iniciativa">
-        <item>Arte</item>
+        <item>Teatro</item>
+        <item>Música</item>
         <item>Deporte</item>
         <item>Comida</item>
     </string-array>

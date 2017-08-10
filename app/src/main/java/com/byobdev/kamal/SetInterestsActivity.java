@@ -18,7 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 public class SetInterestsActivity extends AppCompatActivity{
     CheckBox comida;
     CheckBox deporte;
-    CheckBox arte;
+    CheckBox musica;
+    CheckBox teatro;
     private DatabaseReference mDatabase;
 
     @Override
@@ -27,7 +28,8 @@ public class SetInterestsActivity extends AppCompatActivity{
         setContentView(R.layout.activity_set_interests);
         comida = (CheckBox) findViewById(R.id.checkboxComida);
         deporte = (CheckBox) findViewById(R.id.checkboxDeporte);
-        arte = (CheckBox) findViewById(R.id.checkboxArte);
+        musica = (CheckBox) findViewById(R.id.checkboxMusica);
+        teatro = (CheckBox) findViewById(R.id.checkboxTeatro);
         mDatabase = FirebaseDatabase.getInstance().getReference("Interests");
         Intent i=getIntent();
         Interests interests2=(Interests)i.getSerializableExtra("userInterests");
@@ -35,16 +37,19 @@ public class SetInterestsActivity extends AppCompatActivity{
         if(interests2.Deporte){
             deporte.setChecked(true);
         }
-        if(interests2.Arte){
-            arte.setChecked(true);
+        if(interests2.Musica){
+            musica.setChecked(true);
         }
         if(interests2.Comida){
             comida.setChecked(true);
         }
+        if(interests2.Teatro){
+            teatro.setChecked(true);
+        }
     }
 
     public void SaveInterests(View view){
-        Interests interests=new Interests(deporte.isChecked(),comida.isChecked(),arte.isChecked());
+        Interests interests=new Interests(deporte.isChecked(),comida.isChecked(),teatro.isChecked(),musica.isChecked());
         mDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(interests);
         finish();
     }
