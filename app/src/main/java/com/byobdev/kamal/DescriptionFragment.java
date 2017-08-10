@@ -18,6 +18,7 @@ public class DescriptionFragment extends Fragment {
     TextView Lugar;
     TextView hInicio;
     TextView hFin;
+    String image;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,11 +51,21 @@ public class DescriptionFragment extends Fragment {
         hFin = (TextView) getView().findViewById(R.id.hT);
         hFin.setText(getArguments().getString("hFin"));
         Image = (ImageView) getView().findViewById(R.id.inImage);
-        String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
-        Picasso.with(this.getContext())
-                .load(url)
-                .into(Image);
-
+        image = getArguments().getString("imagen");
+        if (image.equals("")){
+            if(Image.getVisibility() == View.VISIBLE){
+                Image.setVisibility(View.GONE);
+            }
+        }else{
+            if(Image.getVisibility() == View.GONE){
+                Image.setVisibility(View.VISIBLE);
+            }
+            String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
+            Picasso.with(this.getContext())
+                    .load(url)
+                    .error(R.drawable.kamal_logo)
+                    .into(Image);
+        }
     }
 
 
