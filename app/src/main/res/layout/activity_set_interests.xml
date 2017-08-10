@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/fab_margin">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Intereses"
+        android:textSize="22sp"/>
     <CheckBox
         android:id="@+id/checkboxComida"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Comida" />
+        android:text="Comida"
+        android:textSize="18sp"
+        android:layout_marginTop="@dimen/fab_margin"/>
 
     <CheckBox
         android:id="@+id/checkboxDeporte"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Deporte" />
+        android:text="Deporte"
+        android:textSize="18sp"/>
 
     <CheckBox
         android:id="@+id/checkboxArte"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Arte" />
+        android:text="Arte"
+        android:textSize="18sp"/>
 
     <Button
         android:id="@+id/createInitiativeButtonFinal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         android:onClick="SaveInterests"
+        android:layout_marginTop="@dimen/fab_margin"
         android:text="Guardar" />
 
 </LinearLayout>

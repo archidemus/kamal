@@ -8,5 +8,5 @@
           android:paddingLeft="16dp"
           android:paddingRight="16dp"
           android:textColor="@color/textDarkPrimary"
-          android:background="@color/colorPrimary"
+          android:background="@color/Primary"
           android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
