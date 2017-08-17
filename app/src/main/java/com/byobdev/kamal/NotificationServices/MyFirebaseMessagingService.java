@@ -1,15 +1,22 @@
 package com.byobdev.kamal.NotificationServices;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 
+import com.byobdev.kamal.AppHelpers.LocationGPS;
 import com.byobdev.kamal.InitiativesActivity;
 import com.byobdev.kamal.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -19,11 +26,25 @@ import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
+
+
     String Titulo;
     String Tipo;
     String Descripcion;
+    String Latitud;
+    String Longitud;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+
+        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        Boolean isGPSOn = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!isGPSOn) {
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+
         // Check if message contains a notification payload.
         for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
             String key = entry.getKey();
@@ -37,10 +58,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if(key.equals("descripcion")){
                 Descripcion=value;
             }
+            else if(key.equals("latitud")){
+                Latitud=value;
+            }
+            else if(key.equals("longitud")){
+                Longitud=value;
+            }
         }
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
-        String Title="Iniciativa de "+Tipo+" cercana!";
+
+
+        Location loc1 = new Location("");
+        loc1.setLatitude(Double.parseDouble(Latitud));
+        loc1.setLongitude(Double.parseDouble(Longitud));
+
+        Location loc2 = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        int distanceInMeters = (int)loc1.distanceTo(loc2);
+        if(distanceInMeters>1000){
+            return;
+        }
+        String Title="Iniciativa de "+Tipo+" a "+distanceInMeters+" metros!";
         String Body=Titulo+": "+Descripcion;
         sendNotification(Title, Body);
     }

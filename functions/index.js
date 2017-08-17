@@ -18,6 +18,8 @@ exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/').onWr
             "titulo":valueObject.Titulo,
             "tipo": valueObject.Tipo,
             "descripcion": valueObject.Descripcion,
+            "latitud": valueObject.Latitud.toString(),
+            "longitud": valueObject.Longitud.toString(),
         },
     };
 
