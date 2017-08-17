@@ -1,6 +1,7 @@
 package com.byobdev.kamal;
 
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
@@ -36,8 +38,8 @@ import java.util.Date;
 public class CreateInitiativeActivity extends AppCompatActivity{
     EditText titulo;
     EditText description;
-    EditText hInicio;
-    EditText hTermino;
+    TextView hInicio;
+    TextView hTermino;
     Double latitud;
     Double longitud;
     String imagen;
@@ -62,8 +64,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
-        hInicio = (EditText)findViewById(R.id.hInicio);
-        hTermino = (EditText)findViewById(R.id.hTermino);
+        hTermino = (TextView)findViewById(R.id.HoraFinalfinal);
+        hInicio = (TextView)findViewById(R.id.HoraIniciofinal);
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -122,6 +124,22 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     }
 
+    public void showTimePickerDialog(View v) {
+        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
+
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    public void showTimePickerDialog2(View v) {
+        if (hInicio.getText().toString().equals("--:--")){
+            Toast.makeText(this,"No ha seleccionado una hora de inicio",Toast.LENGTH_LONG).show();
+        }
+        else {
+
+            DialogFragment newFragment = HoraActivity.newInstance(v.getId());
+            newFragment.show(getFragmentManager(), "timePicker2");
+        }
+    }
 
 
     public void obtenerGPS(View view){
