@@ -75,7 +75,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         spinner.setAdapter(adapter);
 
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
+        mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives/");
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando...");
@@ -111,8 +111,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             }
 
 
-            String feI = formatter.format(date);
-            String feT = formatterF.format(date1);
+            //String feI = formatter.format(date);
+            //String feT = formatterF.format(date1);
+            long feI=date.getTime();
+            long feT=date1.getTime();
             String interest = spinner.getSelectedItem().toString();
             if (interest.equals("Música")){
                 interest = "Musica";

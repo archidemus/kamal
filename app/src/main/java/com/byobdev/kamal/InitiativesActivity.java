@@ -48,6 +48,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -72,7 +73,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -82,6 +86,9 @@ import org.json.JSONObject;
 
 import static android.R.id.primary;
 import static android.os.Build.VERSION_CODES.M;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
@@ -100,8 +107,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     private DatabaseReference initiativesDB;
     private DatabaseReference userDataDB;
     public Interests userInterests;
-    public List<Initiative> initiativeList;
     public HashMap initiativeHashMap;
+    public HashMap markerHashMap;
     public List<Marker> comidaMarkerList;
     public List<Marker> deporteMarkerList;
     public List<Marker> teatroMarkerList;
@@ -221,23 +228,40 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
 
                 Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-                initiativeList.add(initiative);
+                float markerColor=HUE_AZURE;
                 Marker aux;
+                if(initiative.Estado==0){//aun no inicia
+                    markerColor=HUE_AZURE;
+                }
+                else if(initiative.Estado==1){//en curso
+                    markerColor=HUE_GREEN;
+                }
+                else if(initiative.Estado==2){//por terminar
+                    markerColor=HUE_RED;
+                }
                 if(initiative.Tipo.equals("Comida")){
+
+
                     if(comidaOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         comidaMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .visible(false)
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         comidaMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
 
 
@@ -246,17 +270,23 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(deporteOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         deporteMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .visible(false)
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         deporteMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
 
                 }
@@ -264,17 +294,24 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(teatroOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         teatroMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .visible(false)
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
+
                         );
                         teatroMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
 
                 }
@@ -282,17 +319,23 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     if(musicaOn){
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         musicaMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
                     else{
                         aux=initiativesMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(initiative.Latitud, initiative.Longitud))
                                 .visible(false)
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(markerColor))
                         );
                         musicaMarkerList.add(aux);
                         initiativeHashMap.put(aux.getId(),initiative);
+                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
                     }
                 }
             }
@@ -309,23 +352,39 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Initiative initiative=dataSnapshot.getValue(Initiative.class);
-            initiativeList.add(initiative);
+            float markerColor=HUE_AZURE;
             Marker aux;
+            if(initiative.Estado==0){//aun no inicia
+                markerColor=HUE_AZURE;
+            }
+            else if(initiative.Estado==1){//en curso
+                markerColor=HUE_GREEN;
+            }
+            else if(initiative.Estado==2){//por terminar
+                markerColor=HUE_RED;
+            }
             if(initiative.Tipo.equals("Comida")){
                 if(comidaOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     comidaMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
+
                 }
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .visible(false)
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     comidaMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
 
 
@@ -334,17 +393,23 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(deporteOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     deporteMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .visible(false)
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     deporteMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
 
             }
@@ -352,17 +417,23 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(teatroOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     teatroMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .visible(false)
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     teatroMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
 
             }
@@ -370,23 +441,45 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(musicaOn){
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     musicaMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
                 else{
                     aux=initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
                             .visible(false)
+                            .icon(BitmapDescriptorFactory
+                                    .defaultMarker(markerColor))
                     );
                     musicaMarkerList.add(aux);
                     initiativeHashMap.put(aux.getId(),initiative);
+                    markerHashMap.put(dataSnapshot.getKey(),aux);
                 }
             }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Marker aux= (Marker)markerHashMap.get(dataSnapshot.getKey());
+            Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            if(initiative.Estado==0){//aun no inicia
+                aux.setIcon(BitmapDescriptorFactory
+                        .defaultMarker(HUE_AZURE));
+            }
+            else if(initiative.Estado==1){//en curso
+                aux.setIcon(BitmapDescriptorFactory
+                        .defaultMarker(HUE_GREEN));
+            }
+            else if(initiative.Estado==2){//por terminar
+                aux.setIcon(BitmapDescriptorFactory
+                        .defaultMarker(HUE_RED));
+            }
+            initiativeHashMap.remove(aux.getId());
+            initiativeHashMap.put(aux.getId(),initiative);
 
         }
 
@@ -441,8 +534,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
 
 
-        initiativeList = new Vector<>();
         initiativeHashMap=new HashMap();
+        markerHashMap=new HashMap();
         comidaMarkerList = new Vector<>();
         teatroMarkerList = new Vector<>();
         deporteMarkerList = new Vector<>();
@@ -641,19 +734,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 bn.putString("Descripcion",initiative.Descripcion);
                 bn.putString("Nombre",initiative.Nombre);
                 bn.putString("Direccion", initiative.Direccion);
-                bn.putString("hInicio", initiative.hInicio);
-                bn.putString("hFin", initiative.hTermino);
+                DateFormat formatter = new SimpleDateFormat("HH:mm");
+                DateFormat formatter1 = new SimpleDateFormat("HH:mm");
+                bn.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
+                bn.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
-
-                //Hago aparecer fragment
-                if(vista.getVisibility() == View.VISIBLE) {
-                    vista.setVisibility(View.GONE);
-                }
-                if(shortDescriptionFragment.getVisibility() == View.GONE){
-                    shortDescriptionFragment.setVisibility(View.VISIBLE);
-                }
 
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.replace(R.id.shortDescriptionFragment, DF);
