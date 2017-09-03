@@ -135,12 +135,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Toast.makeText(this,"No ha seleccionado una hora de inicio",Toast.LENGTH_LONG).show();
         }
         else {
-
             DialogFragment newFragment = HoraActivity.newInstance(v.getId());
             newFragment.show(getFragmentManager(), "timePicker2");
         }
     }
-
 
     public void obtenerGPS(View view){
         LocationGPS gps=new LocationGPS(this);
