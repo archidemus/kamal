@@ -626,6 +626,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 bn.putString("Direccion", initiative.Direccion);
                 bn.putString("hInicio", initiative.hInicio);
                 bn.putString("hFin", initiative.hTermino);
+
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
@@ -784,8 +785,19 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     this.startActivity(intentMain2);
                     break;
                 }
-            //case R.id.initiates_settings:
-            //    break;
+            case R.id.initiates_settings:
+                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+                    Intent intentMain3 = new Intent(this, LoginActivity.class);
+                    this.startActivity(intentMain3);
+                    break;
+                }
+                else{
+                    Intent intentMain2 = new Intent(this, ListActivity.class);
+                    intentMain2.putExtra("UserID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    this.startActivity(intentMain2);
+                    break;
+                }
+
             //case R.id.initiates_recent:
             //    break;
             default:
@@ -798,32 +810,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public void onResume() {
         super.onResume();  // Always call the superclass method first
     }
-
-    /*****CODIGO NOTIFICACIONES *******/
-    public void notificacion(View view){
-        NotificationCompat.Builder notificacion = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.kamal_logo) // icono en la barra de notificaciones
-                .setLargeIcon((((BitmapDrawable) getResources()
-                        .getDrawable(R.drawable.kamal_logo)).getBitmap())) // icono cuando extiendes las notificaciones
-                .setContentTitle("Iniciativa de interes cercana") // titulo notificacion
-                .setContentText("Apreta aqui para ir a la iniciativa") // descripcion notificacion
-                .setTicker("Iniciativa cercana")
-                .setVibrate(new long [] {100, 1000}); // tiempo antes de vibrar y por cuanto tiempo vibra
-
-
-        Intent inotificacion = new Intent(this, InitiativesActivity.class); // se genera el intente
-        //inotificacion.putExtra("notificationID", notificationID); //Para rescatar la id despues
-        PendingIntent intentePendiente = PendingIntent.getActivity(this,0,inotificacion,0); // se deja como pendiente
-
-        notificacion.setContentIntent(intentePendiente);
-
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        //El 10 es la id, se puede poner cualquiera, deberiamos poner que sea
-        nm.notify(10,notificacion.build());// se construye la notificacion
-
-
-    }
-
 
 
 }

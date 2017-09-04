@@ -37,6 +37,10 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".CreateInitiativeActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".EditActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:screenOrientation="portrait"

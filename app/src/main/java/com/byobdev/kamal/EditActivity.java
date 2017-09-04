@@ -1,41 +1,47 @@
 package com.byobdev.kamal;
 
-
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.constraint.solver.widgets.Snapshot;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
-import com.byobdev.kamal.DBClasses.Initiative;
-import com.byobdev.kamal.AppHelpers.LocationGPS;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import android.app.ProgressDialog;
-import android.net.Uri;
-import com.google.firebase.storage.UploadTask;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import android.widget.EditText;
-import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.byobdev.kamal.AppHelpers.LocationGPS;
+import com.byobdev.kamal.DBClasses.Initiative;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
-public class CreateInitiativeActivity extends AppCompatActivity{
+/**
+ * Created by crono on 03-09-17.
+ */
+
+public class EditActivity extends AppCompatActivity {
     EditText titulo;
     EditText description;
     TextView hInicio;
@@ -48,6 +54,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     ArrayAdapter<CharSequence> adapter;
 
     private DatabaseReference mDatabase;
+    private DatabaseReference mDatabase2;
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
     StorageReference storageRef = mStoragebase.getReferenceFromUrl("gs://prime-boulevard-168121.appspot.com/Images");
     ProgressDialog pd;
@@ -56,16 +63,22 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
-
+    String imageEdit;
+    String IDanterior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_initiative);
-        titulo   = (EditText)findViewById(R.id.titleInput);
-        description   = (EditText)findViewById(R.id.descriptionInput);
+        setContentView(R.layout.activity_edit_initiative);
+        titulo   = (EditText)findViewById(R.id.titleEdit);
+        Intent i = getIntent();
+        titulo.setText(i.getStringExtra("Titulo"));
+        description   = (EditText)findViewById(R.id.descriptionEdit);
+        description.setText(i.getStringExtra("Descripcion"));
         hTermino = (TextView)findViewById(R.id.HoraFinalfinal);
+        hTermino.setText(i.getStringExtra("duracion"));
         hInicio = (TextView)findViewById(R.id.HoraIniciofinal);
+        hInicio.setText(i.getStringExtra("hinicio"));
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -73,7 +86,21 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 R.array.Tipo_Iniciativa, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        if(i.getStringExtra("Tipo").equals("Teatro")){
+            spinner.setSelection(0);
+        }else if(i.getStringExtra("Tipo").equals("Musica")){
+            spinner.setSelection(1);
+        }else if(i.getStringExtra("Tipo").equals("Deporte")){
+            spinner.setSelection(2);
+        }else{
+            spinner.setSelection(3);
+        }
 
+        longitud = Double.parseDouble(i.getStringExtra("Longitud"));
+        latitud = Double.parseDouble(i.getStringExtra("Latitud"));
+        direccion = i.getStringExtra("Direccion");
+        imageEdit = i.getStringExtra("Imagen");
+        IDanterior = i.getStringExtra("IDanterior");
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
         key=mDatabase.push().getKey();
@@ -82,7 +109,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     }
 
-    public void createInitiative(View view){
+    public void editInitiative(View view){
         if( titulo.getText().toString().equals("")){
 
 
@@ -90,7 +117,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
         }else if(latitud == null){
 
-            Toast.makeText(CreateInitiativeActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EditActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
         }else if(description.getText().toString().equals("")){
 
             description.setError("La descripcion es requerida!");
@@ -105,7 +132,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Date date1 = null;
             try{
                 date = formatter.parse(hInicio.getText().toString());
-                 date1= formatter.parse(hTermino.getText().toString());
+                date1= formatter.parse(hTermino.getText().toString());
             }catch (Exception e){
 
             }
@@ -117,7 +144,28 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             if (interest.equals("Música")){
                 interest = "Musica";
             }
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
+
+            FirebaseDatabase.getInstance().getReference("Initiatives").child(IDanterior).removeValue();
+            mDatabase2 = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    // for (DataSnapshot child : snapshot.getChildren())
+                    // Create a LinearLayout element
+                    snapshot.child(IDanterior).getRef().removeValue();
+
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+
+            });
+            if(imagen != null){
+                imageEdit = key;
+            }
+
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,imageEdit ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
             mDatabase.child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).setValue(titulo.getText().toString());
@@ -125,6 +173,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         }
 
     }
+
     public void showTimePickerDialog(View v) {
         DialogFragment newFragment = new HoraActivity();
         newFragment.show(getFragmentManager(), "timePicker");
@@ -146,7 +195,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
         }
 
-        Toast.makeText(CreateInitiativeActivity.this, "Posicion obtenida", Toast.LENGTH_SHORT).show();
+        Toast.makeText(EditActivity.this, "Posicion obtenida", Toast.LENGTH_SHORT).show();
     }
 
     public void escogerImagen(View v){
@@ -189,23 +238,21 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
                     imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
                     imagen = null;
                 }
             });
         }
         else {
-            Toast.makeText(CreateInitiativeActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EditActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
 }
