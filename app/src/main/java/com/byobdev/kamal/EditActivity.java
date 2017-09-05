@@ -1,5 +1,6 @@
 package com.byobdev.kamal;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -170,8 +171,8 @@ public class EditActivity extends AppCompatActivity {
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).setValue(titulo.getText().toString());
             finish();
-        }
 
+        }
     }
 
     public void showTimePickerDialog(View v) {
@@ -254,5 +255,6 @@ public class EditActivity extends AppCompatActivity {
             Toast.makeText(EditActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 }

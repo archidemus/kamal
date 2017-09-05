@@ -28,7 +28,7 @@
         <item
             android:id="@+id/initiates_settings"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Editar Iniciativas" />
+            android:title="Mis Iniciativas" />
         <!--<item
             android:id="@+id/initiates_recent"
             android:icon="@drawable/ic_menu_logout"
