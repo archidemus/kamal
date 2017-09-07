@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -66,6 +67,9 @@ public class EditActivity extends AppCompatActivity {
     String key;
     String imageEdit;
     String IDanterior;
+    Date dateInits, dateFins;
+    TextView fechaInicio;
+    TextView fechaTermino;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +81,21 @@ public class EditActivity extends AppCompatActivity {
         description   = (EditText)findViewById(R.id.descriptionEdit);
         description.setText(i.getStringExtra("Descripcion"));
         hTermino = (TextView)findViewById(R.id.HoraFinalfinal);
-        hTermino.setText(i.getStringExtra("duracion"));
+        SimpleDateFormat formatter1 = new SimpleDateFormat("HH:mm");
+        String dateF = formatter1.format(new Date(Long.parseLong(i.getStringExtra("duracion"))-10800000));
+        hTermino.setText(dateF);
         hInicio = (TextView)findViewById(R.id.HoraIniciofinal);
-        hInicio.setText(i.getStringExtra("hinicio"));
+        SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm");
+        String dateI = formatter2.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))-10800000));
+        hInicio.setText(dateI);
+        fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
+        SimpleDateFormat formatter3 = new SimpleDateFormat("dd/MM/yyyy");
+        String dateF2 = formatter3.format(new Date(Long.parseLong(i.getStringExtra("duracion"))));
+        fechaTermino.setText(dateF2);
+        fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
+        SimpleDateFormat formatter4 = new SimpleDateFormat("dd/MM/yyyy");
+        String dateI2 = formatter4.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))));
+        fechaInicio.setText(dateI2);
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -138,9 +154,18 @@ public class EditActivity extends AppCompatActivity {
 
             }
 
+            String fechaInit = fechaInicio.getText().toString();
+            String fechaFin = fechaTermino.getText().toString();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                dateInits = simpleDateFormat.parse(fechaInit);
+                dateFins = simpleDateFormat.parse(fechaFin);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
-            String feI = formatter.format(date);
-            String feT = formatterF.format(date1);
+            long feI=dateInits.getTime()+date.getTime();
+            long feT=dateFins.getTime()+date1.getTime();
             String interest = spinner.getSelectedItem().toString();
             if (interest.equals("Música")){
                 interest = "Musica";

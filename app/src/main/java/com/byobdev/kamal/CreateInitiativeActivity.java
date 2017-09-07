@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,7 +39,7 @@ import java.util.Date;
 public class CreateInitiativeActivity extends AppCompatActivity{
     EditText titulo;
     EditText description;
-    TextView hInicio, hTermino, fInicio, fTermino;
+    TextView hInicio, hTermino;
     Double latitud;
     Double longitud;
     String imagen;
@@ -56,24 +57,27 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     ImageView imgView;
     String key;
     final Calendar calendar = Calendar.getInstance();
+    Date dateInits, dateFins;
+    TextView fechaInicio;
+    TextView fechaTermino;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+            super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
         hTermino = (TextView)findViewById(R.id.HoraFinalfinal);
         hInicio = (TextView)findViewById(R.id.HoraIniciofinal);
-        fTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
-        fInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
+        fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
+        fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
 
 
         hInicio.setText(String.format("%02d:%02d",calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
         hTermino.setText(String.format("%02d:%02d",calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
-        fInicio.setText(String.format("%02d/%02d/%d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR)));
-        fTermino.setText(String.format("%02d/%02d/%d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR)));
+        fechaInicio.setText(String.format("%02d/%02d/%d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR)));
+        fechaTermino.setText(String.format("%02d/%02d/%d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR)));
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -83,7 +87,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         spinner.setAdapter(adapter);
 
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
+        mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives/");
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando...");
@@ -113,14 +117,25 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Date date1 = null;
             try{
                 date = formatter.parse(hInicio.getText().toString());
-                 date1= formatter.parse(hTermino.getText().toString());
+                 date1= formatterF.parse(hTermino.getText().toString());
             }catch (Exception e){
 
             }
 
+            String fechaInit = fechaInicio.getText().toString();
+            String fechaFin = fechaTermino.getText().toString();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                dateInits = simpleDateFormat.parse(fechaInit);
+                dateFins = simpleDateFormat.parse(fechaFin);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
-            String feI = formatter.format(date);
-            String feT = formatterF.format(date1);
+            //String feI = formatter.format(date);
+            //String feT = formatterF.format(date1);
+            long feI=dateInits.getTime()+date.getTime();
+            long feT=dateFins.getTime()+date1.getTime();
             String interest = spinner.getSelectedItem().toString();
             if (interest.equals("Música")){
                 interest = "Musica";
