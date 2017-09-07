@@ -57,10 +57,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     ImageView imgView;
     String key;
 
-
+    String getSector(double latitude, double longitude){
+        return Integer.toString((int)(latitude*100))+"-"+Integer.toString((int)(longitude*100));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+            super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
@@ -105,7 +107,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Date date1 = null;
             try{
                 date = formatter.parse(hInicio.getText().toString());
-                 date1= formatter.parse(hTermino.getText().toString());
+                 date1= formatterF.parse(hTermino.getText().toString());
             }catch (Exception e){
 
             }
@@ -121,6 +123,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             }
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
             mDatabase.child(key).setValue(initiative);
+            DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
+            userInitiatives.child(key).setValue(titulo.getText().toString());
             finish();
         }
 

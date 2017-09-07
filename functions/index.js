@@ -117,18 +117,20 @@ exports.initiativesStateChange = functions.https.onRequest((req, res) => {
    return RunRef.once('value').then(snapshot => {
       if (snapshot.hasChildren()) {
         snapshot.forEach(function(child) {  
-          if(child.child("Estado").val()==1 && child.child("fechaFin").val()+600000<=Date.now()){
-            child.ref.update({
-              "Estado": 2
-             });
-          }
-          else if(child.child("Estado").val()==0 && child.child("fechaInicio").val()<=Date.now()){
+          if(child.child("Estado").val()==0 && child.child("fechaInicio").val()<=Date.now()){
             child.ref.update({
               "Estado": 1
              });
           }
+          else if(child.child("Estado").val()==1 && child.child("fechaFin").val()+600000<=Date.now()){
+            child.ref.update({
+              "Estado": 2
+             });
+          }
           else if(child.child("Estado").val()==2 && child.child("fechaFin").val()<=Date.now()){
-            child.ref.remove();
+            child.ref.update({
+              "Estado": 3
+             });
           }
         });
       }

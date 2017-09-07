@@ -73,7 +73,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Location loc2 = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        int distanceInMeters = (int)loc1.distanceTo(loc2);
+        float distanceInMeters = loc1.distanceTo(loc2);
         if(distanceInMeters>1000){
             return;
         }

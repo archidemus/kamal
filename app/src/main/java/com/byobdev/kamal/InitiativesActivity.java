@@ -84,8 +84,12 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 
 import org.json.JSONObject;
 
+import static android.R.attr.breakStrategy;
+import static android.R.attr.data;
+import static android.R.attr.id;
 import static android.R.id.primary;
 import static android.os.Build.VERSION_CODES.M;
+import static com.byobdev.kamal.R.id.map;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
@@ -109,15 +113,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public Interests userInterests;
     public HashMap initiativeHashMap;
     public HashMap markerHashMap;
-    public List<Marker> comidaMarkerList;
-    public List<Marker> deporteMarkerList;
-    public List<Marker> teatroMarkerList;
-    public List<Marker> musicaMarkerList;
+    public List<String> comidaInitiativeIDList;
+    public List<String> deporteInitiativeIDList;
+    public List<String> teatroInitiativeIDList;
+    public List<String> musicaInitiativeIDList;
     public static final String PREFS_NAME = "KamalPreferences";
     public boolean comidaOn=false;
     public boolean deporteOn=false;
     public boolean teatroOn=false;
     public boolean musicaOn=false;
+    public boolean skipinit=true;
     View vista;
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
@@ -239,104 +244,32 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else if(initiative.Estado==2){//por terminar
                     markerColor=HUE_RED;
                 }
+                else if(initiative.Estado==3){//termino
+                    continue;
+                }
+
+                aux=initiativesMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                        .icon(BitmapDescriptorFactory
+                                .defaultMarker(markerColor))
+                );
+                initiativeHashMap.put(aux.getId(),initiative);
+                markerHashMap.put(initiativeSnapshot.getKey(),aux);
                 if(initiative.Tipo.equals("Comida")){
-
-
-                    if(comidaOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        comidaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        comidaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-
-
+                    aux.setVisible(comidaOn);
+                    comidaInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
                 else if(initiative.Tipo.equals("Deporte")){
-                    if(deporteOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        deporteMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        deporteMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-
+                    aux.setVisible(deporteOn);
+                    deporteInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
                 else if(initiative.Tipo.equals("Teatro")){
-                    if(teatroOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        teatroMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-
-                        );
-                        teatroMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-
+                    aux.setVisible(teatroOn);
+                    teatroInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
                 else if(initiative.Tipo.equals("Musica")){
-                    if(musicaOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        musicaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                                .icon(BitmapDescriptorFactory
-                                        .defaultMarker(markerColor))
-                        );
-                        musicaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                        markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                    }
+                    aux.setVisible(musicaOn);
+                    musicaInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
             }
         }
@@ -363,102 +296,32 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             else if(initiative.Estado==2){//por terminar
                 markerColor=HUE_RED;
             }
+            else if(initiative.Estado==3){//termino
+                return;
+            }
+            if(markerHashMap.get(dataSnapshot.getKey())!=null){return;}
+            aux=initiativesMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                    .icon(BitmapDescriptorFactory
+                            .defaultMarker(markerColor))
+            );
+            initiativeHashMap.put(aux.getId(),initiative);
+            markerHashMap.put(dataSnapshot.getKey(),aux);
             if(initiative.Tipo.equals("Comida")){
-                if(comidaOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    comidaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    comidaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
-
-
+                aux.setVisible(comidaOn);
+                comidaInitiativeIDList.add(dataSnapshot.getKey());
             }
             else if(initiative.Tipo.equals("Deporte")){
-                if(deporteOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    deporteMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    deporteMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
-
+                aux.setVisible(deporteOn);
+                deporteInitiativeIDList.add(dataSnapshot.getKey());
             }
             else if(initiative.Tipo.equals("Teatro")){
-                if(teatroOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    teatroMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    teatroMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
-
+                aux.setVisible(teatroOn);
+                teatroInitiativeIDList.add(dataSnapshot.getKey());
             }
             else if(initiative.Tipo.equals("Musica")){
-                if(musicaOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    musicaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                            .icon(BitmapDescriptorFactory
-                                    .defaultMarker(markerColor))
-                    );
-                    musicaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                    markerHashMap.put(dataSnapshot.getKey(),aux);
-                }
+                aux.setVisible(musicaOn);
+                musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
         }
 
@@ -466,6 +329,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             Marker aux= (Marker)markerHashMap.get(dataSnapshot.getKey());
             Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            if(aux==null){return;}
             if(initiative.Estado==0){//aun no inicia
                 aux.setIcon(BitmapDescriptorFactory
                         .defaultMarker(HUE_AZURE));
@@ -478,9 +342,44 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 aux.setIcon(BitmapDescriptorFactory
                         .defaultMarker(HUE_RED));
             }
-            initiativeHashMap.remove(aux.getId());
-            initiativeHashMap.put(aux.getId(),initiative);
+            else if(initiative.Estado==3){//terminado
+                initiativeHashMap.remove(aux.getId());
+                markerHashMap.remove(dataSnapshot.getKey());
+                aux.remove();
+                if(initiative.Tipo.equals("Comida")){
+                    for(int i=0;i<comidaInitiativeIDList.size();i++){
+                        if(comidaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            comidaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    for(int i=0;i<deporteInitiativeIDList.size();i++){
+                        if(deporteInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            deporteInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    for(int i=0;i<teatroInitiativeIDList.size();i++){
+                        if(teatroInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            teatroInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    for(int i=0;i<musicaInitiativeIDList.size();i++){
+                        if(musicaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            musicaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
 
+            }
         }
 
         @Override
@@ -498,6 +397,24 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         }
     };
+
+    public String getSector(double latitude, double longitude){
+        return Integer.toString((int)(latitude*100))+"-"+Integer.toString((int)(longitude*100));
+    }
+    Vector<String> getNeighbours(double latitude,double longitude){
+        Vector<String> neighbours=new Vector<>();
+        int lat=(int)(latitude*100);
+        int lg=(int)(longitude*100);
+        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg));
+        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg));
+        neighbours.add(Integer.toString(lat)+"-"+Integer.toString(lg+1));
+        neighbours.add(Integer.toString(lat)+"-"+Integer.toString(lg-1));
+        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg+1));
+        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg-1));
+        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg-1));
+        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg+1));
+        return neighbours;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -536,14 +453,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         initiativeHashMap=new HashMap();
         markerHashMap=new HashMap();
-        comidaMarkerList = new Vector<>();
-        teatroMarkerList = new Vector<>();
-        deporteMarkerList = new Vector<>();
-        musicaMarkerList = new Vector<>();
+        comidaInitiativeIDList = new Vector<>();
+        teatroInitiativeIDList= new Vector<>();
+        deporteInitiativeIDList = new Vector<>();
+        musicaInitiativeIDList = new Vector<>();
 
 
         //Maps
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
@@ -582,15 +499,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(comidaOn){
                     iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     comidaOn=false;
-                    for (Marker marker:comidaMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:comidaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
                     iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     comidaOn=true;
-                    for (Marker marker:comidaMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:comidaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -604,15 +521,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(deporteOn){
                     iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     deporteOn=false;
-                    for (Marker marker:deporteMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:deporteInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
+                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     deporteOn=true;
-                    for (Marker marker:deporteMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:deporteInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -625,15 +542,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(teatroOn){
                     iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     teatroOn=false;
-                    for (Marker marker:teatroMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:teatroInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
+                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     teatroOn=true;
-                    for (Marker marker:teatroMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:teatroInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -646,15 +563,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(musicaOn){
                     iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     musicaOn=false;
-                    for (Marker marker:musicaMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:musicaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
+                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     musicaOn=true;
-                    for (Marker marker:musicaMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:musicaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -682,8 +599,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //User Auth Listener
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Read initiatives listener
+
+        //initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
-        initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
     }
 
@@ -709,6 +627,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap = googleMap;
         final LocationGPS start = new LocationGPS(getApplicationContext());
         final LatLng interested;
+        //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
+        //initiativesDB.addChildEventListener(initiativesListener);
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
