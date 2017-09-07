@@ -38,8 +38,7 @@ import java.util.Date;
 public class CreateInitiativeActivity extends AppCompatActivity{
     EditText titulo;
     EditText description;
-    TextView hInicio;
-    TextView hTermino;
+    TextView hInicio, hTermino, fInicio, fTermino;
     Double latitud;
     Double longitud;
     String imagen;
@@ -56,6 +55,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
+    final Calendar calendar = Calendar.getInstance();
 
 
     @Override
@@ -66,6 +66,14 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         description   = (EditText)findViewById(R.id.descriptionInput);
         hTermino = (TextView)findViewById(R.id.HoraFinalfinal);
         hInicio = (TextView)findViewById(R.id.HoraIniciofinal);
+        fTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
+        fInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
+
+
+        hInicio.setText(String.format("%02d:%02d",calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
+        hTermino.setText(String.format("%02d:%02d",calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
+        fInicio.setText(String.format("%02d/%02d/%d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR)));
+        fTermino.setText(String.format("%02d/%02d/%d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR)));
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -86,14 +94,14 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         if( titulo.getText().toString().equals("")){
 
 
-            titulo.setError( "El titulo es requerido!" );
+            titulo.setError( "Título Obligatorio" );
 
         }else if(latitud == null){
 
-            Toast.makeText(CreateInitiativeActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CreateInitiativeActivity.this, "Ubicación Obligatoria", Toast.LENGTH_SHORT).show();
         }else if(description.getText().toString().equals("")){
 
-            description.setError("La descripcion es requerida!");
+            description.setError("La descripción es requerida!");
 
         }
         else{
@@ -131,13 +139,24 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     }
 
     public void showTimePickerDialog2(View v) {
-        if (hInicio.getText().toString().equals("--:--")){
-            Toast.makeText(this,"No ha seleccionado una hora de inicio",Toast.LENGTH_LONG).show();
-        }
-        else {
+
             DialogFragment newFragment = HoraActivity.newInstance(v.getId());
             newFragment.show(getFragmentManager(), "timePicker2");
-        }
+
+    }
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = FechaActivity.newInstance(v.getId());
+
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    public void showDatePickerDialog2(View v) {
+       /* if (fInicio.getText().toString().equals("--/--/--")){
+            Toast.makeText(this,"No ha seleccionado una fecha de inicio",Toast.LENGTH_LONG).show();
+        }*/
+            DialogFragment newFragment = FechaActivity.newInstance(v.getId());
+            newFragment.show(getFragmentManager(), "datePicker2");
+
     }
 
     public void obtenerGPS(View view){
