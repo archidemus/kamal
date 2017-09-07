@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/fab_margin">
+    android:layout_margin="@dimen/fab_margin"
+    android:weightSum="1">
 
     <TextView
         android:layout_width="match_parent"
@@ -16,10 +17,11 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/in_title"
-        tools:text="Titulo"
-        android:layout_marginTop="@dimen/fab_margin"/>
-
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Título"
+        tools:text="Titulo" />
     <EditText
         android:id="@+id/titleEdit"
         android:layout_width="match_parent"
@@ -41,24 +43,24 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="47dp"
         android:layout_marginTop="@dimen/fab_margin">
 
         <Button
             android:id="@+id/button5"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/fab_margin"
+            android:gravity="center"
             android:maxWidth="180dp"
             android:onClick="obtenerGPS"
-            android:text="Usar ubicacion actual"
-            android:gravity="center"
-            android:layout_margin="@dimen/fab_margin"/>
+            android:text="ubicacion actual" />
 
         <Button
             android:gravity="center"
             android:id="@+id/elegirImagen"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="37dp"
             android:onClick="escogerImagen"
             android:text="Elegir imagen"
             android:layout_margin="@dimen/fab_margin"/>
@@ -67,29 +69,28 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginTop="@dimen/fab_margin">
-
-
-
 
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="84dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="1">
+
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tipo de iniciativa"
-                android:layout_marginTop="@dimen/fab_margin"/>
+                android:text="Tipo de iniciativa" />
+
             <Spinner
                 android:id="@+id/spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginTop="3dp"
                 android:gravity="center"
                 android:minWidth="120dp" />
 
@@ -99,27 +100,48 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <Button
-                android:id="@+id/HoraInicio"
+                android:id="@+id/btn_fechaInicio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="showTimePickerDialog"
-                android:text="Cambiar hora inicio" />
+                android:onClick="showDatePickerDialog"
+                android:text="Fecha inicio" />
 
             <Button
-                android:id="@+id/button3"
-                android:layout_width="173dp"
-                android:layout_height="36dp"
-                android:onClick="showTimePickerDialog2"
-                android:text="Cambiar duracion" />
+                android:id="@+id/btn_fechaTermino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="showDatePickerDialog2"
+                android:text="Fecha Término" />
 
         </LinearLayout>
+
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="120dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/HoraInicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="showTimePickerDialog"
+            android:text="Hora inicio" />
 
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="showTimePickerDialog2"
+            android:text="Hora Término" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -130,21 +152,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="1">
 
             <TextView
-                android:id="@+id/textView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Hora inicio" />
-
-            <TextView
-                android:id="@+id/HoraIniciofinal"
+                android:id="@+id/txt_fecha_inicio_creates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/fab_margin"
-                android:text="@string/in_hour"
-                tools:text="00:00" />
+                android:text="Fecha Inicio"
+                android:layout_weight="0.51" />
+
+            <TextView
+                android:id="@+id/txt_fecha_inicio_vista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
 
 
         </LinearLayout>
@@ -152,31 +174,86 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/txt_fecha_termino_creates"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:gravity="left"
+                android:text="Fecha término" />
+
+            <TextView
+                android:id="@+id/txt_fecha_termino_vista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fab_margin">
+
+        <LinearLayout
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.51"
+                android:text="Hora inicio" />
+
+            <TextView
+                android:id="@+id/HoraIniciofinal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:weightSum="1">
 
             <TextView
                 android:id="@+id/textView9"
-                android:layout_width="286dp"
+                android:layout_width="207dp"
                 android:layout_height="wrap_content"
-                android:text="Duracion" />
+                android:layout_marginLeft="30dp"
+                android:gravity="left"
+                android:text="Hora término" />
 
             <TextView
                 android:id="@+id/HoraFinalfinal"
-                android:layout_width="74dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="@dimen/fab_margin"
-                android:text="@string/in_hour"
-                tools:text="00:00" />
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="10dp"/>
         </LinearLayout>
     </LinearLayout>
 
     <Button
-        android:id="@+id/EditInitiativeButtonFinal"
+        android:id="@+id/createInitiativeButtonFinal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/fab_margin"
         android:onClick="editInitiative"
         android:text="Guardar" />
+
+
 
 </LinearLayout>

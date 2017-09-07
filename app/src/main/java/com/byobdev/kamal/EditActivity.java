@@ -114,14 +114,14 @@ public class EditActivity extends AppCompatActivity {
         if( titulo.getText().toString().equals("")){
 
 
-            titulo.setError( "El titulo es requerido!" );
+            titulo.setError( "Título Obligatorio!" );
 
         }else if(latitud == null){
 
-            Toast.makeText(EditActivity.this, "La poscion es requerida!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EditActivity.this, "Ubicación Obligatoria!", Toast.LENGTH_SHORT).show();
         }else if(description.getText().toString().equals("")){
 
-            description.setError("La descripcion es requerida!");
+            description.setError("La descripción es requerida!");
 
         }
         else{
@@ -177,13 +177,30 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new HoraActivity();
+        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
+
         newFragment.show(getFragmentManager(), "timePicker");
     }
 
     public void showTimePickerDialog2(View v) {
-        DialogFragment newFragment = new HoraActivity();
+
+        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
         newFragment.show(getFragmentManager(), "timePicker2");
+
+    }
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = FechaActivity.newInstance(v.getId());
+
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    public void showDatePickerDialog2(View v) {
+       /* if (fInicio.getText().toString().equals("--/--/--")){
+            Toast.makeText(this,"No ha seleccionado una fecha de inicio",Toast.LENGTH_LONG).show();
+        }*/
+        DialogFragment newFragment = FechaActivity.newInstance(v.getId());
+        newFragment.show(getFragmentManager(), "datePicker2");
+
     }
 
 
