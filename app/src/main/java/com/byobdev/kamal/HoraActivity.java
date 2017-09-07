@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -15,13 +14,34 @@ import java.util.Calendar;
  * Created by crono on 15-08-17.
  */
 
-public class HoraActivity extends DialogFragment
-        implements TimePickerDialog.OnTimeSetListener {
+public class HoraActivity extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
 
+
+    int mNum;
+
+    /**
+     * Create a new instance of MyDialogFragment, providing "num"
+     * as an argument.
+     */
+    public static HoraActivity newInstance(int num) {
+        HoraActivity horaActivity = new HoraActivity();
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putInt("num", num);
+        horaActivity.setArguments(args);
+
+
+        return horaActivity;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mNum = getArguments().getInt("num");
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         // Use the current time as the default values for the picker
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
@@ -32,23 +52,29 @@ public class HoraActivity extends DialogFragment
                 DateFormat.is24HourFormat(getActivity()));
     }
 
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
 
-        //Get reference of host activity (XML Layout File) TextView widget
-        TextView tv = (TextView) getActivity().findViewById(R.id.HoraIniciofinal);
-        //Display the user changed time on TextView
-        if(tv.getText().equals("00:00")){
-            tv.setText(String.valueOf(hourOfDay) +":"+ String.valueOf(minute));
-        }
-        else{
-            tv = (TextView) getActivity().findViewById(R.id.HoraFinalfinal);
-            tv.setText(String.valueOf(hourOfDay) +":"+ String.valueOf(minute));
-        }
+                    //Get reference of host activity (XML Layout File) TextView widget
+                    TextView tv = (TextView) getActivity().findViewById(R.id.HoraIniciofinal);
+                    TextView tv2 = (TextView) getActivity().findViewById(R.id.HoraFinalfinal);
+                    //Display the user changed time on TextView
+                    if (mNum == R.id.HoraInicio) {
+                        //24hrs format
+                        tv.setText(String.format("%02d:%02d", hourOfDay, minute));
+                    } else {
+                        if (mNum == R.id.button3) {
+                            //24hrs format
+                            tv2.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        }
+                    }
 
-        //TextView tv2 = (TextView) getActivity().findViewById(R.id.HoraFinalfinal);
-        //tv2.setText(String.valueOf(hourOfDay) +":"+ String.valueOf(minute));
+                    //TextView tv2 = (TextView) getActivity().findViewById(R.id.HoraFinalfinal);
+                    //tv2.setText(String.valueOf(hourOfDay) +":"+ String.valueOf(minute));
 
-    }
+                }
+
+
 
 }

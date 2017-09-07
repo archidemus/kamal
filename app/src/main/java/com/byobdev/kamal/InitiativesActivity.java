@@ -632,10 +632,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 DF.setArguments(bn);
 
                 //Hago aparecer fragment
-                marker.hideInfoWindow();
-                if(shortDescriptionFragment.getVisibility() == View.GONE){
-                    shortDescriptionFragment.setVisibility(View.VISIBLE);
-                }
+               /* if(vista.getVisibility() == View.VISIBLE) {
+                    vista.setVisibility(View.GONE);
+                }*/
 
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.replace(R.id.shortDescriptionFragment, DF);
