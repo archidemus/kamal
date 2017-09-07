@@ -171,6 +171,7 @@ public class EditActivity extends AppCompatActivity {
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).setValue(titulo.getText().toString());
             finish();
+            Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
 
         }
     }

@@ -155,6 +155,8 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                         // for (DataSnapshot child : snapshot.getChildren())
                         // Create a LinearLayout element
                         snapshot.child(keyLista[position]).getRef().removeValue();
+                        finish();
+                        startActivity(getIntent());
 
                     }
                     @Override
@@ -164,8 +166,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
 
                 });
                 dialog.dismiss();
-                finish();
-                startActivity(getIntent());
+
 
             }
         });
