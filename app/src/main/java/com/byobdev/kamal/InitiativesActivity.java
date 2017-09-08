@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.byobdev.kamal.AppHelpers.DirectionsJSONParser;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
@@ -46,9 +48,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -62,13 +67,32 @@ import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+import org.json.JSONObject;
+
+import static android.R.attr.breakStrategy;
+import static android.R.attr.data;
+import static android.R.attr.id;
 import static android.R.id.primary;
 import static android.os.Build.VERSION_CODES.M;
+import static com.byobdev.kamal.R.id.map;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
@@ -81,28 +105,31 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     Marker interestedMarker;
     FrameLayout shortDescriptionFragment;
     private float mLastPosY;
+    private Polyline polyline;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     private DatabaseReference initiativesDB;
     private DatabaseReference userDataDB;
     public Interests userInterests;
-    public List<Initiative> initiativeList;
     public HashMap initiativeHashMap;
-    public List<Marker> comidaMarkerList;
-    public List<Marker> deporteMarkerList;
-    public List<Marker> teatroMarkerList;
-    public List<Marker> musicaMarkerList;
+    public HashMap markerHashMap;
+    public List<String> comidaInitiativeIDList;
+    public List<String> deporteInitiativeIDList;
+    public List<String> teatroInitiativeIDList;
+    public List<String> musicaInitiativeIDList;
     public static final String PREFS_NAME = "KamalPreferences";
     public boolean comidaOn=false;
     public boolean deporteOn=false;
     public boolean teatroOn=false;
     public boolean musicaOn=false;
+    public boolean skipinit=true;
     View vista;
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
     String msg = "Inicia sesion para habilitar otras funciones";
     boolean opened_bottom;
     public int authListenerCounter=0;
+
 
     //User Auth Listener
     AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
@@ -206,79 +233,43 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
 
                 Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-                initiativeList.add(initiative);
+                float markerColor=HUE_AZURE;
                 Marker aux;
+                if(initiative.Estado==0){//aun no inicia
+                    markerColor=HUE_AZURE;
+                }
+                else if(initiative.Estado==1){//en curso
+                    markerColor=HUE_GREEN;
+                }
+                else if(initiative.Estado==2){//por terminar
+                    markerColor=HUE_RED;
+                }
+                else if(initiative.Estado==3){//termino
+                    continue;
+                }
+
+                aux=initiativesMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                        .icon(BitmapDescriptorFactory
+                                .defaultMarker(markerColor))
+                );
+                initiativeHashMap.put(aux.getId(),initiative);
+                markerHashMap.put(initiativeSnapshot.getKey(),aux);
                 if(initiative.Tipo.equals("Comida")){
-                    if(comidaOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                        );
-                        comidaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                        );
-                        comidaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-
-
+                    aux.setVisible(comidaOn);
+                    comidaInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
                 else if(initiative.Tipo.equals("Deporte")){
-                    if(deporteOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                        );
-                        deporteMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                        );
-                        deporteMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-
+                    aux.setVisible(deporteOn);
+                    deporteInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
                 else if(initiative.Tipo.equals("Teatro")){
-                    if(teatroOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                        );
-                        teatroMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                        );
-                        teatroMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-
+                    aux.setVisible(teatroOn);
+                    teatroInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
                 else if(initiative.Tipo.equals("Musica")){
-                    if(musicaOn){
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                        );
-                        musicaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
-                    else{
-                        aux=initiativesMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                                .visible(false)
-                        );
-                        musicaMarkerList.add(aux);
-                        initiativeHashMap.put(aux.getId(),initiative);
-                    }
+                    aux.setVisible(musicaOn);
+                    musicaInitiativeIDList.add(initiativeSnapshot.getKey());
                 }
             }
         }
@@ -294,85 +285,101 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             Initiative initiative=dataSnapshot.getValue(Initiative.class);
-            initiativeList.add(initiative);
+            float markerColor=HUE_AZURE;
             Marker aux;
+            if(initiative.Estado==0){//aun no inicia
+                markerColor=HUE_AZURE;
+            }
+            else if(initiative.Estado==1){//en curso
+                markerColor=HUE_GREEN;
+            }
+            else if(initiative.Estado==2){//por terminar
+                markerColor=HUE_RED;
+            }
+            else if(initiative.Estado==3){//termino
+                return;
+            }
+            if(markerHashMap.get(dataSnapshot.getKey())!=null){return;}
+            aux=initiativesMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                    .icon(BitmapDescriptorFactory
+                            .defaultMarker(markerColor))
+            );
+            initiativeHashMap.put(aux.getId(),initiative);
+            markerHashMap.put(dataSnapshot.getKey(),aux);
             if(initiative.Tipo.equals("Comida")){
-                if(comidaOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                    );
-                    comidaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                    );
-                    comidaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-
-
+                aux.setVisible(comidaOn);
+                comidaInitiativeIDList.add(dataSnapshot.getKey());
             }
             else if(initiative.Tipo.equals("Deporte")){
-                if(deporteOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                    );
-                    deporteMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                    );
-                    deporteMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-
+                aux.setVisible(deporteOn);
+                deporteInitiativeIDList.add(dataSnapshot.getKey());
             }
             else if(initiative.Tipo.equals("Teatro")){
-                if(teatroOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                    );
-                    teatroMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                    );
-                    teatroMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-
+                aux.setVisible(teatroOn);
+                teatroInitiativeIDList.add(dataSnapshot.getKey());
             }
             else if(initiative.Tipo.equals("Musica")){
-                if(musicaOn){
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                    );
-                    musicaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
-                else{
-                    aux=initiativesMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                            .visible(false)
-                    );
-                    musicaMarkerList.add(aux);
-                    initiativeHashMap.put(aux.getId(),initiative);
-                }
+                aux.setVisible(musicaOn);
+                musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Marker aux= (Marker)markerHashMap.get(dataSnapshot.getKey());
+            Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            if(aux==null){return;}
+            if(initiative.Estado==0){//aun no inicia
+                aux.setIcon(BitmapDescriptorFactory
+                        .defaultMarker(HUE_AZURE));
+            }
+            else if(initiative.Estado==1){//en curso
+                aux.setIcon(BitmapDescriptorFactory
+                        .defaultMarker(HUE_GREEN));
+            }
+            else if(initiative.Estado==2){//por terminar
+                aux.setIcon(BitmapDescriptorFactory
+                        .defaultMarker(HUE_RED));
+            }
+            else if(initiative.Estado==3){//terminado
+                initiativeHashMap.remove(aux.getId());
+                markerHashMap.remove(dataSnapshot.getKey());
+                aux.remove();
+                if(initiative.Tipo.equals("Comida")){
+                    for(int i=0;i<comidaInitiativeIDList.size();i++){
+                        if(comidaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            comidaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    for(int i=0;i<deporteInitiativeIDList.size();i++){
+                        if(deporteInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            deporteInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    for(int i=0;i<teatroInitiativeIDList.size();i++){
+                        if(teatroInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            teatroInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    for(int i=0;i<musicaInitiativeIDList.size();i++){
+                        if(musicaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                            musicaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
 
+            }
         }
 
         @Override
@@ -390,6 +397,24 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         }
     };
+
+    public String getSector(double latitude, double longitude){
+        return Integer.toString((int)(latitude*100))+"-"+Integer.toString((int)(longitude*100));
+    }
+    Vector<String> getNeighbours(double latitude,double longitude){
+        Vector<String> neighbours=new Vector<>();
+        int lat=(int)(latitude*100);
+        int lg=(int)(longitude*100);
+        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg));
+        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg));
+        neighbours.add(Integer.toString(lat)+"-"+Integer.toString(lg+1));
+        neighbours.add(Integer.toString(lat)+"-"+Integer.toString(lg-1));
+        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg+1));
+        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg-1));
+        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg-1));
+        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg+1));
+        return neighbours;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -426,16 +451,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
 
 
-        initiativeList = new Vector<>();
         initiativeHashMap=new HashMap();
-        comidaMarkerList = new Vector<>();
-        teatroMarkerList = new Vector<>();
-        deporteMarkerList = new Vector<>();
-        musicaMarkerList = new Vector<>();
+        markerHashMap=new HashMap();
+        comidaInitiativeIDList = new Vector<>();
+        teatroInitiativeIDList= new Vector<>();
+        deporteInitiativeIDList = new Vector<>();
+        musicaInitiativeIDList = new Vector<>();
 
 
         //Maps
-        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
@@ -474,15 +499,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(comidaOn){
                     iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     comidaOn=false;
-                    for (Marker marker:comidaMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:comidaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
                     iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     comidaOn=true;
-                    for (Marker marker:comidaMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:comidaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -496,15 +521,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(deporteOn){
                     iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     deporteOn=false;
-                    for (Marker marker:deporteMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:deporteInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
+                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     deporteOn=true;
-                    for (Marker marker:deporteMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:deporteInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -517,15 +542,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(teatroOn){
                     iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     teatroOn=false;
-                    for (Marker marker:teatroMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:teatroInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
+                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     teatroOn=true;
-                    for (Marker marker:teatroMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:teatroInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -538,15 +563,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 if(musicaOn){
                     iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.Primary));
                     musicaOn=false;
-                    for (Marker marker:musicaMarkerList) {
-                        marker.setVisible(false);
+                    for (String aux:musicaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(false);
                     }
                 }
                 else{
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));;
+                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.PrimaryDark));
                     musicaOn=true;
-                    for (Marker marker:musicaMarkerList) {
-                        marker.setVisible(true);
+                    for (String aux:musicaInitiativeIDList) {
+                        ((Marker)markerHashMap.get(aux)).setVisible(true);
                     }
                 }
                 return false;
@@ -574,8 +599,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //User Auth Listener
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Read initiatives listener
+
+        //initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
-        initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         initiativesDB.addChildEventListener(initiativesListener);
     }
 
@@ -599,8 +625,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         initiativesMap = googleMap;
-        LocationGPS start = new LocationGPS(getApplicationContext());
+        final LocationGPS start = new LocationGPS(getApplicationContext());
         final LatLng interested;
+        //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
+        //initiativesDB.addChildEventListener(initiativesListener);
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
@@ -616,6 +644,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
+                if(polyline!=null){
+                    polyline.remove();}
                 //Agrego datos del pin
                 Bundle bn = new Bundle();
                 Initiative initiative=(Initiative)initiativeHashMap.get(marker.getId());
@@ -624,16 +654,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 bn.putString("Descripcion",initiative.Descripcion);
                 bn.putString("Nombre",initiative.Nombre);
                 bn.putString("Direccion", initiative.Direccion);
-                bn.putString("hInicio", initiative.hInicio);
-                bn.putString("hFin", initiative.hTermino);
+                DateFormat formatter = new SimpleDateFormat("HH:mm");
+                DateFormat formatter1 = new SimpleDateFormat("HH:mm");
+                bn.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
+                bn.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
 
-                //Hago aparecer fragment
-               /* if(vista.getVisibility() == View.VISIBLE) {
-                    vista.setVisibility(View.GONE);
-                }*/
+
+
 
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.replace(R.id.shortDescriptionFragment, DF);
@@ -649,6 +679,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
 
+                String url = getDirectionsUrl(new LatLng(start.getLatitud(),start.getLongitud()), marker.getPosition());
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                // Start downloading json data from Google Directions API
+                downloadTask.execute(url);
                 return false;
             }
         });
@@ -783,8 +819,19 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     this.startActivity(intentMain2);
                     break;
                 }
-            //case R.id.initiates_settings:
-            //    break;
+            case R.id.initiates_settings:
+                if(FirebaseAuth.getInstance().getCurrentUser()==null){
+                    Intent intentMain3 = new Intent(this, LoginActivity.class);
+                    this.startActivity(intentMain3);
+                    break;
+                }
+                else{
+                    Intent intentMain2 = new Intent(this, ListActivity.class);
+                    intentMain2.putExtra("UserID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    this.startActivity(intentMain2);
+                    break;
+                }
+
             //case R.id.initiates_recent:
             //    break;
             default:
@@ -798,29 +845,162 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         super.onResume();  // Always call the superclass method first
     }
 
-    /*****CODIGO NOTIFICACIONES *******/
-    public void notificacion(View view){
-        NotificationCompat.Builder notificacion = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.kamal_logo) // icono en la barra de notificaciones
-                .setLargeIcon((((BitmapDrawable) getResources()
-                        .getDrawable(R.drawable.kamal_logo)).getBitmap())) // icono cuando extiendes las notificaciones
-                .setContentTitle("Iniciativa de interes cercana") // titulo notificacion
-                .setContentText("Apreta aqui para ir a la iniciativa") // descripcion notificacion
-                .setTicker("Iniciativa cercana")
-                .setVibrate(new long [] {100, 1000}); // tiempo antes de vibrar y por cuanto tiempo vibra
 
 
-        Intent inotificacion = new Intent(this, InitiativesActivity.class); // se genera el intente
-        //inotificacion.putExtra("notificationID", notificationID); //Para rescatar la id despues
-        PendingIntent intentePendiente = PendingIntent.getActivity(this,0,inotificacion,0); // se deja como pendiente
-
-        notificacion.setContentIntent(intentePendiente);
-
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        //El 10 es la id, se puede poner cualquiera, deberiamos poner que sea
-        nm.notify(10,notificacion.build());// se construye la notificacion
 
 
+
+
+
+
+
+
+
+    private class DownloadTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... url) {
+
+            String data = "";
+
+            try {
+                data = downloadUrl(url[0]);
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
+            }
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            ParserTask parserTask = new ParserTask();
+
+
+            parserTask.execute(result);
+
+        }
+    }
+
+
+    /**
+     * A class to parse the Google Places in JSON format
+     */
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+
+        // Parsing the data in non-ui thread
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try {
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+
+                routes = parser.parse(jObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList points = null;
+            PolylineOptions lineOptions = null;
+            MarkerOptions markerOptions = new MarkerOptions();
+
+            for (int i = 0; i < result.size(); i++) {
+                points = new ArrayList();
+                lineOptions = new PolylineOptions();
+
+                List<HashMap<String, String>> path = result.get(i);
+
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                lineOptions.addAll(points);
+                lineOptions.width(12);
+                lineOptions.color(Color.RED);
+                lineOptions.geodesic(true);
+
+            }
+
+// Drawing polyline in the Google Map for the i-th route
+            polyline=initiativesMap.addPolyline(lineOptions);
+        }
+    }
+
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+        String mode = "mode=driving";
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
+
+        return url;
+    }
+
+    /**
+     * A method to download json data from url
+     */
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(strUrl);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.connect();
+
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        } catch (Exception e) {
+            Log.d("Exception", e.toString());
+        } finally {
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
     }
 
 
