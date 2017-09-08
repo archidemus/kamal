@@ -144,12 +144,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap.OnCameraIdleListener cameraIdleListener=new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
-            String newSector=getSector(start.getLatitud(),start.getLongitud());
+            double latitud=initiativesMap.getCameraPosition().target.latitude;
+            double longitud=initiativesMap.getCameraPosition().target.longitude;
+            String newSector=getSector(latitud,longitud);
             if(!(newSector.equals(currentSector))){
                 initiativesMap.clear();
                 removeListeners();
-                initListeners(start.getLatitud(),start.getLongitud());
+                initListeners(latitud,longitud);
                 currentSector=newSector;
+
+
             }
 
 
@@ -467,6 +471,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         sectorDB6.removeEventListener(initiativesListener);
         sectorDB7.removeEventListener(initiativesListener);
         sectorDB8.removeEventListener(initiativesListener);
+        initiativeHashMap.clear();
+        markerHashMap.clear();
+        comidaInitiativeIDList.clear();
+        teatroInitiativeIDList.clear();
+        deporteInitiativeIDList.clear();
     }
 
     @Override
