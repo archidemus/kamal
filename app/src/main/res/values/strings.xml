@@ -15,6 +15,7 @@
     <string name="in_where">Where</string>
     <string name="in_save">Save</string>
     <string name="in_hour">--:--</string>
+    <string name="in_date">--/--/--</string>
     <!-- Navegation Drawer-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

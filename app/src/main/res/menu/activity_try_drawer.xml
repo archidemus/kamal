@@ -25,10 +25,10 @@
             android:id="@+id/initiates_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Intereses" />
-        <!--<item
+        <item
             android:id="@+id/initiates_settings"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Ajustes" />-->
+            android:title="Mis Iniciativas" />
         <!--<item
             android:id="@+id/initiates_recent"
             android:icon="@drawable/ic_menu_logout"
