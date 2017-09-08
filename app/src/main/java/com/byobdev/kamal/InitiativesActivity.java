@@ -108,7 +108,18 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     private Polyline polyline;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
-    private DatabaseReference initiativesDB;
+    LocationGPS start;
+    private String currentSector="";
+    private DatabaseReference sectorDB;
+    private DatabaseReference sectorDB1;
+    private DatabaseReference sectorDB2;
+    private DatabaseReference sectorDB3;
+    private DatabaseReference sectorDB4;
+    private DatabaseReference sectorDB5;
+    private DatabaseReference sectorDB6;
+    private DatabaseReference sectorDB7;
+    private DatabaseReference sectorDB8;
+
     private DatabaseReference userDataDB;
     public Interests userInterests;
     public HashMap initiativeHashMap;
@@ -130,6 +141,20 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     boolean opened_bottom;
     public int authListenerCounter=0;
 
+    GoogleMap.OnCameraIdleListener cameraIdleListener=new GoogleMap.OnCameraIdleListener() {
+        @Override
+        public void onCameraIdle() {
+            String newSector=getSector(start.getLatitud(),start.getLongitud());
+            if(!(newSector.equals(currentSector))){
+                initiativesMap.clear();
+                removeListeners();
+                initListeners(start.getLatitud(),start.getLongitud());
+                currentSector=newSector;
+            }
+
+
+        }
+    };
 
     //User Auth Listener
     AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
@@ -399,21 +424,49 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     };
 
     public String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+"-"+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
     }
-    Vector<String> getNeighbours(double latitude,double longitude){
-        Vector<String> neighbours=new Vector<>();
+    void initListeners(double latitude,double longitude){
         int lat=(int)(latitude*100);
         int lg=(int)(longitude*100);
-        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg));
-        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg));
-        neighbours.add(Integer.toString(lat)+"-"+Integer.toString(lg+1));
-        neighbours.add(Integer.toString(lat)+"-"+Integer.toString(lg-1));
-        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg+1));
-        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg-1));
-        neighbours.add(Integer.toString(lat+1)+"-"+Integer.toString(lg-1));
-        neighbours.add(Integer.toString(lat-1)+"-"+Integer.toString(lg+1));
-        return neighbours;
+        String nb=Integer.toString(lat)+","+Integer.toString(lg);
+        String nb1=Integer.toString(lat+1)+","+Integer.toString(lg);
+        String nb2=Integer.toString(lat-1)+","+Integer.toString(lg);
+        String nb3=Integer.toString(lat)+","+Integer.toString(lg+1);
+        String nb4=Integer.toString(lat)+","+Integer.toString(lg-1);
+        String nb5=Integer.toString(lat+1)+","+Integer.toString(lg+1);
+        String nb6=Integer.toString(lat-1)+","+Integer.toString(lg-1);
+        String nb7=Integer.toString(lat+1)+","+Integer.toString(lg-1);
+        String nb8=Integer.toString(lat-1)+","+Integer.toString(lg+1);
+        sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb);
+        sectorDB1=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb1);
+        sectorDB2=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb2);
+        sectorDB3=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb3);
+        sectorDB4=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb4);
+        sectorDB5=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb5);
+        sectorDB6=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb6);
+        sectorDB7=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb7);
+        sectorDB8=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb8);
+        sectorDB.addChildEventListener(initiativesListener);
+        sectorDB1.addChildEventListener(initiativesListener);
+        sectorDB2.addChildEventListener(initiativesListener);
+        sectorDB3.addChildEventListener(initiativesListener);
+        sectorDB4.addChildEventListener(initiativesListener);
+        sectorDB5.addChildEventListener(initiativesListener);
+        sectorDB6.addChildEventListener(initiativesListener);
+        sectorDB7.addChildEventListener(initiativesListener);
+        sectorDB8.addChildEventListener(initiativesListener);
+    }
+    void removeListeners(){
+        sectorDB.removeEventListener(initiativesListener);
+        sectorDB1.removeEventListener(initiativesListener);
+        sectorDB2.removeEventListener(initiativesListener);
+        sectorDB3.removeEventListener(initiativesListener);
+        sectorDB4.removeEventListener(initiativesListener);
+        sectorDB5.removeEventListener(initiativesListener);
+        sectorDB6.removeEventListener(initiativesListener);
+        sectorDB7.removeEventListener(initiativesListener);
+        sectorDB8.removeEventListener(initiativesListener);
     }
 
     @Override
@@ -599,10 +652,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //User Auth Listener
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Read initiatives listener
-
         //initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
-        initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
-        initiativesDB.addChildEventListener(initiativesListener);
+        //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
+        //initiativesDB.addChildEventListener(initiativesListener);
     }
 
     @Override
@@ -622,13 +674,18 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     }
 
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         initiativesMap = googleMap;
-        final LocationGPS start = new LocationGPS(getApplicationContext());
+        start = new LocationGPS(getApplicationContext());
         final LatLng interested;
+        currentSector=getSector(start.getLatitud(),start.getLongitud());
+        initListeners(start.getLatitud(),start.getLongitud());
         //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
         //initiativesDB.addChildEventListener(initiativesListener);
+        initiativesMap.setOnCameraIdleListener(cameraIdleListener);
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
@@ -686,6 +743,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         });
     }
+
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -763,7 +821,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
 
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -855,8 +912,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
     }
-
-
 
 
 

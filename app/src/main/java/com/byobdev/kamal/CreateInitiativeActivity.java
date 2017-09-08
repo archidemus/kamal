@@ -58,7 +58,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     String key;
 
     String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+"-"+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +122,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 interest = "Musica";
             }
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
-            mDatabase.child(key).setValue(initiative);
+            mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).setValue(titulo.getText().toString());
             finish();

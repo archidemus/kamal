@@ -10,7 +10,7 @@ const secureCompare = require('secure-compare');
 admin.initializeApp(functions.config().firebase);
 
 // Listens for new messages added to messages/:pushId
-exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/').onWrite( event => {
+exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/{sectorId}/').onWrite( event => {
 
     console.log('Push notification event triggered');
 
@@ -113,25 +113,32 @@ exports.initiativesStateChange = functions.https.onRequest((req, res) => {
     return;
   }
 
-  let RunRef = admin.database().ref(`/Initiatives/`);
+  RunRef = admin.database().ref('/Initiatives/');
    return RunRef.once('value').then(snapshot => {
       if (snapshot.hasChildren()) {
-        snapshot.forEach(function(child) {  
-          if(child.child("Estado").val()==0 && child.child("fechaInicio").val()<=Date.now()){
-            child.ref.update({
-              "Estado": 1
-             });
+        snapshot.forEach(function(child) { 
+          if (child.hasChildren()) {
+            child.forEach(function(child2) { 
+
+              if(child2.child("Estado").val()==0 && child2.child("fechaInicio").val()<=Date.now()){
+                child2.ref.update({
+                 "Estado": 1
+                 });
+              }
+              else if(child2.child("Estado").val()==1 && child2.child("fechaFin").val()-600000<=Date.now()){
+               child2.ref.update({
+                  "Estado": 2
+                 });
+               }
+              else if(child2.child("Estado").val()==2 && child2.child("fechaFin").val()<=Date.now()){
+                child2.ref.update({
+                  "Estado": 3
+                 });
+              }
+            });
           }
-          else if(child.child("Estado").val()==1 && child.child("fechaFin").val()+600000<=Date.now()){
-            child.ref.update({
-              "Estado": 2
-             });
-          }
-          else if(child.child("Estado").val()==2 && child.child("fechaFin").val()<=Date.now()){
-            child.ref.update({
-              "Estado": 3
-             });
-          }
+
+          
         });
       }
       res.end();
@@ -140,5 +147,4 @@ exports.initiativesStateChange = functions.https.onRequest((req, res) => {
    
 
 });
-
 
