@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.icu.util.Calendar;
+import android.icu.util.TimeZone;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.DatePicker;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by famfrit on 04-09-17.
@@ -25,10 +27,13 @@ public class FechaActivity extends DialogFragment implements DatePickerDialog.On
     TextView fechaTermino;
     String fechaInit;
     String fechaFin;
-    public Date dateInits, dateFins;
+    Date dateInits, dateFins;
     long dateDiff;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     String fechaSet;
+    private static SimpleDateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private static SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM", Locale.getDefault());
+    private static SimpleDateFormat DAY_FORMAT = new SimpleDateFormat("dd", Locale.getDefault());
 
     /**
      * Create a new instance of MyDialogFragment, providing "num"
@@ -57,7 +62,7 @@ public class FechaActivity extends DialogFragment implements DatePickerDialog.On
     @TargetApi(Build.VERSION_CODES.N)
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
-        final Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT-3"),Locale.getDefault());
         day = calendar.get(Calendar.DAY_OF_MONTH);
         month = calendar.get(Calendar.MONTH);
         year = calendar.get(Calendar.YEAR);

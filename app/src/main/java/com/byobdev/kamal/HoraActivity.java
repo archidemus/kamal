@@ -8,7 +8,10 @@ import android.text.format.DateFormat;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by crono on 15-08-17.
@@ -18,6 +21,9 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
 
 
     int mNum;
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+    Date dateInits, dateFins;
+    long dateDiff;
 
     /**
      * Create a new instance of MyDialogFragment, providing "num"
@@ -75,6 +81,15 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
 
                 }
 
-
+    private long timeeDifference(String fecha, int day, int month, int year){
+        try {
+            dateInits = simpleDateFormat.parse(fecha);
+            dateFins = simpleDateFormat.parse(String.format("%02d/%02d/%d",day,month+1,year));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        dateDiff = dateInits.getTime() - dateFins.getTime();
+        return dateDiff;
+    }
 
 }
