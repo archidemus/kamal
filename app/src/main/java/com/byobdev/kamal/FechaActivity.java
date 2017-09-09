@@ -4,7 +4,7 @@ import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.icu.util.Calendar;
+import java.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.DatePicker;
