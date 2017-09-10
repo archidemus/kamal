@@ -77,7 +77,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if(distanceInMeters>1000){
             return;
         }
-        String Title="Iniciativa de "+Tipo+" a "+distanceInMeters+" metros!";
+        String Title="Iniciativa de "+Tipo+" a "+(int)distanceInMeters+" metros!";
         String Body=Titulo+": "+Descripcion;
         sendNotification(Title, Body);
     }
