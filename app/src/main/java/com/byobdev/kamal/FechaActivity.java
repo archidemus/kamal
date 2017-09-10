@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.view.View;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,9 +32,6 @@ public class FechaActivity extends DialogFragment implements DatePickerDialog.On
     long dateDiff;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     String fechaSet;
-    private static SimpleDateFormat YEAR_FORMAT = new SimpleDateFormat("yyyy", Locale.getDefault());
-    private static SimpleDateFormat MONTH_FORMAT = new SimpleDateFormat("MMM", Locale.getDefault());
-    private static SimpleDateFormat DAY_FORMAT = new SimpleDateFormat("dd", Locale.getDefault());
 
     /**
      * Create a new instance of MyDialogFragment, providing "num"
@@ -80,10 +78,12 @@ public class FechaActivity extends DialogFragment implements DatePickerDialog.On
             if(dateDifference(fechaFin,day,month,year) < 0){
                 fechaInicio.setText(fechaSet);
                 fechaTermino.setText(fechaSet);
+
             }
             else {
                 fechaInicio.setText(fechaSet);
             }
+
         }
         else if(mNum == R.id.btn_fechaTermino){
             if(dateDifference(fechaInit,day,month,year) >=0){
@@ -104,6 +104,19 @@ public class FechaActivity extends DialogFragment implements DatePickerDialog.On
         }
         dateDiff = dateInits.getTime() - dateFins.getTime();
         return dateDiff;
+    }
+
+    public void showTimePickerDialog(View v) {
+        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
+
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    public void showTimePickerDialog2(View v) {
+
+        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
+        newFragment.show(getFragmentManager(), "timePicker2");
+
     }
 }
 

@@ -69,6 +69,7 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
                     if (mNum == R.id.HoraInicio) {
                         //24hrs format
                         tv.setText(String.format("%02d:%02d", hourOfDay, minute));
+
                     } else {
                         if (mNum == R.id.button3) {
                             //24hrs format
@@ -81,10 +82,10 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
 
                 }
 
-    private long timeeDifference(String fecha, int day, int month, int year){
+    private long timeDifference(String hora, int hour, int minute){
         try {
-            dateInits = simpleDateFormat.parse(fecha);
-            dateFins = simpleDateFormat.parse(String.format("%02d/%02d/%d",day,month+1,year));
+            dateInits = simpleDateFormat.parse(hora);
+            dateFins = simpleDateFormat.parse(String.format("%02d:%02d",hour,minute));
         } catch (ParseException e) {
             e.printStackTrace();
         }
