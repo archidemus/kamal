@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.DatePicker;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Created by famfrit on 04-09-17.

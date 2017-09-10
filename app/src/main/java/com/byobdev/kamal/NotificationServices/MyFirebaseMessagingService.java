@@ -3,26 +3,36 @@ package com.byobdev.kamal.NotificationServices;
 import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.CountDownTimer;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+import android.widget.Chronometer;
 
 
-import com.byobdev.kamal.AppHelpers.LocationGPS;
+import com.byobdev.kamal.AppHelpers.ConnectivityStatus;
+import com.byobdev.kamal.AppHelpers.NotificationHelper;
 import com.byobdev.kamal.InitiativesActivity;
 import com.byobdev.kamal.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.CollationElementIterator;
 import java.util.Map;
+
+import static com.facebook.GraphRequest.TAG;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -33,9 +43,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     String Descripcion;
     String Latitud;
     String Longitud;
+    long c=0;
+    private Chronometer chronometer;
+
+
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
+        ((NotificationHelper)this.getApplication()).NuevoMensaje();
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Boolean isGPSOn = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!isGPSOn) {
@@ -71,15 +86,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         loc1.setLatitude(Double.parseDouble(Latitud));
         loc1.setLongitude(Double.parseDouble(Longitud));
 
-        Location loc2 = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location loc2 = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
 
-        float distanceInMeters = loc1.distanceTo(loc2);
+        double distanceInMeters = loc1.distanceTo(loc2);
         if(distanceInMeters>1000){
             return;
         }
         String Title="Iniciativa de "+Tipo+" a "+(int)distanceInMeters+" metros!";
         String Body=Titulo+": "+Descripcion;
-        sendNotification(Title, Body);
+        if(((NotificationHelper)this.getApplication()).cvalue()<=5){
+            sendNotification(Title, Body);
+            SystemClock.sleep(120*1000);
+        }
+        else if(((NotificationHelper)this.getApplication()).cvalue()>5){
+            notificacion();
+            ((NotificationHelper)this.getApplication()).ColapsoMensaje();
+            SystemClock.sleep(300*1000);
+        }
+
     }
 
 
@@ -103,4 +127,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify(0, notificationBuilder.build());
     }
+
+    /*****CODIGO NOTIFICACIONES *******/
+    public void notificacion(){
+        NotificationCompat.Builder notificacion = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.kamal_logo) // icono en la barra de notificaciones
+                .setLargeIcon((((BitmapDrawable) getResources()
+                        .getDrawable(R.drawable.kamal_logo)).getBitmap())) // icono cuando extiendes las notificaciones
+                .setContentTitle("¡Nuevas Iniciativas En Tu Proximidad!") // titulo notificacion
+                .setContentText("Apreta aqui para ver las nuevas iniciativas") // descripcion notificacion
+                .setTicker("Nuevas Iniciativas Cercanas")
+                .setVibrate(new long [] {100, 1000}); // tiempo antes de vibrar y por cuanto tiempo vibra
+
+
+        Intent inotificacion = new Intent(this, InitiativesActivity.class); // se genera el intente
+        //inotificacion.putExtra("notificationID", notificationID); //Para rescatar la id despues
+        PendingIntent intentePendiente = PendingIntent.getActivity(this,0,inotificacion,0); // se deja como pendiente
+
+        notificacion.setContentIntent(intentePendiente);
+
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        //El 10 es la id, se puede poner cualquiera, deberiamos poner que sea
+        nm.notify(10,notificacion.build());// se construye la notificacion
+
+
+    }
+
+
+
 }
