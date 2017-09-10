@@ -242,17 +242,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="50dp"
                 android:layout_marginTop="10dp"/>
+            <Button
+                android:id="@+id/createInitiativeButtonFinal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="editInitiative"
+                android:text="Guardar" />
         </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/createInitiativeButtonFinal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/fab_margin"
-        android:onClick="editInitiative"
-        android:text="Guardar" />
+
 
 
 

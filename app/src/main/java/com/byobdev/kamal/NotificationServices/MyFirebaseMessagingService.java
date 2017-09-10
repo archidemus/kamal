@@ -17,8 +17,16 @@ import android.widget.Toast;
 
 
 import com.byobdev.kamal.AppHelpers.LocationGPS;
+import com.byobdev.kamal.DBClasses.Interests;
+import com.byobdev.kamal.EditActivity;
 import com.byobdev.kamal.InitiativesActivity;
 import com.byobdev.kamal.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -33,6 +41,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     String Descripcion;
     String Latitud;
     String Longitud;
+    private DatabaseReference mDatabase;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
@@ -73,8 +82,46 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Location loc2 = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        float distanceInMeters = loc1.distanceTo(loc2);
-        if(distanceInMeters>1000){
+        mDatabase = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        final float distanceInMeters = loc1.distanceTo(loc2);
+        final int[] k = {0};
+        k[0] = 0;
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                // for (DataSnapshot child : snapshot.getChildren())
+                // Create a LinearLayout element
+                if(snapshot.child("radio500m").getValue().toString().compareTo("true") == 0){
+                    if(distanceInMeters>500){
+                        k[0] = 1;
+                    }
+                }
+                else if(snapshot.child("radio3km").getValue().toString().compareTo("true") == 0){
+                    if(distanceInMeters>3000){
+                        k[0] = 1;
+                    }
+                }
+                else if(snapshot.child("radio10km").getValue().toString().compareTo("true") == 0){
+                    if(distanceInMeters>10000){
+                        k[0] = 1;
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+
+        });
+
+        try{
+            Thread.sleep(1000);
+        }catch (Exception e){
+            Log.d("Exception", e.toString());
+        }
+
+        if(k[0] ==1){
             return;
         }
         String Title="Iniciativa de "+Tipo+" a "+(int)distanceInMeters+" metros!";

@@ -38,6 +38,35 @@
         android:text="Música"
         android:textSize="18sp"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Distancia notificaciones"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="22sp"/>
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="208dp"
+        android:layout_height="wrap_content"
+        android:onClick="onRadioButtonClicked"
+        android:text="500 metros" />
+
+    <RadioButton
+        android:id="@+id/radioButton2"
+        android:layout_width="219dp"
+        android:layout_height="wrap_content"
+        android:onClick="onRadioButtonClicked"
+        android:text="3 kilometros" />
+
+    <RadioButton
+        android:id="@+id/radioButton3"
+        android:layout_width="219dp"
+        android:layout_height="wrap_content"
+        android:onClick="onRadioButtonClicked"
+        android:text="10 kilometros" />
+
     <Button
         android:id="@+id/createInitiativeButtonFinal"
         android:layout_width="wrap_content"

@@ -71,6 +71,10 @@ public class EditActivity extends AppCompatActivity {
     TextView fechaInicio;
     TextView fechaTermino;
 
+    String getSector(double latitude, double longitude){
+        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,8 +174,8 @@ public class EditActivity extends AppCompatActivity {
             if (interest.equals("Música")){
                 interest = "Musica";
             }
-
-            FirebaseDatabase.getInstance().getReference("Initiatives").child(IDanterior).removeValue();
+            Intent i = getIntent();
+            FirebaseDatabase.getInstance().getReference("Initiatives").child(i.getStringExtra("Sector")).child(IDanterior).removeValue();
             mDatabase2 = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
             mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -192,9 +196,10 @@ public class EditActivity extends AppCompatActivity {
             }
 
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,imageEdit ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
-            mDatabase.child(key).setValue(initiative);
+            mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInitiatives.child(key).setValue(titulo.getText().toString());
+            userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
+            userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             finish();
             Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
 
