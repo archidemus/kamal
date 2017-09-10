@@ -487,9 +487,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onReceive(Context context, Intent intent) {
             if(!ConnectivityStatus.isConnected(getApplicationContext())){
+                ((NotificationHelper)getApplication()).Setc(6);
             }
             else {
-                ((NotificationHelper)getApplication()).Setc(6);
             }
 
         }
