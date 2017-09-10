@@ -50,6 +50,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -494,6 +495,17 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         comidaInitiativeIDList.clear();
         teatroInitiativeIDList.clear();
         deporteInitiativeIDList.clear();
+    }
+    void loadInitiatives(){
+        LatLngBounds curScreen = initiativesMap.getProjection()
+                .getVisibleRegion().latLngBounds;
+        int south=(int)(curScreen.southwest.latitude*100);
+        int north=(int)(curScreen.northeast.latitude*100);
+        int west=(int)(curScreen.southwest.longitude*100);
+        int east=(int)(curScreen.northeast.longitude*100);
+
+
+
     }
 
     @Override

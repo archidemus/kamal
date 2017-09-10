@@ -54,7 +54,7 @@
                 android:gravity="center"
                 android:maxWidth="180dp"
                 android:onClick="obtenerGPS"
-                android:text="ubicacion actual" />
+                android:text="Elegir Ubicación" />
 
             <Button
                 android:gravity="center"
