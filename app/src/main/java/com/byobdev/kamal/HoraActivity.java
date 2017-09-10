@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +25,8 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
     Date dateInits, dateFins;
     long dateDiff;
+    TextView fechaInicio;
+    TextView fechaTermino;
 
     /**
      * Create a new instance of MyDialogFragment, providing "num"
@@ -44,6 +47,9 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mNum = getArguments().getInt("num");
+        fechaInicio = (TextView)getActivity().findViewById(R.id.txt_fecha_inicio_vista);
+        fechaTermino = (TextView)getActivity().findViewById(R.id.txt_fecha_termino_vista);
+
     }
 
     @Override
@@ -68,12 +74,22 @@ public class HoraActivity extends DialogFragment implements TimePickerDialog.OnT
                     //Display the user changed time on TextView
                     if (mNum == R.id.HoraInicio) {
                         //24hrs format
-                        tv.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        if((timeDifference(tv2.getText().toString(),hourOfDay,minute) < 0) && fechaInicio.getText().toString().equals(fechaTermino.getText().toString())){
+                            tv2.setText(String.format("%02d:%02d", hourOfDay, minute));
+                            tv.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        } else {
 
+                            tv.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        }
                     } else {
                         if (mNum == R.id.button3) {
                             //24hrs format
-                            tv2.setText(String.format("%02d:%02d", hourOfDay, minute));
+                            if ((timeDifference(tv.getText().toString(), hourOfDay, minute) > 0) && fechaInicio.getText().toString().equals(fechaTermino.getText().toString())) {
+                                tv2.setText(tv.getText().toString());
+                            }
+                            else {
+                                tv2.setText(String.format("%02d:%02d", hourOfDay, minute));
+                            }
                         }
                     }
 
