@@ -520,7 +520,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Drawable drawable = menu.getItem(i).getIcon();
             if(drawable != null) {
                 drawable.mutate();
-                drawable.setColorFilter(getResources().getColor(R.color.white_1000), PorterDuff.Mode.SRC_ATOP);
+                drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
             }
         }
         return true;
