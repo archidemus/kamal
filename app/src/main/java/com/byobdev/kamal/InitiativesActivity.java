@@ -55,6 +55,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -247,9 +248,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else{
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
                 }
+                if(userInterests.radio500m){
+                    FirebaseMessaging.getInstance().subscribeToTopic("radio500m");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("radio500m");
+                }
+                if(userInterests.radio3km){
+                    FirebaseMessaging.getInstance().subscribeToTopic("radio3km");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("radio3km");
+                }
+                if(userInterests.radio10km){
+                    FirebaseMessaging.getInstance().subscribeToTopic("radio10km");
+                }
+                else{
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("radio10km");
+                }
             }
             else{
-                userInterests=new Interests(false,false,false,false);
+                userInterests=new Interests(false,false,false,false, false, false, false);
             }
 
         }
@@ -482,6 +501,17 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         teatroInitiativeIDList.clear();
         deporteInitiativeIDList.clear();
     }
+    void loadInitiatives(){
+        LatLngBounds curScreen = initiativesMap.getProjection()
+                .getVisibleRegion().latLngBounds;
+        int south=(int)(curScreen.southwest.latitude*100);
+        int north=(int)(curScreen.northeast.latitude*100);
+        int west=(int)(curScreen.southwest.longitude*100);
+        int east=(int)(curScreen.northeast.longitude*100);
+
+
+
+    }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -670,7 +700,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
 
 
-        userInterests=new Interests(false,false,false,false);
+        userInterests=new Interests(false,false,false,false, false, false, false);
         vista= findViewById(R.id.bottom_menu);
 
     }
@@ -808,7 +838,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     interpolator = new OvershootInterpolator(1);
                     shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
                     vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
-                    opened_bottom = false;
+                    opened_bottom = true;
                     return true;
                 }
                 return true;

@@ -20,8 +20,8 @@ public class ListAdapter extends ArrayAdapter<String>{
     customButtonListener customListner;
 
     public interface customButtonListener {
-        public void onButtonClickListner(int position,String[] keyLista);
-        public void onButtonClickListner2(int position,String[] keyLista);
+        public void onButtonClickListner(int position,String[] keyLista, String[] sectorLista);
+        public void onButtonClickListner2(int position,String[] keyLista, String[] sectorLista);
     }
 
     public void setCustomButtonListner(customButtonListener listener) {
@@ -31,12 +31,14 @@ public class ListAdapter extends ArrayAdapter<String>{
     private Context context;
     private ArrayList<String> data = new ArrayList<String>();
     private String[] keyLista;
+    private String[] sectorLista;
 
-    public ListAdapter(Context context, ArrayList<String> dataItem, String[] keyLista) {
+    public ListAdapter(Context context, ArrayList<String> dataItem, String[] keyLista, String[] sectorLista) {
         super(context, R.layout.activity_listview, dataItem);
         this.data = dataItem;
         this.context = context;
         this.keyLista = keyLista;
+        this.sectorLista = sectorLista;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class ListAdapter extends ArrayAdapter<String>{
             @Override
             public void onClick(View v) {
                 if (customListner != null) {
-                    customListner.onButtonClickListner(position,keyLista);
+                    customListner.onButtonClickListner(position,keyLista, sectorLista);
                 }
 
             }
@@ -69,7 +71,7 @@ public class ListAdapter extends ArrayAdapter<String>{
             @Override
             public void onClick(View v) {
                 if (customListner != null) {
-                    customListner.onButtonClickListner2(position,keyLista);
+                    customListner.onButtonClickListner2(position,keyLista, sectorLista);
                 }
 
             }
