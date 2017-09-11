@@ -124,16 +124,14 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             else {
                 fechaInicio.setText(mFormatter.format(date));
             }
-            Toast.makeText(CreateInitiativeActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
+
         }
 
         // Optional cancel listener
         @Override
         public void onDateTimeCancel()
         {
-            Toast.makeText(CreateInitiativeActivity.this,
-                    "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
+
         }
     };
 
@@ -150,16 +148,13 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 fechaTermino.setText(mFormatter.format(date));
             }
 
-            Toast.makeText(CreateInitiativeActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
         }
 
         // Optional cancel listener
         @Override
         public void onDateTimeCancel()
         {
-            Toast.makeText(CreateInitiativeActivity.this,
-                    "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
+            
         }
     };
 

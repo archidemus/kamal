@@ -90,10 +90,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         loc1.setLatitude(Double.parseDouble(Latitud));
         loc1.setLongitude(Double.parseDouble(Longitud));
 
-        Location loc2 = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location loc2 = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        final float distanceInMeters = loc1.distanceTo(loc2);
+        final double distanceInMeters = loc1.distanceTo(loc2);
         final int[] k = {0};
         k[0] = 0;
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {

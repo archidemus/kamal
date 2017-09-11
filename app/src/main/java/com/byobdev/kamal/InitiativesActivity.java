@@ -374,7 +374,44 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+            Marker aux= (Marker)markerHashMap.get(dataSnapshot.getKey());
+            Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            if(aux==null){return;}
+            initiativeHashMap.remove(aux.getId());
+            markerHashMap.remove(dataSnapshot.getKey());
+            aux.remove();
+            if(initiative.Tipo.equals("Comida")){
+                for(int i=0;i<comidaInitiativeIDList.size();i++){
+                    if(comidaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        comidaInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
+            else if(initiative.Tipo.equals("Deporte")){
+                for(int i=0;i<deporteInitiativeIDList.size();i++){
+                    if(deporteInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        deporteInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
+            else if(initiative.Tipo.equals("Teatro")){
+                for(int i=0;i<teatroInitiativeIDList.size();i++){
+                    if(teatroInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        teatroInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
+            else if(initiative.Tipo.equals("Musica")){
+                for(int i=0;i<musicaInitiativeIDList.size();i++){
+                    if(musicaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        musicaInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
         }
 
         @Override

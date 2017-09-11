@@ -119,7 +119,7 @@ public class EditActivity extends AppCompatActivity {
         IDanterior = i.getStringExtra("IDanterior");
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
-        key=mDatabase.push().getKey();
+        key=IDanterior;
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando....");
 
