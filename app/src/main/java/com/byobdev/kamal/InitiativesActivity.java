@@ -1,12 +1,20 @@
 package com.byobdev.kamal;
 
 import android.app.NotificationManager;
+
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
@@ -39,6 +47,8 @@ import com.akexorcist.googledirection.model.Direction;
 import com.akexorcist.googledirection.model.Leg;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
+import com.byobdev.kamal.AppHelpers.ConnectivityStatus;
+import com.byobdev.kamal.AppHelpers.NotificationHelper;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
@@ -249,7 +259,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
             }
             else{
-                userInterests=new Interests(false,false,false,false, false, false, false);
+                userInterests=new Interests(false,false,false,false, false, true, false);
             }
 
         }
@@ -528,14 +538,29 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
     }
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(!ConnectivityStatus.isConnected(getApplicationContext())){
+                ((NotificationHelper)getApplication()).Setc(6);
+            }
+            else {
+            }
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiatives);
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         opened_bottom = true;
+        getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
         nm2.cancelAll();
@@ -733,10 +758,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         start = new LocationGPS(getApplicationContext());
         final LatLng interested;
 
-        //initListeners(start.getLatitud(),start.getLongitud());
-        //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
-        //initiativesDB.addChildEventListener(initiativesListener);
-
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
@@ -910,6 +931,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 getFragmentManager().popBackStack();
             }
         }
+        getApplicationContext().unregisterReceiver(receiver);
 
     }
 
@@ -987,6 +1009,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onResume() {
+
         super.onResume();  // Always call the superclass method first
+        getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
+
 }
