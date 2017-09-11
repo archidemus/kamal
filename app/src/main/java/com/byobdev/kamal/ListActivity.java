@@ -56,6 +56,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 final String[] completarLista;
+                final String[] SectorLista;
                 final String[] keyLista;
                 int t=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
@@ -66,10 +67,12 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                 }
                 completarLista = new String[t];
                 keyLista = new String[t];
+                SectorLista = new String[t];
                 t=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
-                    completarLista[t] = child.getValue().toString();
+                    completarLista[t] = child.child("Titulo").getValue().toString();
+                    SectorLista[t] = child.child("Sector").getValue().toString();
                     keyLista[t] = child.getKey().toString();
                     t++;
 
@@ -85,7 +88,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarLista);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListAdapter(ListActivity.this, dataItems,keyLista);
+                    adapter = new com.byobdev.kamal.ListAdapter(ListActivity.this, dataItems,keyLista, SectorLista);
                     adapter.setCustomButtonListner(ListActivity.this);
                     lista.setAdapter(adapter);
                 }
@@ -103,10 +106,10 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
 
     }
 
-    public void editar(String nombre){
+    public void editar(String nombre, final String Sector){
 
         final Intent intentMain2 = new Intent(this, EditActivity.class);
-        mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives").child(nombre);
+        mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives").child(Sector).child(nombre);
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -123,6 +126,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     intentMain2.putExtra("Direccion",snapshot.child("Direccion").getValue().toString());
                     intentMain2.putExtra("Imagen",snapshot.child("image").getValue().toString());
                     intentMain2.putExtra("IDanterior",snapshot.getKey());
+                    intentMain2.putExtra("Sector",Sector);
 
                 ListActivity.this.startActivity(intentMain2);
                 finish();
@@ -138,8 +142,9 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
         });
 
     }
+    //Para eliminar
     @Override
-    public void onButtonClickListner(final int position, final String[] keyLista) {
+    public void onButtonClickListner(final int position, final String[] keyLista, final String[] data) {
         AlertDialog.Builder alert = new AlertDialog.Builder(ListActivity.this);
         alert.setTitle("Alerta!");
         alert.setMessage("Estas seguro de que quieres eliminar esta iniciativa?");
@@ -147,7 +152,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
             private DatabaseReference mDatabase2;
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                FirebaseDatabase.getInstance().getReference("Initiatives").child(keyLista[position]).removeValue();
+                FirebaseDatabase.getInstance().getReference("Initiatives").child(data[position]).child(keyLista[position]).removeValue();
                 mDatabase2 = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -183,9 +188,10 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
 
 
     }
+    //para editar
     @Override
-    public void onButtonClickListner2(int position, String[] keyLista) {
-        editar(keyLista[position]);
+    public void onButtonClickListner2(int position, String[] keyLista, String[] data) {
+        editar(keyLista[position], data[position]);
 
     }
 

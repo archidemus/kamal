@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.byobdev.kamal.AppHelpers.LocationGPS;
 import com.byobdev.kamal.DBClasses.Initiative;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,13 +50,10 @@ import java.util.Date;
 public class EditActivity extends AppCompatActivity {
     EditText titulo;
     EditText description;
-    TextView hInicio;
-    TextView hTermino;
     Double latitud;
     Double longitud;
     String imagen;
     Spinner spinner;
-    Button button;
     ArrayAdapter<CharSequence> adapter;
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -65,6 +64,7 @@ public class EditActivity extends AppCompatActivity {
     ProgressDialog pd;
     Uri filePath;
     String direccion;
+    int PLACE_PICKER_REQUEST = 1;
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
@@ -74,6 +74,10 @@ public class EditActivity extends AppCompatActivity {
     TextView fechaInicio;
     TextView fechaTermino;
     long dateDiff;
+
+    String getSector(double latitude, double longitude){
+        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,8 +210,8 @@ public class EditActivity extends AppCompatActivity {
             if (interest.equals("Música")){
                 interest = "Musica";
             }
-
-            FirebaseDatabase.getInstance().getReference("Initiatives").child(IDanterior).removeValue();
+            Intent i = getIntent();
+            FirebaseDatabase.getInstance().getReference("Initiatives").child(i.getStringExtra("Sector")).child(IDanterior).removeValue();
             mDatabase2 = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
             mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -228,9 +232,10 @@ public class EditActivity extends AppCompatActivity {
             }
 
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,imageEdit ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
-            mDatabase.child(key).setValue(initiative);
+            mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInitiatives.child(key).setValue(titulo.getText().toString());
+            userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
+            userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             finish();
             Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
 
@@ -266,16 +271,13 @@ public class EditActivity extends AppCompatActivity {
 
 
     public void obtenerGPS(View view){
-        LocationGPS gps=new LocationGPS(this);
-        latitud = gps.getLatitud();
-        longitud = gps.getLongitud();
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try{
-            direccion = gps.getAddress(latitud, longitud);
-        }catch (Exception e){
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
+        }
+        catch (Exception e){
 
         }
-
-        Toast.makeText(EditActivity.this, "Posicion obtenida", Toast.LENGTH_SHORT).show();
     }
 
     public void escogerImagen(View v){
@@ -292,6 +294,15 @@ public class EditActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this,data);
+                latitud=place.getLatLng().latitude;
+                longitud=place.getLatLng().longitude;
+                direccion=place.getAddress().toString();
+            }
+        }
+
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
 
@@ -305,34 +316,35 @@ public class EditActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        if(filePath != null) {
-            pd.show();
+            if(filePath != null) {
+                pd.show();
 
-            StorageReference childRef = storageRef.child(key);
+                StorageReference childRef = storageRef.child(key);
 
-            //uploading the image
-            final UploadTask uploadTask = childRef.putFile(filePath);
+                //uploading the image
+                final UploadTask uploadTask = childRef.putFile(filePath);
 
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    pd.dismiss();
-                    Toast.makeText(EditActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
-                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    pd.dismiss();
-                    Toast.makeText(EditActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
-                    imagen = null;
-                }
-            });
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pd.dismiss();
+                        Toast.makeText(EditActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                        imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(EditActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                        imagen = null;
+                    }
+                });
+            }
+            else {
+                Toast.makeText(EditActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
+            }
         }
-        else {
-            Toast.makeText(EditActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
     private long dateDifference(String fecha, Date date){

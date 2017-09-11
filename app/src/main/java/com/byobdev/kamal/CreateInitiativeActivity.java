@@ -17,6 +17,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
+import com.facebook.places.PlaceManager;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,6 +56,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Spinner spinner;
     Button button;
     ArrayAdapter<CharSequence> adapter;
+    Place place;
+
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     long dateDiff;
 
@@ -61,6 +67,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     ProgressDialog pd;
     Uri filePath;
     String direccion;
+    int PLACE_PICKER_REQUEST = 1;
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
@@ -193,7 +200,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInitiatives.child(key).setValue(titulo.getText().toString());
+            userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
+            userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             finish();
         }
 
@@ -227,15 +235,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     }
 
     public void obtenerGPS(View view){
-        LocationGPS gps=new LocationGPS(this);
-        latitud = gps.getLatitud();
-        longitud = gps.getLongitud();
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
         try{
-            direccion = gps.getAddress(latitud, longitud);
-        }catch (Exception e){
-
+            startActivityForResult(builder.build(this), PLACE_PICKER_REQUEST);
         }
-
+        catch (Exception e) {
+        }
         Toast.makeText(CreateInitiativeActivity.this, "Posición obtenida", Toast.LENGTH_SHORT).show();
     }
 
@@ -253,6 +258,15 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(this,data);
+                latitud=place.getLatLng().latitude;
+                longitud=place.getLatLng().longitude;
+                direccion=place.getAddress().toString();
+            }
+        }
+
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
 
@@ -266,34 +280,35 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        if(filePath != null) {
-            pd.show();
+            if(filePath != null) {
+                pd.show();
 
-            StorageReference childRef = storageRef.child(key);
+                StorageReference childRef = storageRef.child(key);
 
-            //uploading the image
-            final UploadTask uploadTask = childRef.putFile(filePath);
+                //uploading the image
+                final UploadTask uploadTask = childRef.putFile(filePath);
 
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
-                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
-                    imagen = null;
-                }
-            });
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pd.dismiss();
+                        Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                        imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                        imagen = null;
+                    }
+                });
+            }
+            else {
+                Toast.makeText(CreateInitiativeActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
+            }
         }
-        else {
-            Toast.makeText(CreateInitiativeActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
-        }
+
     }
 
 
