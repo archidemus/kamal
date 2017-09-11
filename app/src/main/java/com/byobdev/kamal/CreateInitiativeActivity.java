@@ -242,7 +242,6 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         }
         catch (Exception e) {
         }
-        Toast.makeText(CreateInitiativeActivity.this, "Posición obtenida", Toast.LENGTH_SHORT).show();
     }
 
     public void escogerImagen(View v){
