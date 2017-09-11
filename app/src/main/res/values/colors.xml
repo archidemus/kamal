@@ -8,4 +8,5 @@
     <color name="textDarkDisabled">#61000000</color>
     <color name="textLightPrimary">#ffffff</color>
     <color name="textLightSecondary">#969696</color>
+    <color name="colorKamalPrimary">#9a3776</color>
 </resources>
