@@ -818,7 +818,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     interpolator = new OvershootInterpolator(1);
                     shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
                     vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
-                    opened_bottom = false;
+                    opened_bottom = true;
                     return true;
                 }
                 return true;
