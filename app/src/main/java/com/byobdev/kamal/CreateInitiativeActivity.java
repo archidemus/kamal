@@ -132,7 +132,6 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     //Listener boton fecha Termino
     private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
-
         @Override
         public void onDateTimeSet(Date date)
         {

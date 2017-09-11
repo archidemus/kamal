@@ -130,7 +130,6 @@ public class EditActivity extends AppCompatActivity {
             if(dateDifference(fechaTermino.getText().toString(),date) < 0){
                 fechaInicio.setText(mFormatter.format(date));
                 fechaTermino.setText(mFormatter.format(date));
-
             }
             else {
                 fechaInicio.setText(mFormatter.format(date));
