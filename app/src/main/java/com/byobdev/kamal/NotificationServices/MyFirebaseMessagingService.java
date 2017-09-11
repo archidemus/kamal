@@ -116,7 +116,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         });
 
         try{
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         }catch (Exception e){
             Log.d("Exception", e.toString());
         }

@@ -24,6 +24,8 @@ import com.byobdev.kamal.AppHelpers.LocationGPS;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
+import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,14 +50,12 @@ import java.util.Date;
 public class EditActivity extends AppCompatActivity {
     EditText titulo;
     EditText description;
-    TextView hInicio;
-    TextView hTermino;
     Double latitud;
     Double longitud;
     String imagen;
     Spinner spinner;
-    Button button;
     ArrayAdapter<CharSequence> adapter;
+    private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase2;
@@ -73,6 +73,7 @@ public class EditActivity extends AppCompatActivity {
     Date dateInits, dateFins;
     TextView fechaInicio;
     TextView fechaTermino;
+    long dateDiff;
 
     String getSector(double latitude, double longitude){
         return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
@@ -87,21 +88,12 @@ public class EditActivity extends AppCompatActivity {
         titulo.setText(i.getStringExtra("Titulo"));
         description   = (EditText)findViewById(R.id.descriptionEdit);
         description.setText(i.getStringExtra("Descripcion"));
-        hTermino = (TextView)findViewById(R.id.HoraFinalfinal);
-        SimpleDateFormat formatter1 = new SimpleDateFormat("HH:mm");
-        String dateF = formatter1.format(new Date(Long.parseLong(i.getStringExtra("duracion"))-10800000));
-        hTermino.setText(dateF);
-        hInicio = (TextView)findViewById(R.id.HoraIniciofinal);
-        SimpleDateFormat formatter2 = new SimpleDateFormat("HH:mm");
-        String dateI = formatter2.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))-10800000));
-        hInicio.setText(dateI);
+
         fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
-        SimpleDateFormat formatter3 = new SimpleDateFormat("dd/MM/yyyy");
-        String dateF2 = formatter3.format(new Date(Long.parseLong(i.getStringExtra("duracion"))));
+        String dateF2 = mFormatter.format(new Date(Long.parseLong(i.getStringExtra("duracion"))));
         fechaTermino.setText(dateF2);
         fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
-        SimpleDateFormat formatter4 = new SimpleDateFormat("dd/MM/yyyy");
-        String dateI2 = formatter4.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))));
+        String dateI2 = mFormatter.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))));
         fechaInicio.setText(dateI2);
 
         //para agregar la lista de tipo de iniciativa
@@ -133,6 +125,59 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
+    //Listener boton fecha Inicio
+    private SlideDateTimeListener listener = new SlideDateTimeListener() {
+
+        @Override
+        public void onDateTimeSet(Date date)
+        {
+            if(dateDifference(fechaTermino.getText().toString(),date) < 0){
+                fechaInicio.setText(mFormatter.format(date));
+                fechaTermino.setText(mFormatter.format(date));
+
+            }
+            else {
+                fechaInicio.setText(mFormatter.format(date));
+            }
+            Toast.makeText(EditActivity.this,
+                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
+        }
+
+        // Optional cancel listener
+        @Override
+        public void onDateTimeCancel()
+        {
+            Toast.makeText(EditActivity.this,
+                    "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    //Listener boton fecha Termino
+    private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
+
+        @Override
+        public void onDateTimeSet(Date date)
+        {
+            if(dateDifference(fechaInicio.getText().toString(),date) >=0){
+                fechaTermino.setText(fechaInicio.getText().toString());
+            }
+            else{
+                fechaTermino.setText(mFormatter.format(date));
+            }
+
+            Toast.makeText(EditActivity.this,
+                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
+        }
+
+        // Optional cancel listener
+        @Override
+        public void onDateTimeCancel()
+        {
+            Toast.makeText(EditActivity.this,
+                    "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
+        }
+    };
+
     public void editInitiative(View view){
         if( titulo.getText().toString().equals("")){
 
@@ -150,29 +195,18 @@ public class EditActivity extends AppCompatActivity {
         else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-            DateFormat formatter = new SimpleDateFormat("HH:mm");
-            DateFormat formatterF = new SimpleDateFormat("HH:mm");
-            Date date =null;
-            Date date1 = null;
-            try{
-                date = formatter.parse(hInicio.getText().toString());
-                date1= formatter.parse(hTermino.getText().toString());
-            }catch (Exception e){
-
-            }
 
             String fechaInit = fechaInicio.getText().toString();
             String fechaFin = fechaTermino.getText().toString();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
             try {
-                dateInits = simpleDateFormat.parse(fechaInit);
-                dateFins = simpleDateFormat.parse(fechaFin);
+                dateInits = mFormatter.parse(fechaInit);
+                dateFins = mFormatter.parse(fechaFin);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            long feI=dateInits.getTime()+date.getTime();
-            long feT=dateFins.getTime()+date1.getTime();
+            long feI=dateInits.getTime();
+            long feT=dateFins.getTime();
             String interest = spinner.getSelectedItem().toString();
             if (interest.equals("Música")){
                 interest = "Musica";
@@ -209,30 +243,30 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
-
-        newFragment.show(getFragmentManager(), "timePicker");
-    }
-
-    public void showTimePickerDialog2(View v) {
-
-        DialogFragment newFragment = HoraActivity.newInstance(v.getId());
-        newFragment.show(getFragmentManager(), "timePicker2");
-
-    }
     public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = FechaActivity.newInstance(v.getId());
-
-        newFragment.show(getFragmentManager(), "datePicker");
+        new SlideDateTimePicker.Builder(getSupportFragmentManager())
+                .setListener(listener)
+                .setInitialDate(new Date())
+                .setMinDate(new Date())
+                //.setMaxDate(maxDate)
+                .setIs24HourTime(true)
+                //.setTheme(SlideDateTimePicker.HOLO_DARK)
+                //.setIndicatorColor(Color.parseColor("#990000"))
+                .build()
+                .show();
     }
 
     public void showDatePickerDialog2(View v) {
-       /* if (fInicio.getText().toString().equals("--/--/--")){
-            Toast.makeText(this,"No ha seleccionado una fecha de inicio",Toast.LENGTH_LONG).show();
-        }*/
-        DialogFragment newFragment = FechaActivity.newInstance(v.getId());
-        newFragment.show(getFragmentManager(), "datePicker2");
+        new SlideDateTimePicker.Builder(getSupportFragmentManager())
+                .setListener(listener2)
+                .setInitialDate(new Date())
+                .setMinDate(new Date())
+                //.setMaxDate(maxDate)
+                .setIs24HourTime(true)
+                //.setTheme(SlideDateTimePicker.HOLO_DARK)
+                //.setIndicatorColor(Color.parseColor("#990000"))
+                .build()
+                .show();
 
     }
 
@@ -312,6 +346,17 @@ public class EditActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    private long dateDifference(String fecha, Date date){
+        try {
+            dateInits = mFormatter.parse(fecha);
+            dateFins = date;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        dateDiff = dateInits.getTime() - dateFins.getTime();
+        return dateDiff;
     }
 
 

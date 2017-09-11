@@ -1,19 +1,14 @@
 package com.byobdev.kamal;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -22,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -32,11 +26,19 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.byobdev.kamal.AppHelpers.DirectionsJSONParser;
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.Language;
+import com.akexorcist.googledirection.constant.RequestResult;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.constant.Unit;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Leg;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
@@ -68,12 +70,6 @@ import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,13 +81,6 @@ import java.util.Map;
 import java.util.Vector;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import org.json.JSONObject;
-
-import static android.R.attr.breakStrategy;
-import static android.R.attr.data;
-import static android.R.attr.id;
-import static android.R.id.primary;
-import static android.os.Build.VERSION_CODES.M;
 import static com.byobdev.kamal.R.id.map;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
@@ -101,20 +90,20 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
 
     //Maps
+    Polyline initiativePath;
+    boolean polylineActive;
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     //Others
-    Marker interestedMarker;
     FrameLayout shortDescriptionFragment;
     private float mLastPosY;
-    private Polyline polyline;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     LocationGPS start;
     Vector<String> sectors;
     Vector<DatabaseReference> sectorsDB;
-
+    LatLng lastMarkerPosition;
     private DatabaseReference userDataDB;
     public Interests userInterests;
     public HashMap initiativeHashMap;
@@ -128,7 +117,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean deporteOn=false;
     public boolean teatroOn=false;
     public boolean musicaOn=false;
-    public boolean skipinit=true;
     View vista;
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
@@ -764,8 +752,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(polyline!=null){
-                    polyline.remove();}
                 //Agrego datos del pin
                 Bundle bn = new Bundle();
                 Initiative initiative=(Initiative)initiativeHashMap.get(marker.getId());
@@ -781,10 +767,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
-
-
-
-
+                lastMarkerPosition=marker.getPosition();
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.replace(R.id.shortDescriptionFragment, DF);
 
@@ -798,13 +781,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
-
-                String url = getDirectionsUrl(new LatLng(start.getLatitud(),start.getLongitud()), marker.getPosition());
-
-                DownloadTask downloadTask = new DownloadTask();
-
-                // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
                 return false;
             }
         });
@@ -848,7 +824,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     interpolator = new OvershootInterpolator(1);
                     shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
                     vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
-                    opened_bottom = false;
+                    opened_bottom = true;
                     return true;
                 }
                 return true;
@@ -856,10 +832,49 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return v.onTouchEvent(event);
         }
     }
+    public void showPath(View view){
+        if(polylineActive && initiativePath!=null){
+            initiativePath.remove();
+            polylineActive=false;
+        }
+        OvershootInterpolator interpolator;
+        interpolator = new OvershootInterpolator(1);
+        shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
+        vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
+        opened_bottom = true;
+        GoogleDirection.withServerKey(getString(R.string.google_maps_key))
+                .from(new LatLng(start.getLatitud(),start.getLongitud()))
+                .to(lastMarkerPosition)
+                .transportMode(TransportMode.WALKING)
+                .language(Language.SPANISH)
+                .unit(Unit.METRIC)
 
+                .execute(new DirectionCallback()
+                {
+                    @Override
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        String status = direction.getStatus();
+                        if(status.equals(RequestResult.OK)) {
+                            Route route = direction.getRouteList().get(0);
+                            Leg leg = route.getLegList().get(0);
+                            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+                            PolylineOptions polylineOptions = DirectionConverter.createPolyline(getApplicationContext(), directionPositionList, 5, Color.RED);
+                            initiativePath=initiativesMap.addPolyline(polylineOptions);
+                            polylineActive=true;
+                        }
+                    }
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+                        // Do something
+                    }
+                });
+
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -869,6 +884,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
             vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
             opened_bottom = true;
+        }
+        else if(polylineActive && initiativePath!=null){
+            initiativePath.remove();
+            polylineActive=false;
         }
         else {
             super.onBackPressed();
@@ -970,163 +989,4 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public void onResume() {
         super.onResume();  // Always call the superclass method first
     }
-
-
-
-
-
-
-
-
-
-
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-
-            parserTask.execute(result);
-
-        }
-    }
-
-
-    /**
-     * A class to parse the Google Places in JSON format
-     */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList points = null;
-            PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList();
-                lineOptions = new PolylineOptions();
-
-                List<HashMap<String, String>> path = result.get(i);
-
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                lineOptions.addAll(points);
-                lineOptions.width(12);
-                lineOptions.color(Color.RED);
-                lineOptions.geodesic(true);
-
-            }
-
-// Drawing polyline in the Google Map for the i-th route
-            polyline=initiativesMap.addPolyline(lineOptions);
-        }
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-        String mode = "mode=driving";
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-
-        return url;
-    }
-
-    /**
-     * A method to download json data from url
-     */
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            urlConnection.connect();
-
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-
-
 }

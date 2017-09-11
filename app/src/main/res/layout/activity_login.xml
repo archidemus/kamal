@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
 
         <com.facebook.login.widget.LoginButton
@@ -61,7 +61,7 @@
         <com.google.android.gms.common.SignInButton
             android:id="@+id/googleBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="28dp"
             android:gravity="center"
             android:text="Google" />
     </LinearLayout>
