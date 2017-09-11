@@ -154,7 +154,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         @Override
         public void onDateTimeCancel()
         {
-            
+
         }
     };
 
