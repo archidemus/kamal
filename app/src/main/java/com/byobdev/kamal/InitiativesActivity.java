@@ -79,7 +79,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
@@ -110,16 +112,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     LocationGPS start;
-    private String currentSector="";
-    private DatabaseReference sectorDB;
-    private DatabaseReference sectorDB1;
-    private DatabaseReference sectorDB2;
-    private DatabaseReference sectorDB3;
-    private DatabaseReference sectorDB4;
-    private DatabaseReference sectorDB5;
-    private DatabaseReference sectorDB6;
-    private DatabaseReference sectorDB7;
-    private DatabaseReference sectorDB8;
+    Vector<String> sectors;
+    Vector<DatabaseReference> sectorsDB;
 
     private DatabaseReference userDataDB;
     public Interests userInterests;
@@ -145,17 +139,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap.OnCameraIdleListener cameraIdleListener=new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
-            double latitud=initiativesMap.getCameraPosition().target.latitude;
-            double longitud=initiativesMap.getCameraPosition().target.longitude;
-            String newSector=getSector(latitud,longitud);
-            if(!(newSector.equals(currentSector))){
+            //double latitud=initiativesMap.getCameraPosition().target.latitude;
+            //double longitud=initiativesMap.getCameraPosition().target.longitude;
+            //String newSector=getSector(latitud,longitud);
+            //initiativesMap.clear();
+            //removeListeners();
+            //loadInitiatives();
+            updateInitiatives();
+            /*if(!(newSector.equals(currentSector))){
                 initiativesMap.clear();
                 removeListeners();
                 initListeners(latitud,longitud);
                 currentSector=newSector;
 
 
-            }
+            }*/
 
 
         }
@@ -266,60 +264,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 userInterests=new Interests(false,false,false,false, false, false, false);
             }
 
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-            Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    };
-
-    //Initiatives Init Listener
-    ValueEventListener initiativesInitListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
-
-                Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-                float markerColor=HUE_AZURE;
-                Marker aux;
-                if(initiative.Estado==0){//aun no inicia
-                    markerColor=HUE_AZURE;
-                }
-                else if(initiative.Estado==1){//en curso
-                    markerColor=HUE_GREEN;
-                }
-                else if(initiative.Estado==2){//por terminar
-                    markerColor=HUE_RED;
-                }
-                else if(initiative.Estado==3){//termino
-                    continue;
-                }
-
-                aux=initiativesMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                        .icon(BitmapDescriptorFactory
-                                .defaultMarker(markerColor))
-                );
-                initiativeHashMap.put(aux.getId(),initiative);
-                markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                if(initiative.Tipo.equals("Comida")){
-                    aux.setVisible(comidaOn);
-                    comidaInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-                else if(initiative.Tipo.equals("Deporte")){
-                    aux.setVisible(deporteOn);
-                    deporteInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-                else if(initiative.Tipo.equals("Teatro")){
-                    aux.setVisible(teatroOn);
-                    teatroInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-                else if(initiative.Tipo.equals("Musica")){
-                    aux.setVisible(musicaOn);
-                    musicaInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-            }
         }
 
         @Override
@@ -447,65 +391,153 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     };
 
     public String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
     }
-    void initListeners(double latitude,double longitude){
-        int lat=(int)(latitude*100);
-        int lg=(int)(longitude*100);
-        String nb=Integer.toString(lat)+","+Integer.toString(lg);
-        String nb1=Integer.toString(lat+1)+","+Integer.toString(lg);
-        String nb2=Integer.toString(lat-1)+","+Integer.toString(lg);
-        String nb3=Integer.toString(lat)+","+Integer.toString(lg+1);
-        String nb4=Integer.toString(lat)+","+Integer.toString(lg-1);
-        String nb5=Integer.toString(lat+1)+","+Integer.toString(lg+1);
-        String nb6=Integer.toString(lat-1)+","+Integer.toString(lg-1);
-        String nb7=Integer.toString(lat+1)+","+Integer.toString(lg-1);
-        String nb8=Integer.toString(lat-1)+","+Integer.toString(lg+1);
-        sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb);
-        sectorDB1=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb1);
-        sectorDB2=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb2);
-        sectorDB3=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb3);
-        sectorDB4=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb4);
-        sectorDB5=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb5);
-        sectorDB6=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb6);
-        sectorDB7=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb7);
-        sectorDB8=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb8);
-        sectorDB.addChildEventListener(initiativesListener);
-        sectorDB1.addChildEventListener(initiativesListener);
-        sectorDB2.addChildEventListener(initiativesListener);
-        sectorDB3.addChildEventListener(initiativesListener);
-        sectorDB4.addChildEventListener(initiativesListener);
-        sectorDB5.addChildEventListener(initiativesListener);
-        sectorDB6.addChildEventListener(initiativesListener);
-        sectorDB7.addChildEventListener(initiativesListener);
-        sectorDB8.addChildEventListener(initiativesListener);
-    }
+
     void removeListeners(){
-        sectorDB.removeEventListener(initiativesListener);
-        sectorDB1.removeEventListener(initiativesListener);
-        sectorDB2.removeEventListener(initiativesListener);
-        sectorDB3.removeEventListener(initiativesListener);
-        sectorDB4.removeEventListener(initiativesListener);
-        sectorDB5.removeEventListener(initiativesListener);
-        sectorDB6.removeEventListener(initiativesListener);
-        sectorDB7.removeEventListener(initiativesListener);
-        sectorDB8.removeEventListener(initiativesListener);
         initiativeHashMap.clear();
         markerHashMap.clear();
         comidaInitiativeIDList.clear();
         teatroInitiativeIDList.clear();
         deporteInitiativeIDList.clear();
+        for(DatabaseReference aux2:sectorsDB){
+            aux2.removeEventListener(initiativesListener);
+        }
+        sectors.clear();
+        sectorsDB.clear();
+    }
+    void unloadSector(String sector){
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        String currentSector;
+        Initiative initiative;
+        Vector<String> keys=new Vector<>();
+        Vector<String> markerIds=new Vector<>();
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative=(Initiative)initiativeHashMap.get(pair.getValue().getId());
+            currentSector=getSector(initiative.Latitud,initiative.Longitud);
+            if(currentSector.equals(sector)){
+                keys.add(pair.getKey());
+                markerIds.add(pair.getValue().getId());
+                pair.getValue().remove();
+                if(initiative.Tipo.equals("Comida")){
+                    for(int i=0;i<comidaInitiativeIDList.size();i++){
+                        if(comidaInitiativeIDList.get(i).equals(pair.getKey())){
+                            comidaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    for(int i=0;i<deporteInitiativeIDList.size();i++){
+                        if(deporteInitiativeIDList.get(i).equals(pair.getKey())){
+                            deporteInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    for(int i=0;i<teatroInitiativeIDList.size();i++){
+                        if(teatroInitiativeIDList.get(i).equals(pair.getKey())){
+                            teatroInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    for(int i=0;i<musicaInitiativeIDList.size();i++){
+                        if(musicaInitiativeIDList.get(i).equals(pair.getKey())){
+                            musicaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        for(String aux:keys){
+            markerHashMap.remove(aux);
+        }
+        for(String aux:markerIds){
+            initiativeHashMap.remove(aux);
+        }
+    }
+    void updateInitiatives(){
+        LatLngBounds curScreen = initiativesMap.getProjection()
+                .getVisibleRegion().latLngBounds;
+        int south=(int)(curScreen.southwest.latitude*50);
+        int north=(int)(curScreen.northeast.latitude*50);
+        int west=(int)(curScreen.southwest.longitude*50);
+        int east=(int)(curScreen.northeast.longitude*50);
+        int southIterator=south;
+        int westIterator;
+        boolean sectorloaded;
+        int sectorSize=sectors.size();
+        Vector<String> sectors2=new Vector<>();
+        Vector<DatabaseReference> sectorsDB2=new Vector<>();
+        while(southIterator<=north){
+            westIterator=west;
+            while(westIterator<=east){
+                sectorloaded=false;
+                String sector=Integer.toString(southIterator)+","+Integer.toString(westIterator);
+                for(int i=0;i<sectorSize;i++){
+                    if(sectors.get(i).equals(sector)){
+                        sectorloaded=true;
+                        sectors2.add(sector);
+                        sectorsDB2.add(sectorsDB.get(i));
+
+                    }
+
+                }
+                if(!sectorloaded){
+                    sectors2.add(sector);
+                    DatabaseReference sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+sector);
+                    sectorDB.addChildEventListener(initiativesListener);
+                    sectorsDB2.add(sectorDB);
+                }
+                westIterator++;
+            }
+            southIterator++;
+        }
+        boolean del;
+        for(int i=0;i<sectors.size();i++){
+            del=true;
+            for(int j=0;j<sectors2.size();j++){
+                if(sectors2.get(j).equals(sectors.get(i))){
+                    del=false;
+                }
+            }
+            if(del){
+                unloadSector(sectors.get(i));
+            }
+        }
+        sectors.clear();
+        sectors=sectors2;
+        sectorsDB.clear();
+        sectorsDB=sectorsDB2;
     }
     void loadInitiatives(){
         LatLngBounds curScreen = initiativesMap.getProjection()
                 .getVisibleRegion().latLngBounds;
-        int south=(int)(curScreen.southwest.latitude*100);
-        int north=(int)(curScreen.northeast.latitude*100);
-        int west=(int)(curScreen.southwest.longitude*100);
-        int east=(int)(curScreen.northeast.longitude*100);
-
-
-
+        int south=(int)(curScreen.southwest.latitude*50);
+        int north=(int)(curScreen.northeast.latitude*50);
+        int west=(int)(curScreen.southwest.longitude*50);
+        int east=(int)(curScreen.northeast.longitude*50);
+        sectors=new Vector<>();
+        sectorsDB=new Vector<>();
+        int southIterator=south;
+        int westIterator;
+        while(southIterator<=north){
+            westIterator=west;
+            while(westIterator<=east){
+                String sector=Integer.toString(southIterator)+","+Integer.toString(westIterator);
+                sectors.add(sector);
+                DatabaseReference sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+sector);
+                sectorDB.addChildEventListener(initiativesListener);
+                sectorsDB.add(sectorDB);
+                westIterator++;
+            }
+            southIterator++;
+        }
     }
 
     @Override
@@ -551,6 +583,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         musicaInitiativeIDList = new Vector<>();
 
 
+
         //Maps
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
@@ -566,15 +599,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*View search = findViewById(R.id.search);
-        search.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                drawer.openDrawer(Gravity.LEFT);
-                return false;
-            }
-        });*/
         View llMenu = findViewById(R.id.linearLayoutMenu);
         llMenu.setOnTouchListener(new View.OnTouchListener() {
 
@@ -720,11 +744,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap = googleMap;
         start = new LocationGPS(getApplicationContext());
         final LatLng interested;
-        currentSector=getSector(start.getLatitud(),start.getLongitud());
-        initListeners(start.getLatitud(),start.getLongitud());
+
+        //initListeners(start.getLatitud(),start.getLongitud());
         //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
         //initiativesDB.addChildEventListener(initiativesListener);
-        initiativesMap.setOnCameraIdleListener(cameraIdleListener);
+
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
@@ -784,8 +808,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return false;
             }
         });
+        initiativesMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                loadInitiatives();
+                initiativesMap.setOnCameraIdleListener(cameraIdleListener);
+            }
+        });
     }
-
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {

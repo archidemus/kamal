@@ -67,7 +67,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     TextView fechaTermino;
 
     String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
     }
 
     @Override
