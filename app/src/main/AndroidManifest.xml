@@ -78,6 +78,10 @@
             </intent-filter>
         </service>
 
+        <activity
+            android:name=".Asdasdasd"
+            android:label="@string/title_activity_asdasdasd"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -73,8 +74,8 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     String key;
 
     Date dateInits, dateFins;
-    TextView fechaInicio;
-    TextView fechaTermino;
+    Button fechaInicio, fechaTermino, lugarIniciativa;
+
 
     String getSector(double latitude, double longitude){
         return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
@@ -86,8 +87,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
-        fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
-        fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
+        fechaTermino = (Button)findViewById(R.id.btn_fechaTermino);
+        fechaInicio = (Button)findViewById(R.id.btn_fechaInicio);
+        lugarIniciativa = (Button)findViewById(R.id.button5);
 
         final android.icu.util.Calendar calendar = android.icu.util.Calendar.getInstance(TimeZone.getTimeZone("GMT-3"), Locale.getDefault());
         final Calendar calendar2 = Calendar.getInstance();
@@ -106,6 +108,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando...");
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
 
     }
 
@@ -241,7 +247,6 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         }
         catch (Exception e) {
         }
-        Toast.makeText(CreateInitiativeActivity.this, "Posición obtenida", Toast.LENGTH_SHORT).show();
     }
 
     public void escogerImagen(View v){
@@ -264,6 +269,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 latitud=place.getLatLng().latitude;
                 longitud=place.getLatLng().longitude;
                 direccion=place.getAddress().toString();
+                lugarIniciativa.setText(direccion);
             }
         }
 
@@ -323,5 +329,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         dateDiff = dateInits.getTime() - dateFins.getTime();
         return dateDiff;
     }
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }
