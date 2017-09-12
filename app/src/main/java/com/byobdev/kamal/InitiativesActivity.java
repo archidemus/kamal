@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,6 +135,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean musicaOn=false;
     View vista;
     TextView txtv_user, txtv_mail;
+    RatingBar rtb;
     ImageView img_profile;
     String msg = "Inicia sesion para habilitar otras funciones";
     boolean opened_bottom;
@@ -187,6 +189,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Menu Header
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
+                rtb.setRating(3);
                 Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
             } else{
                 //Button visibility logout
@@ -771,6 +774,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         txtv_user = (TextView)view.findViewById(R.id.initiates_user);
         txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
+        rtb = (RatingBar) view.findViewById(R.id.inRatingMenu);
 
 
         userInterests=new Interests(false,false,false,false, false, false, false);
