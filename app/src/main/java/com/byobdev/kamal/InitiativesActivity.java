@@ -1,21 +1,24 @@
 package com.byobdev.kamal;
 
 import android.app.NotificationManager;
+
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -36,11 +39,21 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.byobdev.kamal.AppHelpers.DirectionsJSONParser;
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.Language;
+import com.akexorcist.googledirection.constant.RequestResult;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.constant.Unit;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Leg;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
+import com.byobdev.kamal.AppHelpers.ConnectivityStatus;
+import com.byobdev.kamal.AppHelpers.NotificationHelper;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
 import com.byobdev.kamal.DBClasses.User;
@@ -72,28 +85,17 @@ import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import org.json.JSONObject;
-
-import static android.R.attr.breakStrategy;
-import static android.R.attr.data;
-import static android.R.attr.id;
-import static android.R.id.primary;
-import static android.os.Build.VERSION_CODES.M;
 import static com.byobdev.kamal.R.id.map;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
@@ -103,29 +105,21 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
 
     //Maps
+    Polyline initiativePath;
+    boolean polylineActive;
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     //Others
-    Marker interestedMarker;
     FrameLayout shortDescriptionFragment;
     FrameLayout filterFragment;
     private float mLastPosY;
-    private Polyline polyline;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     LocationGPS start;
-    private String currentSector="";
-    private DatabaseReference sectorDB;
-    private DatabaseReference sectorDB1;
-    private DatabaseReference sectorDB2;
-    private DatabaseReference sectorDB3;
-    private DatabaseReference sectorDB4;
-    private DatabaseReference sectorDB5;
-    private DatabaseReference sectorDB6;
-    private DatabaseReference sectorDB7;
-    private DatabaseReference sectorDB8;
-
+    Vector<String> sectors;
+    Vector<DatabaseReference> sectorsDB;
+    LatLng lastMarkerPosition;
     private DatabaseReference userDataDB;
     public Interests userInterests;
     public HashMap initiativeHashMap;
@@ -139,7 +133,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean deporteOn=false;
     public boolean teatroOn=false;
     public boolean musicaOn=false;
-    public boolean skipinit=true;
     View vista;
     TextView txtv_user, txtv_mail;
     ImageView img_profile;
@@ -150,17 +143,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap.OnCameraIdleListener cameraIdleListener=new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
-            double latitud=initiativesMap.getCameraPosition().target.latitude;
-            double longitud=initiativesMap.getCameraPosition().target.longitude;
-            String newSector=getSector(latitud,longitud);
-            if(!(newSector.equals(currentSector))){
+            //double latitud=initiativesMap.getCameraPosition().target.latitude;
+            //double longitud=initiativesMap.getCameraPosition().target.longitude;
+            //String newSector=getSector(latitud,longitud);
+            //initiativesMap.clear();
+            //removeListeners();
+            //loadInitiatives();
+            updateInitiatives();
+            /*if(!(newSector.equals(currentSector))){
                 initiativesMap.clear();
                 removeListeners();
                 initListeners(latitud,longitud);
                 currentSector=newSector;
 
 
-            }
+            }*/
 
 
         }
@@ -184,10 +181,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
-                navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
-                //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                 //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
                 //Menu Header
                 txtv_user.setText(currentUser.getDisplayName());
@@ -198,10 +194,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
-                //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(false);
                 //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
                 //Menu Header
                 txtv_mail.setText(msg);
@@ -268,63 +263,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
             }
             else{
-                userInterests=new Interests(false,false,false,false, false, false, false);
+                userInterests=new Interests(false,false,false,false, false, true, false);
             }
 
-        }
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-            Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    };
-
-    //Initiatives Init Listener
-    ValueEventListener initiativesInitListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            for (DataSnapshot initiativeSnapshot : dataSnapshot.getChildren()) {
-
-                Initiative initiative=initiativeSnapshot.getValue(Initiative.class);
-                float markerColor=HUE_AZURE;
-                Marker aux;
-                if(initiative.Estado==0){//aun no inicia
-                    markerColor=HUE_AZURE;
-                }
-                else if(initiative.Estado==1){//en curso
-                    markerColor=HUE_GREEN;
-                }
-                else if(initiative.Estado==2){//por terminar
-                    markerColor=HUE_RED;
-                }
-                else if(initiative.Estado==3){//termino
-                    continue;
-                }
-
-                aux=initiativesMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                        .icon(BitmapDescriptorFactory
-                                .defaultMarker(markerColor))
-                );
-                initiativeHashMap.put(aux.getId(),initiative);
-                markerHashMap.put(initiativeSnapshot.getKey(),aux);
-                if(initiative.Tipo.equals("Comida")){
-                    aux.setVisible(comidaOn);
-                    comidaInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-                else if(initiative.Tipo.equals("Deporte")){
-                    aux.setVisible(deporteOn);
-                    deporteInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-                else if(initiative.Tipo.equals("Teatro")){
-                    aux.setVisible(teatroOn);
-                    teatroInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-                else if(initiative.Tipo.equals("Musica")){
-                    aux.setVisible(musicaOn);
-                    musicaInitiativeIDList.add(initiativeSnapshot.getKey());
-                }
-            }
         }
 
         @Override
@@ -437,7 +378,44 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+            Marker aux= (Marker)markerHashMap.get(dataSnapshot.getKey());
+            Initiative initiative=dataSnapshot.getValue(Initiative.class);
+            if(aux==null){return;}
+            initiativeHashMap.remove(aux.getId());
+            markerHashMap.remove(dataSnapshot.getKey());
+            aux.remove();
+            if(initiative.Tipo.equals("Comida")){
+                for(int i=0;i<comidaInitiativeIDList.size();i++){
+                    if(comidaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        comidaInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
+            else if(initiative.Tipo.equals("Deporte")){
+                for(int i=0;i<deporteInitiativeIDList.size();i++){
+                    if(deporteInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        deporteInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
+            else if(initiative.Tipo.equals("Teatro")){
+                for(int i=0;i<teatroInitiativeIDList.size();i++){
+                    if(teatroInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        teatroInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
+            else if(initiative.Tipo.equals("Musica")){
+                for(int i=0;i<musicaInitiativeIDList.size();i++){
+                    if(musicaInitiativeIDList.get(i).equals(dataSnapshot.getKey())){
+                        musicaInitiativeIDList.remove(i);
+                        break;
+                    }
+                }
+            }
         }
 
         @Override
@@ -452,66 +430,166 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     };
 
     public String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
     }
-    void initListeners(double latitude,double longitude){
-        int lat=(int)(latitude*100);
-        int lg=(int)(longitude*100);
-        String nb=Integer.toString(lat)+","+Integer.toString(lg);
-        String nb1=Integer.toString(lat+1)+","+Integer.toString(lg);
-        String nb2=Integer.toString(lat-1)+","+Integer.toString(lg);
-        String nb3=Integer.toString(lat)+","+Integer.toString(lg+1);
-        String nb4=Integer.toString(lat)+","+Integer.toString(lg-1);
-        String nb5=Integer.toString(lat+1)+","+Integer.toString(lg+1);
-        String nb6=Integer.toString(lat-1)+","+Integer.toString(lg-1);
-        String nb7=Integer.toString(lat+1)+","+Integer.toString(lg-1);
-        String nb8=Integer.toString(lat-1)+","+Integer.toString(lg+1);
-        sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb);
-        sectorDB1=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb1);
-        sectorDB2=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb2);
-        sectorDB3=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb3);
-        sectorDB4=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb4);
-        sectorDB5=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb5);
-        sectorDB6=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb6);
-        sectorDB7=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb7);
-        sectorDB8=FirebaseDatabase.getInstance().getReference("Initiatives/"+nb8);
-        sectorDB.addChildEventListener(initiativesListener);
-        sectorDB1.addChildEventListener(initiativesListener);
-        sectorDB2.addChildEventListener(initiativesListener);
-        sectorDB3.addChildEventListener(initiativesListener);
-        sectorDB4.addChildEventListener(initiativesListener);
-        sectorDB5.addChildEventListener(initiativesListener);
-        sectorDB6.addChildEventListener(initiativesListener);
-        sectorDB7.addChildEventListener(initiativesListener);
-        sectorDB8.addChildEventListener(initiativesListener);
-    }
+
     void removeListeners(){
-        sectorDB.removeEventListener(initiativesListener);
-        sectorDB1.removeEventListener(initiativesListener);
-        sectorDB2.removeEventListener(initiativesListener);
-        sectorDB3.removeEventListener(initiativesListener);
-        sectorDB4.removeEventListener(initiativesListener);
-        sectorDB5.removeEventListener(initiativesListener);
-        sectorDB6.removeEventListener(initiativesListener);
-        sectorDB7.removeEventListener(initiativesListener);
-        sectorDB8.removeEventListener(initiativesListener);
         initiativeHashMap.clear();
         markerHashMap.clear();
         comidaInitiativeIDList.clear();
         teatroInitiativeIDList.clear();
         deporteInitiativeIDList.clear();
+        for(DatabaseReference aux2:sectorsDB){
+            aux2.removeEventListener(initiativesListener);
+        }
+        sectors.clear();
+        sectorsDB.clear();
+    }
+    void unloadSector(String sector){
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        String currentSector;
+        Initiative initiative;
+        Vector<String> keys=new Vector<>();
+        Vector<String> markerIds=new Vector<>();
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative=(Initiative)initiativeHashMap.get(pair.getValue().getId());
+            currentSector=getSector(initiative.Latitud,initiative.Longitud);
+            if(currentSector.equals(sector)){
+                keys.add(pair.getKey());
+                markerIds.add(pair.getValue().getId());
+                pair.getValue().remove();
+                if(initiative.Tipo.equals("Comida")){
+                    for(int i=0;i<comidaInitiativeIDList.size();i++){
+                        if(comidaInitiativeIDList.get(i).equals(pair.getKey())){
+                            comidaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    for(int i=0;i<deporteInitiativeIDList.size();i++){
+                        if(deporteInitiativeIDList.get(i).equals(pair.getKey())){
+                            deporteInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    for(int i=0;i<teatroInitiativeIDList.size();i++){
+                        if(teatroInitiativeIDList.get(i).equals(pair.getKey())){
+                            teatroInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    for(int i=0;i<musicaInitiativeIDList.size();i++){
+                        if(musicaInitiativeIDList.get(i).equals(pair.getKey())){
+                            musicaInitiativeIDList.remove(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        for(String aux:keys){
+            markerHashMap.remove(aux);
+        }
+        for(String aux:markerIds){
+            initiativeHashMap.remove(aux);
+        }
+    }
+    void updateInitiatives(){
+        LatLngBounds curScreen = initiativesMap.getProjection()
+                .getVisibleRegion().latLngBounds;
+        int south=(int)(curScreen.southwest.latitude*50);
+        int north=(int)(curScreen.northeast.latitude*50);
+        int west=(int)(curScreen.southwest.longitude*50);
+        int east=(int)(curScreen.northeast.longitude*50);
+        int southIterator=south;
+        int westIterator;
+        boolean sectorloaded;
+        int sectorSize=sectors.size();
+        Vector<String> sectors2=new Vector<>();
+        Vector<DatabaseReference> sectorsDB2=new Vector<>();
+        while(southIterator<=north){
+            westIterator=west;
+            while(westIterator<=east){
+                sectorloaded=false;
+                String sector=Integer.toString(southIterator)+","+Integer.toString(westIterator);
+                for(int i=0;i<sectorSize;i++){
+                    if(sectors.get(i).equals(sector)){
+                        sectorloaded=true;
+                        sectors2.add(sector);
+                        sectorsDB2.add(sectorsDB.get(i));
+
+                    }
+
+                }
+                if(!sectorloaded){
+                    sectors2.add(sector);
+                    DatabaseReference sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+sector);
+                    sectorDB.addChildEventListener(initiativesListener);
+                    sectorsDB2.add(sectorDB);
+                }
+                westIterator++;
+            }
+            southIterator++;
+        }
+        boolean del;
+        for(int i=0;i<sectors.size();i++){
+            del=true;
+            for(int j=0;j<sectors2.size();j++){
+                if(sectors2.get(j).equals(sectors.get(i))){
+                    del=false;
+                }
+            }
+            if(del){
+                unloadSector(sectors.get(i));
+            }
+        }
+        sectors.clear();
+        sectors=sectors2;
+        sectorsDB.clear();
+        sectorsDB=sectorsDB2;
     }
     void loadInitiatives(){
         LatLngBounds curScreen = initiativesMap.getProjection()
                 .getVisibleRegion().latLngBounds;
-        int south=(int)(curScreen.southwest.latitude*100);
-        int north=(int)(curScreen.northeast.latitude*100);
-        int west=(int)(curScreen.southwest.longitude*100);
-        int east=(int)(curScreen.northeast.longitude*100);
-
-
-
+        int south=(int)(curScreen.southwest.latitude*50);
+        int north=(int)(curScreen.northeast.latitude*50);
+        int west=(int)(curScreen.southwest.longitude*50);
+        int east=(int)(curScreen.northeast.longitude*50);
+        sectors=new Vector<>();
+        sectorsDB=new Vector<>();
+        int southIterator=south;
+        int westIterator;
+        while(southIterator<=north){
+            westIterator=west;
+            while(westIterator<=east){
+                String sector=Integer.toString(southIterator)+","+Integer.toString(westIterator);
+                sectors.add(sector);
+                DatabaseReference sectorDB=FirebaseDatabase.getInstance().getReference("Initiatives/"+sector);
+                sectorDB.addChildEventListener(initiativesListener);
+                sectorsDB.add(sectorDB);
+                westIterator++;
+            }
+            southIterator++;
+        }
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(!ConnectivityStatus.isConnected(getApplicationContext())){
+                ((NotificationHelper)getApplication()).Setc(6);
+            }
+            else {
+            }
+
+        }
+    };
 
     //Toolbar set
     @Override
@@ -529,12 +607,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initiatives);
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         opened_bottom = true;
+        getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
         nm2.cancelAll();
@@ -568,7 +649,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         teatroInitiativeIDList= new Vector<>();
         deporteInitiativeIDList = new Vector<>();
         musicaInitiativeIDList = new Vector<>();
-
         //Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
@@ -592,15 +672,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*View search = findViewById(R.id.search);
-        search.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                drawer.openDrawer(Gravity.LEFT);
-                return false;
-            }
-        });*/
         View llMenu = findViewById(R.id.linearLayoutMenu);
         llMenu.setOnTouchListener(new View.OnTouchListener() {
 
@@ -746,11 +817,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap = googleMap;
         start = new LocationGPS(getApplicationContext());
         final LatLng interested;
-        currentSector=getSector(start.getLatitud(),start.getLongitud());
-        initListeners(start.getLatitud(),start.getLongitud());
-        //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
-        //initiativesDB.addChildEventListener(initiativesListener);
-        initiativesMap.setOnCameraIdleListener(cameraIdleListener);
+
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
@@ -766,8 +833,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(polyline!=null){
-                    polyline.remove();}
                 //Agrego datos del pin
                 Bundle bn = new Bundle();
                 Initiative initiative=(Initiative)initiativeHashMap.get(marker.getId());
@@ -783,10 +848,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //le paso los datos al fragment
                 DescriptionFragment DF = new DescriptionFragment();
                 DF.setArguments(bn);
-
-
-
-
+                lastMarkerPosition=marker.getPosition();
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                 trans.replace(R.id.shortDescriptionFragment, DF);
 
@@ -800,18 +862,17 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
-
-                String url = getDirectionsUrl(new LatLng(start.getLatitud(),start.getLongitud()), marker.getPosition());
-
-                DownloadTask downloadTask = new DownloadTask();
-
-                // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
                 return false;
             }
         });
+        initiativesMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                loadInitiatives();
+                initiativesMap.setOnCameraIdleListener(cameraIdleListener);
+            }
+        });
     }
-
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -852,10 +913,49 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return v.onTouchEvent(event);
         }
     }
+    public void showPath(View view){
+        if(polylineActive && initiativePath!=null){
+            initiativePath.remove();
+            polylineActive=false;
+        }
+        OvershootInterpolator interpolator;
+        interpolator = new OvershootInterpolator(1);
+        shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
+        vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
+        opened_bottom = true;
+        GoogleDirection.withServerKey(getString(R.string.google_maps_key))
+                .from(new LatLng(start.getLatitud(),start.getLongitud()))
+                .to(lastMarkerPosition)
+                .transportMode(TransportMode.WALKING)
+                .language(Language.SPANISH)
+                .unit(Unit.METRIC)
 
+                .execute(new DirectionCallback()
+                {
+                    @Override
+                    public void onDirectionSuccess(Direction direction, String rawBody) {
+                        String status = direction.getStatus();
+                        if(status.equals(RequestResult.OK)) {
+                            Route route = direction.getRouteList().get(0);
+                            Leg leg = route.getLegList().get(0);
+                            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+                            PolylineOptions polylineOptions = DirectionConverter.createPolyline(getApplicationContext(), directionPositionList, 5, Color.RED);
+                            initiativePath=initiativesMap.addPolyline(polylineOptions);
+                            polylineActive=true;
+                        }
+                    }
+
+                    @Override
+                    public void onDirectionFailure(Throwable t) {
+                        // Do something
+                    }
+                });
+
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -865,6 +965,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
             vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
             opened_bottom = true;
+        }
+        else if(polylineActive && initiativePath!=null){
+            initiativePath.remove();
+            polylineActive=false;
         }
         else {
             super.onBackPressed();
@@ -887,6 +991,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 getFragmentManager().popBackStack();
             }
         }
+        getApplicationContext().unregisterReceiver(receiver);
 
     }
 
@@ -899,24 +1004,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 Intent login = new Intent();
                 login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
                 startActivityForResult(login,0);
-            case R.id.initiates_logout:
-                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-                    new AlertDialog.Builder(this)
-                            .setTitle("Confirmacion de cierre de sesion")
-                            .setMessage("Seguro que quieres cerrar sesion?")
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                    user.unlink(user.getProviderId());
-                                    FirebaseAuth.getInstance().signOut();
-                                    LoginManager.getInstance().logOut();
-
-
-                                }})
-                            .setNegativeButton(android.R.string.no, null).show();
-                }
-                break;
             case R.id.initiates_initiative:
                 if(FirebaseAuth.getInstance().getCurrentUser()==null){
                     Intent intentMain3 = new Intent(this, LoginActivity.class);
@@ -964,165 +1051,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public void onResume() {
+
         super.onResume();  // Always call the superclass method first
+        getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
-
-
-
-
-
-
-
-
-
-
-    private class DownloadTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-
-            parserTask.execute(result);
-
-        }
-    }
-
-
-    /**
-     * A class to parse the Google Places in JSON format
-     */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList points = null;
-            PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList();
-                lineOptions = new PolylineOptions();
-
-                List<HashMap<String, String>> path = result.get(i);
-
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                lineOptions.addAll(points);
-                lineOptions.width(12);
-                lineOptions.color(Color.RED);
-                lineOptions.geodesic(true);
-
-            }
-
-// Drawing polyline in the Google Map for the i-th route
-            polyline=initiativesMap.addPolyline(lineOptions);
-        }
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-        String mode = "mode=driving";
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-
-        return url;
-    }
-
-    /**
-     * A method to download json data from url
-     */
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            urlConnection.connect();
-
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-
 
 }

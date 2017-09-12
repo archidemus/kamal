@@ -3,6 +3,7 @@
     <color name="Primary">#932C5E</color>
     <color name="PrimaryDark">#A5356A</color>
     <color name="Accent">#FDC539</color>
+    <color name="RedSession">#FF0000</color>
 
     <color name="textDarkPrimary">#000000</color>
     <color name="textDarkSecondary">#212121</color>
