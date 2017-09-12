@@ -2,7 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:checkableBehavior="single">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/group1">
         <!--<item
             android:id="@+id/initiates_search"
             android:icon="@drawable/ic_search_black_24dp"
@@ -14,25 +16,23 @@
             android:icon="@drawable/ic_menu_login"
             android:title="Iniciar Sesion" />
         <item
-            android:id="@+id/initiates_logout"
-            android:icon="@drawable/ic_menu_logout"
-            android:title="Cerrar Sesion" />
-        <item
             android:id="@+id/initiates_initiative"
             android:icon="@drawable/ic_menu_initiative"
             android:title="Crear Iniciativa" />
         <item
-            android:id="@+id/initiates_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Intereses" />
-        <item
             android:id="@+id/initiates_settings"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_list"
             android:title="Mis Iniciativas" />
+
+
         <!--<item
             android:id="@+id/initiates_recent"
             android:icon="@drawable/ic_menu_logout"
             android:title="Iniciativas Recientes" />-->
     </group>
+    <item
+        android:id="@+id/initiates_manage"
+        android:icon="@drawable/ic_build"
+        android:title="Configuración" />
 
 </menu>

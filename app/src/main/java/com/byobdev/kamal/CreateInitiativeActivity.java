@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.EventLogTags;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -197,7 +198,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
+            userInitiatives.child(key).child("Descripcion").setValue(description);
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
+            userInitiatives.child(key).child("image").setValue(key);
+
             finish();
         }
 

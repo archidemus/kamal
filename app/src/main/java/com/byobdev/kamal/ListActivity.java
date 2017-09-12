@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +59,8 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                 final String[] completarLista;
                 final String[] SectorLista;
                 final String[] keyLista;
+                final String[] descriptionLista;
+                final String[] imageLista;
                 int t=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
@@ -68,12 +71,16 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                 completarLista = new String[t];
                 keyLista = new String[t];
                 SectorLista = new String[t];
+                descriptionLista = new String[t];
+                imageLista = new String[t];
                 t=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
                     completarLista[t] = child.child("Titulo").getValue().toString();
                     SectorLista[t] = child.child("Sector").getValue().toString();
                     keyLista[t] = child.getKey().toString();
+                    descriptionLista[t] = child.child("Description").getValue().toString();
+                    imageLista[t] = child.child("Image").toString();
                     t++;
 
                 }
@@ -88,7 +95,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarLista);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListAdapter(ListActivity.this, dataItems,keyLista, SectorLista);
+                    adapter = new com.byobdev.kamal.ListAdapter(ListActivity.this, dataItems,keyLista, SectorLista,descriptionLista,imageLista);
                     adapter.setCustomButtonListner(ListActivity.this);
                     lista.setAdapter(adapter);
                 }

@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,6 +135,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean musicaOn=false;
     View vista;
     TextView txtv_user, txtv_mail;
+    RatingBar rtb;
     ImageView img_profile;
     String msg = "Inicia sesion para habilitar otras funciones";
     boolean opened_bottom;
@@ -180,26 +182,23 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
-                navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-                //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                 //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
                 //Menu Header
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
+                rtb.setRating(3);
                 Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
             } else{
                 //Button visibility logout
                 NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
                 //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(false);
-                //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                 //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
                 //Menu Header
                 txtv_mail.setText(msg);
@@ -775,6 +774,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         txtv_user = (TextView)view.findViewById(R.id.initiates_user);
         txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
+        rtb = (RatingBar) view.findViewById(R.id.inRatingMenu);
 
 
         userInterests=new Interests(false,false,false,false, false, false, false);
@@ -1004,24 +1004,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 Intent login = new Intent();
                 login.setClassName("com.byobdev.kamal","com.byobdev.kamal.LoginActivity");
                 startActivityForResult(login,0);
-            case R.id.initiates_logout:
-                if(FirebaseAuth.getInstance().getCurrentUser()!=null){
-                    new AlertDialog.Builder(this)
-                            .setTitle("Confirmacion de cierre de sesion")
-                            .setMessage("Seguro que quieres cerrar sesion?")
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                    user.unlink(user.getProviderId());
-                                    FirebaseAuth.getInstance().signOut();
-                                    LoginManager.getInstance().logOut();
-
-
-                                }})
-                            .setNegativeButton(android.R.string.no, null).show();
-                }
-                break;
             case R.id.initiates_initiative:
                 if(FirebaseAuth.getInstance().getCurrentUser()==null){
                     Intent intentMain3 = new Intent(this, LoginActivity.class);
