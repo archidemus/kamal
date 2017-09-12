@@ -183,6 +183,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                 //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                 //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
                 //Menu Header
@@ -197,6 +198,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 navigationView.getMenu().findItem(R.id.initiates_logout).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
                 navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(false);
                 //navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
                 //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
                 //Menu Header
