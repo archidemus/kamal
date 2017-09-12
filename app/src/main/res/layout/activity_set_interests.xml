@@ -19,7 +19,7 @@
         android:layout_height="50dp"
         android:text="   Notificaciones"
         android:gravity="center_vertical"
-        android:background="@color/textLightSecondary"
+        android:background="@color/titleMenuBackground"
         android:textSize="22sp"/>
 
     <TextView
@@ -140,7 +140,7 @@
         android:text="   Cuenta"
         android:layout_marginTop="10dp"
         android:gravity="center_vertical"
-        android:background="@color/textLightSecondary"
+        android:background="@color/titleMenuBackground"
         android:textSize="22sp"/>
 
     <TextView

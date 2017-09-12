@@ -195,6 +195,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             }
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
+
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Kamal</string>
     <string name="title_activity_initiatives">Map</string>
-    <string name="log_in_with">Log in with</string>
+    <string name="log_in_with">Iniciar con</string>
     <string name="or">Or</string>
     <string name="email">Email</string>
     <string name="password">Password</string>

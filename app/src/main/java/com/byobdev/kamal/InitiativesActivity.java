@@ -97,6 +97,7 @@ import java.util.Map;
 import java.util.Vector;
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
 import static com.byobdev.kamal.R.id.map;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
@@ -137,6 +138,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     TextView txtv_user, txtv_mail;
     RatingBar rtb;
     ImageView img_profile;
+    View linea;
     String msg = "Inicia sesion para habilitar otras funciones";
     boolean opened_bottom;
     public int authListenerCounter=0;
@@ -190,6 +192,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
                 rtb.setRating(3);
+                linea.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
             } else{
                 //Button visibility logout
@@ -203,6 +206,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Menu Header
                 txtv_mail.setText(msg);
                 txtv_user.setText("");
+                rtb.setRating(0);
+                linea.setVisibility(View.GONE);
                 img_profile.setImageResource(android.R.color.transparent);
                 //Remove Read interests listener
                 if(authListenerCounter>0){
@@ -775,6 +780,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
         img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
         rtb = (RatingBar) view.findViewById(R.id.inRatingMenu);
+        linea = (View) view.findViewById(R.id.linea);
 
 
         userInterests=new Interests(false,false,false,false, false, false, false);

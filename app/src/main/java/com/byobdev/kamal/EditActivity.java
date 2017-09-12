@@ -213,21 +213,7 @@ public class EditActivity extends AppCompatActivity {
             }
             Intent i = getIntent();
             FirebaseDatabase.getInstance().getReference("Initiatives").child(i.getStringExtra("Sector")).child(IDanterior).removeValue();
-            mDatabase2 = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    // for (DataSnapshot child : snapshot.getChildren())
-                    // Create a LinearLayout element
-                    snapshot.child(IDanterior).getRef().removeValue();
 
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-
-            });
             if(imagen != null){
                 imageEdit = key;
             }
@@ -235,8 +221,8 @@ public class EditActivity extends AppCompatActivity {
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,imageEdit ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
-            userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
+            userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
             finish();
             Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
 
