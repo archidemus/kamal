@@ -25,194 +25,198 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="59dp"
-        android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"
-            android:layout_weight="0.00">
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="69dp"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.00">
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="242dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:text="Título"
-                    android:textColor="@color/Primary"
-                    tools:text="Nombre" />
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/titleInput"
-                    android:layout_width="243dp"
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="242dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:text="Título"
+                        android:textColor="@color/Primary"
+                        tools:text="Nombre" />
+
+                    <EditText
+                        android:id="@+id/titleInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autoLink="none"
+                        android:inputType="text" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:paddingRight="199dp" />
+                    android:orientation="vertical"
+                    android:weightSum="1">
 
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo"
+                        android:textColor="@color/Primary" />
 
+                    <Spinner
+                        android:id="@+id/spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1.05"
+                        android:gravity="center"
+                        android:minWidth="120dp"
+                        android:transitionGroup="false" />
+                </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="167dp"
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Descripción"
+                android:textColor="@color/Primary" />
+
+            <EditText
+                android:id="@+id/descriptionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.00"
+                android:inputType="textMultiLine" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_weight="0.00"
                 android:orientation="vertical"
                 android:weightSum="1">
 
                 <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:text="Tipo"
-                    android:textColor="@color/Primary" />
-
-                <Spinner
-                    android:id="@+id/spinner"
+                    android:id="@+id/txt_place_create"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1.05"
-                    android:gravity="center"
-                    android:minWidth="120dp"
-                    android:transitionGroup="false" />
+                    android:text="Lugar"
+                    android:textColor="@color/Primary" />
+
+                <Button
+                    android:id="@+id/button5"
+                    style="@android:style/Widget.DeviceDefault.Light.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:allowUndo="false"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right"
+                    android:drawableRight="@drawable/ic_keyboard_arrow_right"
+                    android:maxLines="2"
+                    android:maxWidth="180dp"
+                    android:onClick="obtenerGPS" />
+
             </LinearLayout>
-        </LinearLayout>
 
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Descripción"
-            android:textColor="@color/Primary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/descriptionInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.00"
-            android:inputType="textMultiLine"
-            android:paddingBottom="20dp" />
+                <TextView
+                    android:id="@+id/txt_from_create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Desde"
+                    android:textColor="@color/Primary" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_weight="0.00"
-            android:orientation="vertical"
-            android:weightSum="1">
+                <Button
+                    android:id="@+id/btn_fechaInicio"
+                    style="@android:style/Widget.DeviceDefault.Light.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:allowUndo="false"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right"
+                    android:drawableRight="@drawable/ic_keyboard_arrow_right"
+                    android:maxWidth="180dp"
+                    android:onClick="showDatePickerDialog" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/txt_place_create"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lugar"
-                android:textColor="@color/Primary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_until_create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hasta"
+                    android:textColor="@color/Primary" />
+
+                <Button
+                    android:id="@+id/btn_fechaTermino"
+                    style="@android:style/Widget.DeviceDefault.Light.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:allowUndo="false"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right"
+                    android:drawableRight="@drawable/ic_keyboard_arrow_right"
+                    android:maxWidth="180dp"
+                    android:onClick="showDatePickerDialog2" />
+
+
+            </LinearLayout>
+
 
             <Button
-                android:id="@+id/button5"
-                style="@android:style/Widget.DeviceDefault.Light.EditText"
+                android:id="@+id/elegirImagen"
                 android:layout_width="match_parent"
-                android:layout_height="75dp"
-                android:allowUndo="false"
-                android:drawableEnd="@drawable/ic_keyboard_arrow_right"
-                android:maxLines="2"
-                android:maxWidth="180dp"
-                android:onClick="obtenerGPS"
-                android:drawableRight="@drawable/ic_keyboard_arrow_right" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/txt_from_create"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Desde"
-                android:textColor="@color/Primary" />
+                android:layout_height="37dp"
+                android:layout_margin="@dimen/fab_margin"
+                android:layout_weight="0.00"
+                android:gravity="center"
+                android:onClick="escogerImagen"
+                android:text="subir Imagen" />
 
             <Button
-                android:id="@+id/btn_fechaInicio"
-                style="@android:style/Widget.DeviceDefault.Light.EditText"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:allowUndo="false"
-                android:drawableEnd="@drawable/ic_keyboard_arrow_right"
-                android:drawableRight="@drawable/ic_keyboard_arrow_right"
-                android:maxWidth="180dp"
-                android:onClick="showDatePickerDialog" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/txt_until_create"
+                android:id="@+id/createInitiativeButtonFinal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hasta"
-                android:textColor="@color/Primary" />
-
-            <Button
-                android:id="@+id/btn_fechaTermino"
-                style="@android:style/Widget.DeviceDefault.Light.EditText"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:allowUndo="false"
-                android:drawableEnd="@drawable/ic_keyboard_arrow_right"
-                android:drawableRight="@drawable/ic_keyboard_arrow_right"
-                android:maxWidth="180dp"
-                android:onClick="showDatePickerDialog2" />
-
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:onClick="createInitiative"
+                android:text="Crear" />
 
         </LinearLayout>
-
-
-        <Button
-            android:id="@+id/elegirImagen"
-            android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:layout_margin="@dimen/fab_margin"
-            android:layout_weight="0.00"
-            android:gravity="center"
-            android:onClick="escogerImagen"
-            android:text="subir Imagen" />
-
-        <Button
-            android:id="@+id/createInitiativeButtonFinal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/fab_margin"
-            android:onClick="createInitiative"
-            android:text="Crear" />
-
-    </LinearLayout>
-
+    </ScrollView>
 
 
 </android.support.design.widget.CoordinatorLayout>

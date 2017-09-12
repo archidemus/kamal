@@ -76,7 +76,7 @@ public class EditActivity extends AppCompatActivity {
     long dateDiff;
 
     String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
     }
 
     @Override
@@ -119,7 +119,7 @@ public class EditActivity extends AppCompatActivity {
         IDanterior = i.getStringExtra("IDanterior");
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
-        key=mDatabase.push().getKey();
+        key=IDanterior;
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando....");
 

@@ -32,7 +32,6 @@
         <item>Deporte</item>
         <item>Comida</item>
     </string-array>
-    <string name="title_activity_creates_all">CreatesALL</string>
 
     <!-- Strings related to Settings -->
 
@@ -105,7 +104,12 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="title_activity_asdasdasd">Asdasdasd</string>
+
+    <string-array name="Distancia_Notificacion">
+        <item>500 metros</item>
+        <item>3 kilómetros</item>
+        <item>10 kilómetros</item>
+    </string-array>
 
 
 </resources>

@@ -59,7 +59,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     ArrayAdapter<CharSequence> adapter;
     Place place;
 
-    private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy        HH:mm");
     long dateDiff;
 
     private DatabaseReference mDatabase;
@@ -78,7 +78,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
 
     String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*100))+","+Integer.toString((int)(longitude*100));
+        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
     }
 
     @Override
@@ -91,10 +91,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         fechaInicio = (Button)findViewById(R.id.btn_fechaInicio);
         lugarIniciativa = (Button)findViewById(R.id.button5);
 
-        final android.icu.util.Calendar calendar = android.icu.util.Calendar.getInstance(TimeZone.getTimeZone("GMT-3"), Locale.getDefault());
         final Calendar calendar2 = Calendar.getInstance();
-        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
-        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
+        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -130,16 +129,14 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             else {
                 fechaInicio.setText(mFormatter.format(date));
             }
-            Toast.makeText(CreateInitiativeActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
+
         }
 
         // Optional cancel listener
         @Override
         public void onDateTimeCancel()
         {
-            Toast.makeText(CreateInitiativeActivity.this,
-                    "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
+
         }
     };
 
@@ -155,16 +152,13 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 fechaTermino.setText(mFormatter.format(date));
             }
 
-            Toast.makeText(CreateInitiativeActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
         }
 
         // Optional cancel listener
         @Override
         public void onDateTimeCancel()
         {
-            Toast.makeText(CreateInitiativeActivity.this,
-                    "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
+
         }
     };
 
