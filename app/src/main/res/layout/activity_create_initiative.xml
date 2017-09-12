@@ -28,15 +28,15 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="69dp">
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="69dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -67,7 +67,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autoLink="none"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:textSize="16sp" />
 
 
                 </LinearLayout>
@@ -111,7 +112,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.00"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine"
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -132,13 +134,14 @@
                     android:id="@+id/button5"
                     style="@android:style/Widget.DeviceDefault.Light.EditText"
                     android:layout_width="match_parent"
-                    android:layout_height="75dp"
+                    android:layout_height="wrap_content"
                     android:allowUndo="false"
                     android:drawableEnd="@drawable/ic_keyboard_arrow_right"
                     android:drawableRight="@drawable/ic_keyboard_arrow_right"
-                    android:maxLines="2"
+                    android:maxLines="3"
                     android:maxWidth="180dp"
-                    android:onClick="obtenerGPS" />
+                    android:onClick="obtenerGPS"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -165,7 +168,8 @@
                     android:drawableEnd="@drawable/ic_keyboard_arrow_right"
                     android:drawableRight="@drawable/ic_keyboard_arrow_right"
                     android:maxWidth="180dp"
-                    android:onClick="showDatePickerDialog" />
+                    android:onClick="showDatePickerDialog"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -190,30 +194,29 @@
                     android:drawableEnd="@drawable/ic_keyboard_arrow_right"
                     android:drawableRight="@drawable/ic_keyboard_arrow_right"
                     android:maxWidth="180dp"
-                    android:onClick="showDatePickerDialog2" />
+                    android:onClick="showDatePickerDialog2"
+                    android:textSize="16sp" />
 
 
             </LinearLayout>
 
-
+            <TextView
+                android:id="@+id/txt_img_create"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Imágenes"
+                android:textColor="@color/Primary" />
             <Button
                 android:id="@+id/elegirImagen"
-                android:layout_width="match_parent"
+                style="@android:style/Widget.DeviceDefault.MediaRouteButton"
+                android:layout_width="wrap_content"
                 android:layout_height="37dp"
                 android:layout_margin="@dimen/fab_margin"
                 android:layout_weight="0.00"
                 android:gravity="center"
                 android:onClick="escogerImagen"
                 android:text="subir Imagen" />
-
-            <Button
-                android:id="@+id/createInitiativeButtonFinal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/fab_margin"
-                android:onClick="createInitiative"
-                android:text="Crear" />
 
         </LinearLayout>
     </ScrollView>
