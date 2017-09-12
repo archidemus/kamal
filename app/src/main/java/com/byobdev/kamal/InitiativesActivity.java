@@ -109,6 +109,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     //Others
     Marker interestedMarker;
     FrameLayout shortDescriptionFragment;
+    FrameLayout filterFragment;
     private float mLastPosY;
     private Polyline polyline;
     //int notificationID = 10;
@@ -579,6 +580,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //Short description fragment set
         shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
         shortDescriptionFragment.setOnTouchListener(this);
+        //Filter
+        filterFragment = (FrameLayout) findViewById(R.id.filter);
+        filterFragment.setOnTouchListener(this);
 
         //Menu
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
