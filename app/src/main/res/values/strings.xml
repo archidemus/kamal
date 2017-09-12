@@ -32,6 +32,11 @@
         <item>Deporte</item>
         <item>Comida</item>
     </string-array>
+    <string-array name="Distancia_Notificacion">
+        <item>500 metros</item>
+        <item>3 kilómetros</item>
+        <item>10 kilómetros</item>
+    </string-array>
 
 
 </resources>
