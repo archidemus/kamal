@@ -64,7 +64,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_bottom_menu" />
+                            app:srcCompat="@drawable/ic_bottom_menu" />
                     </LinearLayout>
                     <View
                         android:layout_width="1dp"
@@ -88,7 +88,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_bottom_food" />
+                                    app:srcCompat="@drawable/ic_bottom_food" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_bottom_theater" />
+                                    app:srcCompat="@drawable/ic_bottom_theater" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -139,7 +139,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_bottom_music" />
+                                    app:srcCompat="@drawable/ic_bottom_music" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"

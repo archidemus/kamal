@@ -5,7 +5,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".AppHelpers.NotificationHelper"
         android:allowBackup="true"
@@ -30,27 +31,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InitiativesActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".LoginActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SetInterestsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CreateInitiativeActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ListActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".EditActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".InitiativesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SetInterestsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CreateInitiativeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EditActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.facebook.CustomTabActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -61,19 +68,16 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".NotificationServices.MyFirebaseMessagingService">
+        <service android:name=".NotificationServices.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".NotificationServices.MyFirebaseInstanceIDService">
+        <service android:name=".NotificationServices.MyFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
 
     </application>
 

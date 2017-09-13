@@ -1,15 +1,20 @@
 package com.byobdev.kamal;
 
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.icu.util.TimeZone;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.EventLogTags;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -58,6 +63,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Button button;
     ArrayAdapter<CharSequence> adapter;
     Place place;
+    MenuItem check;
 
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     long dateDiff;
@@ -74,11 +80,33 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     String key;
 
     Date dateInits, dateFins;
-    TextView fechaInicio;
-    TextView fechaTermino;
+    Button fechaInicio, fechaTermino, lugarIniciativa;
+
 
     String getSector(double latitude, double longitude){
         return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_config, menu);
+        check = menu.findItem(R.id.done);
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+        check.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                CreateInitiativeActivity.this.createInitiative(item);
+                return true;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -87,13 +115,13 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
-        fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
-        fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
+        fechaTermino = (Button)findViewById(R.id.btn_fechaTermino);
+        fechaInicio = (Button)findViewById(R.id.btn_fechaInicio);
+        lugarIniciativa = (Button)findViewById(R.id.button5);
 
-        final android.icu.util.Calendar calendar = android.icu.util.Calendar.getInstance(TimeZone.getTimeZone("GMT-3"), Locale.getDefault());
         final Calendar calendar2 = Calendar.getInstance();
-        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
-        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
+        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -107,6 +135,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando...");
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+
 
     }
 
@@ -138,7 +172,6 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     //Listener boton fecha Termino
     private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
-
         @Override
         public void onDateTimeSet(Date date)
         {
@@ -159,24 +192,17 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         }
     };
 
-    public void createInitiative(View view){
+    public void createInitiative(MenuItem menuItem){
         if( titulo.getText().toString().equals("")){
-
-
             titulo.setError( "Título Obligatorio" );
 
         }else if(latitud == null){
-
             Toast.makeText(CreateInitiativeActivity.this, "Ubicación Obligatoria", Toast.LENGTH_SHORT).show();
         }else if(description.getText().toString().equals("")){
-
             description.setError("La descripción es requerida!");
-
         }
         else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-
-
             String fechaInit = fechaInicio.getText().toString();
             String fechaFin = fechaTermino.getText().toString();
             try {
@@ -198,7 +224,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
-            userInitiatives.child(key).child("Descripcion").setValue(description);
+            userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             userInitiatives.child(key).child("image").setValue(key);
 
@@ -259,10 +285,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this,data);
+                place = PlacePicker.getPlace(this,data);
                 latitud=place.getLatLng().latitude;
                 longitud=place.getLatLng().longitude;
                 direccion=place.getAddress().toString();
+                lugarIniciativa.setText(direccion);
             }
         }
 
@@ -322,5 +349,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         dateDiff = dateInits.getTime() - dateFins.getTime();
         return dateDiff;
     }
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }

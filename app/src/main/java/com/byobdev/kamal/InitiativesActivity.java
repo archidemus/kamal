@@ -777,7 +777,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         rtb = (RatingBar) view.findViewById(R.id.inRatingMenu);
 
 
-        userInterests=new Interests(false,false,false,false, false, false, false);
+        userInterests=new Interests(false,false,false,false, false, true, false);
         vista= findViewById(R.id.bottom_menu);
 
     }

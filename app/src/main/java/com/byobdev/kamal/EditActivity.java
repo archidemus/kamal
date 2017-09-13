@@ -56,7 +56,7 @@ public class EditActivity extends AppCompatActivity {
     Spinner spinner;
     ArrayAdapter<CharSequence> adapter;
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
+    Place place;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabase2;
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
@@ -213,21 +213,6 @@ public class EditActivity extends AppCompatActivity {
             }
             Intent i = getIntent();
             FirebaseDatabase.getInstance().getReference("Initiatives").child(i.getStringExtra("Sector")).child(IDanterior).removeValue();
-            mDatabase2 = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    // for (DataSnapshot child : snapshot.getChildren())
-                    // Create a LinearLayout element
-                    snapshot.child(IDanterior).getRef().removeValue();
-
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-
-            });
             if(imagen != null){
                 imageEdit = key;
             }
@@ -236,9 +221,9 @@ public class EditActivity extends AppCompatActivity {
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
+            userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
-            userInitiatives.child(key).child("image").setValue(imagen);
-            userInitiatives.child(key).child("Descripcion").setValue(description);
+            userInitiatives.child(key).child("image").setValue(key);
             finish();
             Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
 
@@ -299,7 +284,7 @@ public class EditActivity extends AppCompatActivity {
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this,data);
+                place = PlacePicker.getPlace(this,data);
                 latitud=place.getLatLng().latitude;
                 longitud=place.getLatLng().longitude;
                 direccion=place.getAddress().toString();
