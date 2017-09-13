@@ -805,6 +805,25 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        iniciativaComida.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (comidaOn) {
+                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    comidaOn = false;
+                    for (String aux : comidaInitiativeIDList) {
+                        ((Marker) markerHashMap.get(aux)).setVisible(false);
+                    }
+                } else {
+                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    comidaOn = true;
+                    for (String aux : comidaInitiativeIDList) {
+                        ((Marker) markerHashMap.get(aux)).setVisible(true);
+                    }
+                }
+                return false;
+            }
+        });
 
         iniciativaDeportes.setOnTouchListener(new View.OnTouchListener() {
             @Override

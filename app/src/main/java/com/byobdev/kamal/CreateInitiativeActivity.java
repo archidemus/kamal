@@ -200,7 +200,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         }else if(description.getText().toString().equals("")){
             description.setError("La descripción es requerida!");
         }else if(dateDifference(fechainicioprueba,fechaPrueba) < 0){
-            Toast.makeText(this,"No puede crear una Iniciativa antes de la hora actual",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"No puede crear una Iniciativa antes de la fecha actual",Toast.LENGTH_LONG).show();
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fechaTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
         }else{
