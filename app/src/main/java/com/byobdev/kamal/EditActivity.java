@@ -186,8 +186,6 @@ public class EditActivity extends AppCompatActivity {
             else {
                 fInicio.setText(mFormatter.format(date));
             }
-            Toast.makeText(EditActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
         }
 
         // Optional cancel listener
@@ -211,9 +209,6 @@ public class EditActivity extends AppCompatActivity {
             else{
                 fTermino.setText(mFormatter.format(date));
             }
-
-            Toast.makeText(EditActivity.this,
-                    mFormatter.format(date), Toast.LENGTH_SHORT).show();
         }
 
         // Optional cancel listener
@@ -227,7 +222,7 @@ public class EditActivity extends AppCompatActivity {
 
     public void editInitiative(MenuItem menuItem) throws ParseException {
         Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
-        String fechainicioprueba = fTermino.getText().toString();
+        String fechainicioprueba = fInicio.getText().toString();
 
         if( titulo.getText().toString().equals("")){
 
@@ -242,7 +237,9 @@ public class EditActivity extends AppCompatActivity {
             description.setError("La descripción es requerida!");
 
         }else if(dateDifference(fechainicioprueba,fechaPrueba) <= 0){
-            Toast.makeText(this,"La hora de término tiene que ser mayor a la actual",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"La fecha de inicio tiene que ser mayor a la actual",Toast.LENGTH_LONG).show();
+        }else if(dateDifference(fechainicioprueba,mFormatter.parse(fTermino.getText().toString())) == 0) {
+            Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
         }else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
