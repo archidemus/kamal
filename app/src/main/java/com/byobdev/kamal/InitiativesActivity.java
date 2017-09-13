@@ -612,8 +612,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = true;
             }
-
-            return true;
+        }else if (item.getItemId()== R.id.toolbar_ir) {
+            showPath(descriptionFragment);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -805,26 +805,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        iniciativaComida.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (comidaOn) {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
-                    comidaOn = false;
-                    for (String aux : comidaInitiativeIDList) {
-                        ((Marker) markerHashMap.get(aux)).setVisible(false);
-                    }
-                } else {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
-                    comidaOn = true;
-                    for (String aux : comidaInitiativeIDList) {
-                        ((Marker) markerHashMap.get(aux)).setVisible(true);
-                    }
-                }
-                return false;
-            }
-        });
-
 
         iniciativaDeportes.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -945,7 +925,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Log.e(TAG, "Style parsing failed.");
         }
 
-        //Dummy points
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             initiativesMap.setMyLocationEnabled(true);
         }

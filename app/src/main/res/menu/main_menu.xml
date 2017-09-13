@@ -9,5 +9,6 @@
     <item
         android:id="@+id/toolbar_ir"
         android:title="Ir!"
-        app:showAsAction="always|withText"/>
+        app:showAsAction="always|withText"
+        />
 </menu>
