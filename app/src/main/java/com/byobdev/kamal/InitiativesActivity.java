@@ -2,10 +2,8 @@ package com.byobdev.kamal;
 
 import android.app.NotificationManager;
 
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -13,10 +11,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
@@ -25,9 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -37,9 +31,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +55,6 @@ import com.byobdev.kamal.DBClasses.User;
 import com.byobdev.kamal.NotificationServices.MyFirebaseInstanceIDService;
 import com.byobdev.kamal.NotificationServices.MyFirebaseMessagingService;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
-import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -140,7 +133,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean musicaOn = false;
     View vista;
     TextView txtv_user, txtv_mail;
+    RatingBar rtb;
     ImageView img_profile;
+    View linea;
     String msg = "Inicia sesion para habilitar otras funciones";
     boolean opened_bottom;
     public int authListenerCounter = 0;
@@ -193,6 +188,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Menu Header
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
+                rtb.setRating(3);
+                linea.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
             } else {
                 //Button visibility logout
@@ -206,6 +203,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Menu Header
                 txtv_mail.setText(msg);
                 txtv_user.setText("");
+                rtb.setRating(0);
+                linea.setVisibility(View.GONE);
                 img_profile.setImageResource(android.R.color.transparent);
                 //Remove Read interests listener
                 if (authListenerCounter > 0) {
@@ -592,6 +591,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
 
         }else if (item.getItemId()== R.id.toolbar_filter) {
+            OvershootInterpolator interpolator;
+            interpolator = new OvershootInterpolator(1);
+            if(opened_bottom){
+                vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                opened_bottom = false;
+            } else{
+                vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
+                opened_bottom = true;
+            }
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -619,7 +628,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        opened_bottom = true;
+        opened_bottom = false;
         getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
@@ -760,9 +769,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         //User & mail headers
-        txtv_user = (TextView) view.findViewById(R.id.initiates_user);
-        txtv_mail = (TextView) view.findViewById(R.id.initiates_mail);
-        img_profile = (ImageView) view.findViewById(R.id.initiates_img_profile);
+
+        txtv_user = (TextView)view.findViewById(R.id.initiates_user);
+        txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
+        img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
+        rtb = (RatingBar) view.findViewById(R.id.inRatingMenu);
+        linea = (View) view.findViewById(R.id.linea);
+
 
 
         userInterests = new Interests(false, false, false, false, false, false, false);
@@ -832,7 +845,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 bn.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
                 bn.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
                 //le paso los datos al fragment
-                DescriptionFragment DF = new DescriptionFragment();
+                PreviewFragment DF = new PreviewFragment();
                 DF.setArguments(bn);
                 lastMarkerPosition = marker.getPosition();
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -843,8 +856,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     OvershootInterpolator interpolator;
                     interpolator = new OvershootInterpolator(1);
                     shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
-                    vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-                    opened_bottom = false;
+                    if (opened_bottom){
+                        vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                        opened_bottom = false;
+                    }
                 }
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
@@ -886,12 +901,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return true;
             case (MotionEvent.ACTION_UP):
                 v.getLocationOnScreen(fragment_pos);
-                if (fragment_pos[1] >= maxY - 700) {
+                if (fragment_pos[1] >= maxY - 440) {
                     OvershootInterpolator interpolator;
                     interpolator = new OvershootInterpolator(1);
                     shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
-                    vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
-                    opened_bottom = true;
                     return true;
                 }
                 return true;
@@ -945,12 +958,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!opened_bottom) {
+        } else if (opened_bottom) {
             OvershootInterpolator interpolator;
             interpolator = new OvershootInterpolator(1);
-            shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
-            vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
-            opened_bottom = true;
+            vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+            opened_bottom = false;
         } else if (polylineActive && initiativePath != null) {
             initiativePath.remove();
             polylineActive = false;
