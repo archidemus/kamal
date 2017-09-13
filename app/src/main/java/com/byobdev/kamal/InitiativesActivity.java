@@ -880,8 +880,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
 
-        userInterests = new Interests(false, false, false, false, false, false, false);
-        vista = findViewById(R.id.bottom_menu);
+        userInterests=new Interests(false,false,false,false, false, true, false);
+        vista= findViewById(R.id.bottom_menu);
 
     }
 

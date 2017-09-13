@@ -1,13 +1,21 @@
 package com.byobdev.kamal;
 
 import android.content.Context;
+import android.media.Image;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -20,8 +28,7 @@ public class ListAdapter extends ArrayAdapter<String>{
     customButtonListener customListner;
 
     public interface customButtonListener {
-        public void onButtonClickListner(int position,String[] keyLista, String[] sectorLista);
-        public void onButtonClickListner2(int position,String[] keyLista, String[] sectorLista);
+        void getPosition1234(int position);
     }
 
     public void setCustomButtonListner(customButtonListener listener) {
@@ -29,16 +36,16 @@ public class ListAdapter extends ArrayAdapter<String>{
     }
 
     private Context context;
-    private ArrayList<String> data = new ArrayList<String>();
-    private String[] keyLista;
-    private String[] sectorLista;
+    private String[] imageLista;
+    private String[] descripcionLista;
+    private ListView lista;
 
-    public ListAdapter(Context context, ArrayList<String> dataItem, String[] keyLista, String[] sectorLista) {
+    public ListAdapter(Context context, ArrayList<String> dataItem, String[] keyLista, String[] sectorLista,String[] descripcionLista,String[] imageLista,ListView lista) {
         super(context, R.layout.activity_listview, dataItem);
-        this.data = dataItem;
         this.context = context;
-        this.keyLista = keyLista;
-        this.sectorLista = sectorLista;
+        this.imageLista=imageLista;
+        this.descripcionLista=descripcionLista;
+        this.lista=lista;
     }
 
     @Override
@@ -49,40 +56,38 @@ public class ListAdapter extends ArrayAdapter<String>{
             convertView = inflater.inflate(R.layout.activity_listview, null);
             viewHolder = new ViewHolder();
             viewHolder.text = (TextView) convertView.findViewById(R.id.childTextView);
-            viewHolder.button = (ImageButton) convertView.findViewById(R.id.childButton);
-            viewHolder.button2 = (ImageButton) convertView.findViewById(R.id.childButton1);
+            viewHolder.imageView=(ImageView) convertView.findViewById(R.id.childImage);
+            viewHolder.descripcion=(TextView) convertView.findViewById(R.id.descrip);
+            viewHolder.ll=(RelativeLayout) convertView.findViewById(R.id.lllista);
+            String image=imageLista[position];
+
+            String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+image+"?alt=media";
+            Picasso.with(this.getContext())
+                    .load(url)
+                    .error(R.drawable.kamal_logo)
+                    .into(viewHolder.imageView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         final String temp = getItem(position);
         viewHolder.text.setText(temp);
-        viewHolder.button.setOnClickListener(new View.OnClickListener() {
-
+        viewHolder.descripcion.setText(descripcionLista[position]);
+        viewHolder.ll.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if (customListner != null) {
-                    customListner.onButtonClickListner(position,keyLista, sectorLista);
-                }
+                if(customListner!=null){
+                    customListner.getPosition1234(position);}
 
             }
         });
-        viewHolder.button2.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if (customListner != null) {
-                    customListner.onButtonClickListner2(position,keyLista, sectorLista);
-                }
-
-            }
-        });
-
         return convertView;
     }
 
     public class ViewHolder {
-        TextView text;
-        ImageButton button;
-        ImageButton button2;
+        ImageView imageView;
+        TextView text;;
+        TextView descripcion;
+        RelativeLayout ll;
     }
 }

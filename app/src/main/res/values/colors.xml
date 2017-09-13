@@ -4,7 +4,6 @@
     <color name="PrimaryDark">#a5356a</color>
     <color name="Accent">#FDC539</color>
     <color name="RedSession">#FF0000</color>
-
     <color name="textDarkPrimary">#000000</color>
     <color name="textDarkSecondary">#212121</color>
     <color name="textDarkDisabled">#424242</color>

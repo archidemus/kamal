@@ -193,25 +193,18 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
         String fechainicioprueba = fechaInicio.getText().toString();
         if( titulo.getText().toString().equals("")){
-
-
             titulo.setError( "Título Obligatorio" );
 
         }else if(latitud == null){
-
             Toast.makeText(CreateInitiativeActivity.this, "Ubicación Obligatoria", Toast.LENGTH_SHORT).show();
         }else if(description.getText().toString().equals("")){
-
             description.setError("La descripción es requerida!");
-
         }else if(dateDifference(fechainicioprueba,fechaPrueba) < 0){
             Toast.makeText(this,"No puede crear una Iniciativa antes de la hora actual",Toast.LENGTH_LONG).show();
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fechaTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
         }else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-
-
             String fechaInit = fechaInicio.getText().toString();
             String fechaFin = fechaTermino.getText().toString();
             try {
@@ -234,7 +227,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
             userInitiatives.child(key).child("Sector").setValue(getSector(latitud,longitud));
+            userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
+            userInitiatives.child(key).child("image").setValue(key);
+
             finish();
         }
     }
