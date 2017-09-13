@@ -22,6 +22,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -55,10 +56,12 @@ import com.byobdev.kamal.DBClasses.User;
 import com.byobdev.kamal.NotificationServices.MyFirebaseInstanceIDService;
 import com.byobdev.kamal.NotificationServices.MyFirebaseMessagingService;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -97,7 +100,7 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREE
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
 
-public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
+public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     //Menu
     DrawerLayout drawer;
@@ -109,9 +112,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     SupportMapFragment mapFragment;
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     //Others
-    FrameLayout shortDescriptionFragment;
-    FrameLayout filterFragment;
+    FrameLayout previewFragment;
+    FrameLayout descriptionFragment;
+    Bundle selectedInitiative;
+    boolean opened_bottom, opened_df, opened_pf, on_way;
     private float mLastPosY;
+    Marker selectedMarker;
+    Toolbar toolbar;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
     LocationGPS start;
@@ -137,7 +144,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     ImageView img_profile;
     View linea;
     String msg = "Inicia sesion para habilitar otras funciones";
-    boolean opened_bottom;
     public int authListenerCounter = 0;
 
     GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
@@ -609,6 +615,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        menu.findItem(R.id.toolbar_ir).setVisible(false);
         for (int i = 0; i < menu.size(); i++) {
             Drawable drawable = menu.getItem(i).getIcon();
             if (drawable != null) {
@@ -621,14 +628,17 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
+
+        opened_bottom = false;
+        opened_df = false;
+        opened_pf = false;
+        on_way = false;
+
         setContentView(R.layout.activity_initiatives);
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
         NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        opened_bottom = false;
         getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Cancelamos la Notificacion que hemos comenzado
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
@@ -644,16 +654,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
         if (comidaOn) {
-            iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+            iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
         }
         if (deporteOn) {
-            iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+            iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
         }
         if (teatroOn) {
-            iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+            iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
         }
         if (musicaOn) {
-            iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+            iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
         }
 
 
@@ -664,16 +674,122 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         deporteInitiativeIDList = new Vector<>();
         musicaInitiativeIDList = new Vector<>();
         //Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
+
         //Maps
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
-        //Short description fragment set
-        shortDescriptionFragment = (FrameLayout) findViewById(R.id.shortDescriptionFragment);
-        shortDescriptionFragment.setOnTouchListener(this);
+        //PreviewFragment
+        previewFragment = (FrameLayout) findViewById(R.id.previewFragment);
+        previewFragment.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+                int maxX = mdispSize.x;
+                int maxY = mdispSize.y;
+                float currentPosition;
+                int fragment_pos[] = new int[2];
+                int bottom_pos[] = new int[2];
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mLastPosY = event.getY();
+                        return true;
+                    case (MotionEvent.ACTION_MOVE):
+                        if (!on_way){
+                            currentPosition = event.getY();
+                            float deltaY = mLastPosY - currentPosition;
+                            float transY = View.TRANSLATION_Y.get(v);
+                            transY -= deltaY;
+                            if (transY < 0) {
+                                transY = 0;
+                            }
+                            v.setTranslationY(transY);
+                        }
+                        return true;
+                    case (MotionEvent.ACTION_UP):
+                        v.getLocationOnScreen(fragment_pos);
+                        if (((fragment_pos[1] + v.getHeight()) > maxY + 1) && !on_way) {
+                            OvershootInterpolator interpolator;
+                            interpolator = new OvershootInterpolator(1);
+                            previewFragment.animate().setInterpolator(interpolator).translationY(previewFragment.getMeasuredHeight()).setDuration(600);
+                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                            Titulo.setText("Kamal");
+                            Titulo.setTextSize(18);
+                            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+                        } else{ //Cuando toca el preview
+                            if (!opened_df && !on_way){
+                                DescriptionFragment DF = new DescriptionFragment();
+                                DF.setArguments(selectedInitiative);
+                                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                                trans.replace(R.id.descriptionFragment, DF);
+                                OvershootInterpolator interpolator;
+                                interpolator = new OvershootInterpolator(1);
+                                descriptionFragment.animate().setInterpolator(interpolator).translationYBy(-descriptionFragment.getMeasuredHeight()).setDuration(600);
+                                trans.commit();
+                                TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                                Initiative initiative = (Initiative) initiativeHashMap.get(selectedMarker);
+                                Titulo.setText(selectedInitiative.getString("Descripcion"));
+                                Titulo.setTextSize(25);
+                                initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 17));
+                                initiativesMap.moveCamera(CameraUpdateFactory.scrollBy(0, 500));
+                                opened_df = true;
+                            }
+                        }
+                        return true;
+                    default:
+                        return v.onTouchEvent(event);
+                }
+            }
+        });
+        //DescriptionFragment
+        descriptionFragment = (FrameLayout) findViewById(R.id.descriptionFragment);
+        descriptionFragment.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+                int maxY = mdispSize.y;
+                float currentPosition;
+                int fragment_pos[] = new int[2];
+                int bottom_pos[] = new int[2];
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mLastPosY = event.getY();
+                        return true;
+                    case (MotionEvent.ACTION_MOVE):
+                        currentPosition = event.getY();
+                        float deltaY = mLastPosY - currentPosition;
+                        float transY = View.TRANSLATION_Y.get(v);
+                        transY -= deltaY;
+                        if (transY < 0) {
+                            transY = 0;
+                        }
+                        v.setTranslationY(transY);
+                        return true;
+                    case (MotionEvent.ACTION_UP):
+                        v.getLocationOnScreen(fragment_pos);
+                        if (((fragment_pos[1] + v.getHeight()) > maxY + 1) && !on_way) {
+                            OvershootInterpolator interpolator;
+                            interpolator = new OvershootInterpolator(1);
+                            descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
+                            opened_df = false;
+                        }
+                        TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                        Titulo.setText("Kamal");
+                        Titulo.setTextSize(18);
+                        toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+                        return true;
+                    default:
+                        return v.onTouchEvent(event);
+                }
+            }
+        });
 
         //Menu
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -687,13 +803,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (comidaOn) {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.Primary));
+                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
                     comidaOn = false;
                     for (String aux : comidaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     comidaOn = true;
                     for (String aux : comidaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(true);
@@ -708,13 +824,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (deporteOn) {
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.Primary));
+                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
                     deporteOn = false;
                     for (String aux : deporteInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     deporteOn = true;
                     for (String aux : deporteInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(true);
@@ -728,13 +844,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (teatroOn) {
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.Primary));
+                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
                     teatroOn = false;
                     for (String aux : teatroInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     teatroOn = true;
                     for (String aux : teatroInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(true);
@@ -748,13 +864,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (musicaOn) {
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.Primary));
+                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
                     musicaOn = false;
                     for (String aux : musicaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.PrimaryDark));
+                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     musicaOn = true;
                     for (String aux : musicaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(true);
@@ -788,6 +904,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         super.onStart();
         //User Auth Listener
         //Read initiatives listener
+        FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
         //initiativesDB.addChildEventListener(initiativesListener);
@@ -829,37 +946,43 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         interested = new LatLng(start.getLatitud(), start.getLongitud());
         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested, 15));
+        UiSettings settings = initiativesMap.getUiSettings();
+        settings.setCompassEnabled(false);
+        settings.setMapToolbarEnabled(false);
+        settings.setZoomControlsEnabled(false);
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //Agrego datos del pin
-                Bundle bn = new Bundle();
+                OvershootInterpolator interpolator;
+                interpolator = new OvershootInterpolator(1);
+                selectedMarker = marker;
+                selectedInitiative = new Bundle();
                 Initiative initiative = (Initiative) initiativeHashMap.get(marker.getId());
-                bn.putString("Titulo", initiative.Titulo);
-                bn.putString("imagen", initiative.image);
-                bn.putString("Descripcion", initiative.Descripcion);
-                bn.putString("Nombre", initiative.Nombre);
-                bn.putString("Direccion", initiative.Direccion);
+                selectedInitiative.putString("Titulo", initiative.Titulo);
+                selectedInitiative.putString("imagen", initiative.image);
+                selectedInitiative.putString("Descripcion", initiative.Descripcion);
+                selectedInitiative.putString("Nombre", initiative.Nombre);
+                selectedInitiative.putString("Direccion", initiative.Direccion);
                 DateFormat formatter = new SimpleDateFormat("HH:mm");
                 DateFormat formatter1 = new SimpleDateFormat("HH:mm");
-                bn.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
-                bn.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
+                selectedInitiative.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
+                selectedInitiative.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
                 //le paso los datos al fragment
                 PreviewFragment DF = new PreviewFragment();
-                DF.setArguments(bn);
+                DF.setArguments(selectedInitiative);
                 lastMarkerPosition = marker.getPosition();
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                trans.replace(R.id.shortDescriptionFragment, DF);
 
+                trans.replace(R.id.previewFragment, DF);
+                if (opened_bottom){
+                    vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                    opened_bottom = false;
+                }
                 //Log
-                if (shortDescriptionFragment.getTranslationY() >= shortDescriptionFragment.getHeight()) {
-                    OvershootInterpolator interpolator;
-                    interpolator = new OvershootInterpolator(1);
-                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationYBy(-shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
-                    if (opened_bottom){
-                        vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-                        opened_bottom = false;
-                    }
+                if ((previewFragment.getTranslationY() >= previewFragment.getHeight()) && !on_way) {
+                    previewFragment.animate().setInterpolator(interpolator).translationYBy(-previewFragment.getMeasuredHeight()).setDuration(600);
+                    opened_pf = true;
                 }
                 trans.commit();
                 Log.d("MAP", "Entro a " + marker.getTitle());
@@ -875,44 +998,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        Display mdisp = getWindowManager().getDefaultDisplay();
-        Point mdispSize = new Point();
-        mdisp.getSize(mdispSize);
-        int maxX = mdispSize.x;
-        int maxY = mdispSize.y;
-        float currentPosition;
-        int fragment_pos[] = new int[2];
-        int bottom_pos[] = new int[2];
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mLastPosY = event.getY();
-                return true;
-            case (MotionEvent.ACTION_MOVE):
-                currentPosition = event.getY();
-                float deltaY = mLastPosY - currentPosition;
-                float transY = View.TRANSLATION_Y.get(v);
-                transY -= deltaY;
-                if (transY < 0) {
-                    transY = 0;
-                }
-                v.setTranslationY(transY);
-                return true;
-            case (MotionEvent.ACTION_UP):
-                v.getLocationOnScreen(fragment_pos);
-                if (fragment_pos[1] >= maxY - 440) {
-                    OvershootInterpolator interpolator;
-                    interpolator = new OvershootInterpolator(1);
-                    shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
-                    return true;
-                }
-                return true;
-            default:
-                return v.onTouchEvent(event);
-        }
-    }
-
     public void showPath(View view) {
         if (polylineActive && initiativePath != null) {
             initiativePath.remove();
@@ -920,9 +1005,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
         OvershootInterpolator interpolator;
         interpolator = new OvershootInterpolator(1);
-        shortDescriptionFragment.animate().setInterpolator(interpolator).translationY(shortDescriptionFragment.getMeasuredHeight()).setDuration(600);
-        vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
-        opened_bottom = true;
+        descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
+        opened_df = false;
+        toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
         GoogleDirection.withServerKey(getString(R.string.google_maps_key))
                 .from(new LatLng(start.getLatitud(), start.getLongitud()))
                 .to(lastMarkerPosition)
@@ -938,12 +1023,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             Route route = direction.getRouteList().get(0);
                             Leg leg = route.getLegList().get(0);
                             ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
-                            PolylineOptions polylineOptions = DirectionConverter.createPolyline(getApplicationContext(), directionPositionList, 5, Color.RED);
+                            PolylineOptions polylineOptions = DirectionConverter.createPolyline(getApplicationContext(), directionPositionList, 3, R.color.Primary);
                             initiativePath = initiativesMap.addPolyline(polylineOptions);
                             polylineActive = true;
+                            on_way = true;
                         }
                     }
-
                     @Override
                     public void onDirectionFailure(Throwable t) {
                         // Do something
@@ -955,22 +1040,37 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        OvershootInterpolator interpolator;
+        interpolator = new OvershootInterpolator(1);
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (opened_bottom) {
-            OvershootInterpolator interpolator;
-            interpolator = new OvershootInterpolator(1);
-            vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-            opened_bottom = false;
         } else if (polylineActive && initiativePath != null) {
             initiativePath.remove();
             polylineActive = false;
+            on_way = false;
+            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+            Titulo.setText("Kamal");
+            Titulo.setTextSize(18);
+        } else if (opened_df) {
+            descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
+            opened_df = false;
+            initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 17));
+            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+            Titulo.setText("Kamal");
+            Titulo.setTextSize(18);
+        } else if (opened_pf) {
+            previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
+            opened_pf = false;
+            MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
+            item.setVisible(true);
+            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+        } else if (opened_bottom) {
+            vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+            opened_bottom = false;
         } else {
             super.onBackPressed();
         }
-
-
     }
 
 

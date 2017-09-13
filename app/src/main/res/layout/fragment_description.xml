@@ -103,15 +103,6 @@
                             android:textAllCaps="true"
                             />
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/inTitle"
-                        android:textSize="25sp"
-                        android:text="Titulo sadfasd f asd fsa df asdf"
-                        android:maxLines="2"
-                        android:ellipsize="marquee"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -130,15 +121,15 @@
                             android:textSize="15sp"
                             android:text=" "
                             android:textAllCaps="true"/>
-                        <RatingBar
-                            android:id="@+id/inRating"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            style="?android:attr/ratingBarStyleSmall"
-                            android:numStars="5"
-                            android:stepSize="0.1"
-                            android:isIndicator="true"/>
                     </LinearLayout>
+                    <RatingBar
+                        android:id="@+id/inRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:numStars="5"
+                        android:stepSize="0.1"
+                        android:isIndicator="true"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -151,12 +142,21 @@
             </LinearLayout>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Descripción"
+                android:textColor="@color/Primary"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"/>
+
+            <TextView
                 android:id="@+id/inShortDesc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textDarkPrimary"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:layout_marginTop="@dimen/fab_margin"/>
-
             <Button
                 android:id="@+id/showPathButton"
                 android:layout_width="match_parent"
@@ -165,6 +165,5 @@
                 android:text="Como llegar" />
         </LinearLayout>
     </ScrollView>
-
 
 </LinearLayout>

@@ -13,11 +13,39 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/Primary"
-            app:theme="@style/ToolBarStyle"/>
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:layout_scrollFlags="scroll|enterAlways">
+            <FrameLayout
+                android:background="@color/Primary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <!-- This is a centered title -->
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical|center_horizontal">
+                    <TextView
+                        android:id="@+id/toolbar_title"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:text="Kamal"
+                        android:textSize="18dp"
+                        android:textColor="@color/textLightPrimary"
+                        style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse" />
+                </LinearLayout>
+            </FrameLayout>
+        </android.support.v7.widget.Toolbar>
 
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                      android:layout_width="match_parent"
@@ -30,13 +58,6 @@
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
                       tools:context="com.byobdev.kamal.InitiativesActivity"/>
-            <FrameLayout
-                android:id="@+id/shortDescriptionFragment"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_gravity="bottom"
-                android:background="@null"
-                android:translationY="150dp"/>
             <android.support.v7.widget.CardView
                 android:id="@+id/bottom_menu"
                 android:layout_width="match_parent"
@@ -137,6 +158,23 @@
                     </HorizontalScrollView>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
+
+            <FrameLayout
+                android:id="@+id/previewFragment"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_gravity="bottom"
+                android:background="@null"
+                android:translationY="150dp"/>
+
+            <FrameLayout
+                android:id="@+id/descriptionFragment"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_gravity="bottom"
+                android:background="@color/textLightPrimary"
+                android:translationY="400dp"
+                />
         </FrameLayout>
     </LinearLayout>
 
