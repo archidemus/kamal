@@ -58,6 +58,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
     ListView lista;
     int position;
     int prevPosition=-1;
+    boolean selected=false;
     //Toolbar set
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -247,14 +248,31 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
     }
     @Override
     public void getPosition1234(int position) {
+
         if(prevPosition!=-1){
             lista.getChildAt(prevPosition).setBackgroundResource(0);
         }
-        this.position=position;
-        this.prevPosition=this.position;
-        lista.getChildAt(position).setBackgroundResource(R.color.gray_holo_light);
-        edit.setVisible(true);
-        delete.setVisible(true);
+        if(position == prevPosition && selected){
+            lista.getChildAt(prevPosition).setBackgroundResource(0);
+            edit.setVisible(false);
+            delete.setVisible(false);
+            selected=false;
+        }
+        else if(position == prevPosition && !selected){
+            lista.getChildAt(prevPosition).setBackgroundResource(R.color.gray_holo_light);
+            edit.setVisible(true);
+            delete.setVisible(true);
+            selected=true;
+        }
+        else{
+            this.position=position;
+            this.prevPosition=this.position;
+            lista.getChildAt(position).setBackgroundResource(R.color.gray_holo_light);
+            edit.setVisible(true);
+            delete.setVisible(true);
+            selected=true;
+        }
+
 
 
     }
