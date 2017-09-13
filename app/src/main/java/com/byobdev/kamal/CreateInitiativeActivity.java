@@ -1,26 +1,24 @@
 package com.byobdev.kamal;
 
 
-import android.app.DialogFragment;
 import android.content.Intent;
-import android.icu.util.TimeZone;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 import com.byobdev.kamal.DBClasses.Initiative;
-import com.byobdev.kamal.AppHelpers.LocationGPS;
-import com.facebook.places.PlaceManager;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
 import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,18 +31,19 @@ import android.net.Uri;
 import com.google.firebase.storage.UploadTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.squareup.picasso.Picasso;
+
 import android.widget.EditText;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
-import java.text.DateFormat;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class CreateInitiativeActivity extends AppCompatActivity{
@@ -57,6 +56,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Button button;
     ArrayAdapter<CharSequence> adapter;
     Place place;
+    MenuItem check;
 
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     long dateDiff;
@@ -71,13 +71,40 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
+    final Calendar calendar2 = Calendar.getInstance();
 
     Date dateInits, dateFins;
-    TextView fechaInicio;
-    TextView fechaTermino;
+    Button fechaInicio, fechaTermino, lugarIniciativa;
+
 
     String getSector(double latitude, double longitude){
         return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_config, menu);
+        check = menu.findItem(R.id.done);
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+        check.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                try {
+                    CreateInitiativeActivity.this.createInitiative(item);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
+        return true;
     }
 
     @Override
@@ -86,13 +113,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         setContentView(R.layout.activity_create_initiative);
         titulo   = (EditText)findViewById(R.id.titleInput);
         description   = (EditText)findViewById(R.id.descriptionInput);
-        fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
-        fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
-
-        final android.icu.util.Calendar calendar = android.icu.util.Calendar.getInstance(TimeZone.getTimeZone("GMT-3"), Locale.getDefault());
-        final Calendar calendar2 = Calendar.getInstance();
-        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
-        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE)));
+        fechaTermino = (Button)findViewById(R.id.btn_fechaTermino);
+        fechaInicio = (Button)findViewById(R.id.btn_fechaInicio);
+        lugarIniciativa = (Button)findViewById(R.id.button5);
+        imgView = (ImageView)findViewById(R.id.imgView);
+        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -106,6 +132,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         key=mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando...");
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+
 
     }
 
@@ -137,7 +169,6 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     //Listener boton fecha Termino
     private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
-
         @Override
         public void onDateTimeSet(Date date)
         {
@@ -158,7 +189,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         }
     };
 
-    public void createInitiative(View view){
+    public void createInitiative(MenuItem menuItem) throws ParseException {
+        Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        String fechainicioprueba = fechaInicio.getText().toString();
         if( titulo.getText().toString().equals("")){
 
 
@@ -171,8 +204,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
             description.setError("La descripción es requerida!");
 
-        }
-        else{
+        }else if(dateDifference(fechainicioprueba,fechaPrueba) < 0){
+            Toast.makeText(this,"No puede crear una Iniciativa antes de la hora actual",Toast.LENGTH_LONG).show();
+        }else if(dateDifference(fechainicioprueba,mFormatter.parse(fechaTermino.getText().toString())) == 0) {
+            Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
+        }else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
 
@@ -201,14 +237,13 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             finish();
         }
-
     }
 
-    public void showDatePickerDialog(View v) {
+    public void showDatePickerDialog(View v) throws ParseException {
         new SlideDateTimePicker.Builder(getSupportFragmentManager())
                 .setListener(listener)
                 .setInitialDate(new Date())
-                .setMinDate(new Date())
+                .setMinDate(mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE))))
                 //.setMaxDate(maxDate)
                 .setIs24HourTime(true)
                 //.setTheme(SlideDateTimePicker.HOLO_DARK)
@@ -217,11 +252,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 .show();
     }
 
-    public void showDatePickerDialog2(View v) {
+    public void showDatePickerDialog2(View v) throws ParseException {
         new SlideDateTimePicker.Builder(getSupportFragmentManager())
                 .setListener(listener2)
                 .setInitialDate(new Date())
-                .setMinDate(new Date())
+                .setMinDate(mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE))))
                 //.setMaxDate(maxDate)
                 .setIs24HourTime(true)
                 //.setTheme(SlideDateTimePicker.HOLO_DARK)
@@ -256,10 +291,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this,data);
+                place = PlacePicker.getPlace(this,data);
                 latitud=place.getLatLng().latitude;
                 longitud=place.getLatLng().longitude;
                 direccion=place.getAddress().toString();
+                lugarIniciativa.setText(direccion);
             }
         }
 
@@ -268,11 +304,9 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
             try {
                 //getting image from gallery
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
 
                 //Setting image to ImageView
-                imgView.setImageBitmap(bitmap);
-
+                Picasso.with(this).load(filePath).resize(100,100).into(imgView);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -319,5 +353,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         dateDiff = dateInits.getTime() - dateFins.getTime();
         return dateDiff;
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
 
 }

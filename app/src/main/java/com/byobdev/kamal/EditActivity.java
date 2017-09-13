@@ -5,12 +5,17 @@ import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,11 +42,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+
+import static com.byobdev.kamal.R.id.imgViewEdit;
 
 /**
  * Created by crono on 03-09-17.
@@ -71,33 +80,70 @@ public class EditActivity extends AppCompatActivity {
     String imageEdit;
     String IDanterior;
     Date dateInits, dateFins;
-    TextView fechaInicio;
-    TextView fechaTermino;
     long dateDiff;
+    Button fInicio, fTermino,lugar;
+    final Calendar calendar2 = Calendar.getInstance();
+    String url;
+    MenuItem check;
 
     String getSector(double latitude, double longitude){
         return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_config, menu);
+        check = menu.findItem(R.id.done);
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
+        check.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                try {
+                    EditActivity.this.editInitiative(item);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
+        return true;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_initiative);
-        titulo   = (EditText)findViewById(R.id.titleEdit);
+        titulo   = (EditText)findViewById(R.id.titleInput_edit);
         Intent i = getIntent();
         titulo.setText(i.getStringExtra("Titulo"));
-        description   = (EditText)findViewById(R.id.descriptionEdit);
+        description   = (EditText)findViewById(R.id.descriptionInput_edit);
         description.setText(i.getStringExtra("Descripcion"));
 
-        fechaTermino = (TextView)findViewById(R.id.txt_fecha_termino_vista);
+        fInicio = (Button)findViewById(R.id.btn_fechaInicio_edit);
+        fTermino = (Button)findViewById(R.id.btn_fechaTermino_edit);
         String dateF2 = mFormatter.format(new Date(Long.parseLong(i.getStringExtra("duracion"))));
-        fechaTermino.setText(dateF2);
-        fechaInicio = (TextView)findViewById(R.id.txt_fecha_inicio_vista);
+        fTermino.setText(dateF2);
         String dateI2 = mFormatter.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))));
-        fechaInicio.setText(dateI2);
+        fInicio.setText(dateI2);
+        url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+i.getStringExtra("Imagen")+"?alt=media";
+        imgView = (ImageView)findViewById(imgViewEdit);
+        Picasso.with(this).load(url)
+                .error(R.drawable.kamal_logo).resize(100,100).into(imgView);
+
+
+        lugar = (Button)findViewById(R.id.btn_place_edit);
+        lugar.setText(i.getStringExtra("Direccion"));
 
         //para agregar la lista de tipo de iniciativa
-        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner = (Spinner) findViewById(R.id.spinner_edit);
         adapter = ArrayAdapter.createFromResource(this,
                 R.array.Tipo_Iniciativa, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -123,6 +169,8 @@ public class EditActivity extends AppCompatActivity {
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando....");
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit);
+        setSupportActionBar(toolbar);
     }
 
     //Listener boton fecha Inicio
@@ -131,13 +179,12 @@ public class EditActivity extends AppCompatActivity {
         @Override
         public void onDateTimeSet(Date date)
         {
-            if(dateDifference(fechaTermino.getText().toString(),date) < 0){
-                fechaInicio.setText(mFormatter.format(date));
-                fechaTermino.setText(mFormatter.format(date));
-
+            if(dateDifference(fTermino.getText().toString(),date) < 0){
+                fInicio.setText(mFormatter.format(date));
+                fTermino.setText(mFormatter.format(date));
             }
             else {
-                fechaInicio.setText(mFormatter.format(date));
+                fInicio.setText(mFormatter.format(date));
             }
             Toast.makeText(EditActivity.this,
                     mFormatter.format(date), Toast.LENGTH_SHORT).show();
@@ -158,11 +205,11 @@ public class EditActivity extends AppCompatActivity {
         @Override
         public void onDateTimeSet(Date date)
         {
-            if(dateDifference(fechaInicio.getText().toString(),date) >=0){
-                fechaTermino.setText(fechaInicio.getText().toString());
+            if(dateDifference(fInicio.getText().toString(),date) >=0){
+                fTermino.setText(fInicio.getText().toString());
             }
             else{
-                fechaTermino.setText(mFormatter.format(date));
+                fTermino.setText(mFormatter.format(date));
             }
 
             Toast.makeText(EditActivity.this,
@@ -178,7 +225,10 @@ public class EditActivity extends AppCompatActivity {
         }
     };
 
-    public void editInitiative(View view){
+    public void editInitiative(MenuItem menuItem) throws ParseException {
+        Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        String fechainicioprueba = fTermino.getText().toString();
+
         if( titulo.getText().toString().equals("")){
 
 
@@ -191,13 +241,14 @@ public class EditActivity extends AppCompatActivity {
 
             description.setError("La descripción es requerida!");
 
-        }
-        else{
+        }else if(dateDifference(fechainicioprueba,fechaPrueba) <= 0){
+            Toast.makeText(this,"La hora de término tiene que ser mayor a la actual",Toast.LENGTH_LONG).show();
+        }else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
 
-            String fechaInit = fechaInicio.getText().toString();
-            String fechaFin = fechaTermino.getText().toString();
+            String fechaInit = fInicio.getText().toString();
+            String fechaFin = fTermino.getText().toString();
             try {
                 dateInits = mFormatter.parse(fechaInit);
                 dateFins = mFormatter.parse(fechaFin);
@@ -229,11 +280,11 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    public void showDatePickerDialog(View v) {
+    public void showDatePickerDialog(View v) throws ParseException {
         new SlideDateTimePicker.Builder(getSupportFragmentManager())
                 .setListener(listener)
                 .setInitialDate(new Date())
-                .setMinDate(new Date())
+                .setMinDate(mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE))))
                 //.setMaxDate(maxDate)
                 .setIs24HourTime(true)
                 //.setTheme(SlideDateTimePicker.HOLO_DARK)
@@ -242,11 +293,11 @@ public class EditActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void showDatePickerDialog2(View v) {
+    public void showDatePickerDialog2(View v) throws ParseException {
         new SlideDateTimePicker.Builder(getSupportFragmentManager())
                 .setListener(listener2)
                 .setInitialDate(new Date())
-                .setMinDate(new Date())
+                .setMinDate(mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE))))
                 //.setMaxDate(maxDate)
                 .setIs24HourTime(true)
                 //.setTheme(SlideDateTimePicker.HOLO_DARK)
@@ -287,6 +338,7 @@ public class EditActivity extends AppCompatActivity {
                 latitud=place.getLatLng().latitude;
                 longitud=place.getLatLng().longitude;
                 direccion=place.getAddress().toString();
+                lugar.setText(direccion);
             }
         }
 
@@ -294,11 +346,8 @@ public class EditActivity extends AppCompatActivity {
             filePath = data.getData();
 
             try {
-                //getting image from gallery
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                Picasso.with(this).load(filePath).resize(100,100).into(imgView);
 
-                //Setting image to ImageView
-                imgView.setImageBitmap(bitmap);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -344,6 +393,10 @@ public class EditActivity extends AppCompatActivity {
         dateDiff = dateInits.getTime() - dateFins.getTime();
         return dateDiff;
     }
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
 }

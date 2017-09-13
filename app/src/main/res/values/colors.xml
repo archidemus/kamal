@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="Primary">#932C5E</color>
-    <color name="PrimaryDark">#A5356A</color>
+    <color name="Primary">#932c5e</color>
+    <color name="PrimaryDark">#a5356a</color>
     <color name="Accent">#FDC539</color>
     <color name="RedSession">#FF0000</color>
 
