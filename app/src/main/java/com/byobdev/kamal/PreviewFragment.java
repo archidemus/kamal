@@ -2,8 +2,9 @@ package com.byobdev.kamal;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -11,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
-public class DescriptionFragment extends Fragment {
+public class PreviewFragment extends Fragment {
 
     TextView Titulo;
     TextView Nombre;
@@ -24,8 +25,14 @@ public class DescriptionFragment extends Fragment {
     Button Editar;
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.toolbar_filter).setVisible(false);
+        menu.findItem(R.id.toolbar_ir).setVisible(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_description, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_preview, container, false);
         ImageView i = (ImageView)rootView.findViewById(R.id.inImage);
 
         return rootView;
@@ -33,27 +40,31 @@ public class DescriptionFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
     }
 
     @Override
     public void onStart(){
         super.onStart();
 
-        //Titulo = (TextView) getView().findViewById(R.id.inTitle);
-        //Titulo.setText(getArguments().getString("Titulo"));
         Nombre = (TextView) getView().findViewById(R.id.inOrganizer);
         Nombre.setText(getArguments().getString("Nombre"));
-        Descripcion = (TextView) getView().findViewById(R.id.inShortDesc);
-        Descripcion.setText(getArguments().getString("Descripcion"));
+        Titulo = (TextView) getView().findViewById(R.id.inTitle);
+        Titulo.setText(getArguments().getString("Titulo"));
+        //Descripcion = (TextView) getView().findViewById(R.id.inShortDesc);
+        //Descripcion.setText(getArguments().getString("Descripcion"));
         Lugar = (TextView) getView().findViewById(R.id.inPlace);
         Lugar.setText(getArguments().getString("Direccion"));
         hInicio = (TextView) getView().findViewById(R.id.hI);
         hInicio.setText(getArguments().getString("hInicio"));
-        hFin = (TextView) getView().findViewById(R.id.hT);
-        hFin.setText(getArguments().getString("hFin"));
+        //hFin = (TextView) getView().findViewById(R.id.hT);
+        //hFin.setText(getArguments().getString("hFin"));
         Image = (ImageView) getView().findViewById(R.id.inImage);
         image = getArguments().getString("imagen");
+
         if (image.equals("")){
             if(Image.getVisibility() == View.VISIBLE){
                 Image.setVisibility(View.GONE);

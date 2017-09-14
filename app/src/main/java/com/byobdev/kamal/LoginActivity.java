@@ -185,7 +185,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
+                            if(CheckConnectionHelper.isNetworkStatusAvialable(getApplicationContext())!= true) {
                                 Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                             else{
@@ -218,7 +218,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            if(check.isNetworkStatusAvialable (getApplicationContext())!= true) {
+                            if(CheckConnectionHelper.isNetworkStatusAvialable(getApplicationContext())!= true) {
                                 Toast.makeText(getApplicationContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
                             }
                             Toast.makeText(getApplicationContext(), R.string.autentication_error, Toast.LENGTH_SHORT).show();
