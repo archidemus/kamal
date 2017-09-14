@@ -1216,7 +1216,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 getFragmentManager().popBackStack();
             }
         }
-        getApplicationContext().unregisterReceiver(receiver);
+        //getApplicationContext().unregisterReceiver(receiver);
 
     }
 
@@ -1275,7 +1275,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public void onResume() {
 
         super.onResume();  // Always call the superclass method first
-        getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        //  getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
 
