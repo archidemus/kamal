@@ -592,6 +592,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                 OvershootInterpolator interpolator;
                 interpolator = new OvershootInterpolator(1);
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+                int maxY = mdispSize.y;
+                float currentPosition;
+                int fragment_pos[] = new int[2];
 
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
@@ -605,33 +611,46 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 } else if (opened_df) {
-                    descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
-                    opened_df = false;
-                    initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                    Titulo.setText("Kamal");
-                    Titulo.setTextSize(18);
-                    uiSettings.setAllGesturesEnabled(true);
-                    uiSettings.setMyLocationButtonEnabled(true);
+                    View df = findViewById(R.id.descriptionFragment);
+                    df.getLocationOnScreen(fragment_pos);
+                    if ((df.getHeight() + fragment_pos[1]) == maxY){
+                        descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
+                        opened_df = false;
+                        initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                        TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                        Titulo.setText("Kamal");
+                        Titulo.setTextSize(18);
+                        uiSettings.setAllGesturesEnabled(true);
+                        uiSettings.setMyLocationButtonEnabled(true);
+                    }
                 } else if (opened_pf) {
-                    previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
-                    opened_pf = false;
-                    toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
-                    toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
-                    toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                    final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                    upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                    getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                    View pf = findViewById(R.id.previewFragment);
+                    pf.getLocationOnScreen(fragment_pos);
+                    if ((pf.getHeight() + fragment_pos[1]) == maxY){
+                        previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
+                        opened_pf = false;
+                        toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+                        toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+                        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                        upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                        getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                    }
                 } else if (opened_bottom) {
-                    vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-                    opened_bottom = false;
-                    toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                    final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                    upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                    getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                    View ob = findViewById(R.id.bottom_menu);
+                    ob.getLocationOnScreen(fragment_pos);
+                    if ((ob.getHeight() + fragment_pos[1]) == maxY){
+                        vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                        opened_bottom = false;
+                        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                        upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                        getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                    }
                 } else {
                     return super.onOptionsItemSelected(item);
                 }
+                back_button_active = false;
 
             } else {
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
@@ -744,11 +763,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 Display mdisp = getWindowManager().getDefaultDisplay();
                 Point mdispSize = new Point();
                 mdisp.getSize(mdispSize);
-                int maxX = mdispSize.x;
                 int maxY = mdispSize.y;
                 float currentPosition;
                 int fragment_pos[] = new int[2];
-                int bottom_pos[] = new int[2];
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         mLastPosY = event.getY();
@@ -1120,6 +1137,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         OvershootInterpolator interpolator;
         interpolator = new OvershootInterpolator(1);
+        Display mdisp = getWindowManager().getDefaultDisplay();
+        Point mdispSize = new Point();
+        mdisp.getSize(mdispSize);
+        int maxY = mdispSize.y;
+        float currentPosition;
+        int fragment_pos[] = new int[2];
 
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -1133,31 +1156,43 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {
-            descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
-            opened_df = false;
-            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-            Titulo.setText("Kamal");
-            Titulo.setTextSize(18);
-            uiSettings.setAllGesturesEnabled(true);
-            uiSettings.setMyLocationButtonEnabled(true);
+            View df = findViewById(R.id.descriptionFragment);
+            df.getLocationOnScreen(fragment_pos);
+            if ((df.getHeight() + fragment_pos[1]) == maxY){
+                descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
+                opened_df = false;
+                initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                Titulo.setText("Kamal");
+                Titulo.setTextSize(18);
+                uiSettings.setAllGesturesEnabled(true);
+                uiSettings.setMyLocationButtonEnabled(true);
+            }
         } else if (opened_pf) {
-            previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
-            opened_pf = false;
-            MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
-            item.setVisible(true);
-            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
-            toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-            final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-            upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-            getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            View pf = findViewById(R.id.previewFragment);
+            pf.getLocationOnScreen(fragment_pos);
+            if ((pf.getHeight() + fragment_pos[1]) == maxY){
+                previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
+                opened_pf = false;
+                MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
+                item.setVisible(true);
+                toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+                toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            }
         } else if (opened_bottom) {
-            vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-            opened_bottom = false;
-            toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-            final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-            upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-            getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            View ob = findViewById(R.id.bottom_menu);
+            ob.getLocationOnScreen(fragment_pos);
+            if ((ob.getHeight() + fragment_pos[1]) == maxY){
+                vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                opened_bottom = false;
+                toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            }
         } else {
             super.onBackPressed();
         }
