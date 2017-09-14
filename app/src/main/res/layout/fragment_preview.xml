@@ -25,35 +25,14 @@
                     android:layout_height="match_parent"
                     android:padding="8dp"
                     android:orientation="vertical">
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/fecha"
-                            android:textSize="12sp"
-                            android:text="LUN, 5 FEB"
-                            android:textAllCaps="true"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:text=" • "
-                            android:textAllCaps="true"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/hI"
-                            android:textSize="12sp"
-                            android:text="00:00"
-                            android:textAllCaps="true"
-                            />
-                    </LinearLayout>
+                        android:id="@+id/hI"
+                        android:textSize="12sp"
+                        android:text="00:00"
+                        android:textAllCaps="true"
+                        />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

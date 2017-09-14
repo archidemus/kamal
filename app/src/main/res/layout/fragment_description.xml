@@ -50,21 +50,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/fI"
-                            android:textSize="12sp"
-                            android:text="LUN, 5 FEB"
-                            android:textAllCaps="true"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:text=" • "
-                            android:textAllCaps="true"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/hI"
                             android:textSize="12sp"
                             android:text="00:00"
@@ -76,22 +61,6 @@
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
                             android:text=" → "
-                            android:textAllCaps="true"
-                            />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/fT"
-                            android:textSize="12sp"
-                            android:text="LUN, 5 FEB"
-                            android:textAllCaps="true"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:text=" • "
                             android:textAllCaps="true"
                             />
                         <TextView

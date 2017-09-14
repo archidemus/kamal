@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -26,7 +25,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -41,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.squareup.picasso.Transformation;
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
@@ -106,6 +105,20 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String PREFS_NAME = "KamalPreferences";
+    private static final String TAG = InitiativesActivity.class.getSimpleName();
+    public Interests userInterests;
+    public HashMap initiativeHashMap;
+    public HashMap markerHashMap;
+    public List<String> comidaInitiativeIDList;
+    public List<String> deporteInitiativeIDList;
+    public List<String> teatroInitiativeIDList;
+    public List<String> musicaInitiativeIDList;
+    public boolean comidaOn = false;
+    public boolean deporteOn = false;
+    public boolean teatroOn = false;
+    public boolean musicaOn = false;
+    public int authListenerCounter = 0;
     //Menu
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
@@ -114,119 +127,24 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     boolean polylineActive;
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
-    private static final String TAG = InitiativesActivity.class.getSimpleName();
     //Others
     FrameLayout previewFragment;
     FrameLayout descriptionFragment;
     Bundle selectedInitiative;
-    boolean opened_bottom, opened_df, opened_pf, on_way;
-    private float mLastPosY;
+    boolean opened_bottom, opened_df, opened_pf, on_way, back_button_active;
     Marker selectedMarker;
     Toolbar toolbar;
-    //int notificationID = 10;
-    private DatabaseReference userInterestsDB;
     LocationGPS start;
     Vector<String> sectors;
     Vector<DatabaseReference> sectorsDB;
     LatLng lastMarkerPosition;
-    private DatabaseReference userDataDB;
-    public Interests userInterests;
-    public HashMap initiativeHashMap;
-    public HashMap markerHashMap;
-    public List<String> comidaInitiativeIDList;
-    public List<String> deporteInitiativeIDList;
-    public List<String> teatroInitiativeIDList;
-    public List<String> musicaInitiativeIDList;
-    public static final String PREFS_NAME = "KamalPreferences";
-    public boolean comidaOn = false;
-    public boolean deporteOn = false;
-    public boolean teatroOn = false;
-    public boolean musicaOn = false;
     View vista;
     TextView txtv_user, txtv_mail;
     RatingBar rtb;
     ImageView img_profile;
     View linea;
     String msg = "Inicia sesion para habilitar otras funciones";
-    public int authListenerCounter = 0;
-
-    GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
-        @Override
-        public void onCameraIdle() {
-            //double latitud=initiativesMap.getCameraPosition().target.latitude;
-            //double longitud=initiativesMap.getCameraPosition().target.longitude;
-            //String newSector=getSector(latitud,longitud);
-            //initiativesMap.clear();
-            //removeListeners();
-            //loadInitiatives();
-            updateInitiatives();
-            /*if(!(newSector.equals(currentSector))){
-                initiativesMap.clear();
-                removeListeners();
-                initListeners(latitud,longitud);
-                currentSector=newSector;
-
-
-            }*/
-
-
-        }
-    };
-
-    //User Auth Listener
-    AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            if (currentUser != null) {
-                userDataDB = FirebaseDatabase.getInstance().getReference("Users");
-                User user = new User(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), FirebaseInstanceId.getInstance().getToken());
-                userDataDB.child(currentUser.getUid()).setValue(user);
-                //Add Read interests listener
-                userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                userInterestsDB.addValueEventListener(userInterestslistener);
-                authListenerCounter++;
-
-                //Button visibility login
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
-                navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
-                //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
-                //Menu Header
-                txtv_user.setText(currentUser.getDisplayName());
-                txtv_mail.setText(currentUser.getEmail());
-                rtb.setRating(3);
-                linea.setVisibility(View.VISIBLE);
-
-                Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).transform(new CircleTransform()).into(img_profile);
-                //Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
-            } else{
-                //Button visibility logout
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
-                navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
-                navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
-                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(false);
-                //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
-                //Menu Header
-                txtv_mail.setText(msg);
-                txtv_user.setText("");
-                rtb.setRating(0);
-                linea.setVisibility(View.GONE);
-                img_profile.setImageResource(android.R.color.transparent);
-                //Remove Read interests listener
-                if (authListenerCounter > 0) {
-                    userInterestsDB.removeEventListener(userInterestslistener);
-                    authListenerCounter--;
-                }
-            }
-        }
-    };
-
+    UiSettings uiSettings;
     //User Interests Listener
     ValueEventListener userInterestslistener = new ValueEventListener() {
         @Override
@@ -281,7 +199,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
         }
     };
-
     //Initiatives Permanent Listener
     ChildEventListener initiativesListener = new ChildEventListener() {
         @Override
@@ -424,6 +341,95 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+    GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
+        @Override
+        public void onCameraIdle() {
+            //double latitud=initiativesMap.getCameraPosition().target.latitude;
+            //double longitud=initiativesMap.getCameraPosition().target.longitude;
+            //String newSector=getSector(latitud,longitud);
+            //initiativesMap.clear();
+            //removeListeners();
+            //loadInitiatives();
+            updateInitiatives();
+            /*if(!(newSector.equals(currentSector))){
+                initiativesMap.clear();
+                removeListeners();
+                initListeners(latitud,longitud);
+                currentSector=newSector;
+
+
+            }*/
+
+
+        }
+    };
+    private float mLastPosY;
+    //int notificationID = 10;
+    private DatabaseReference userInterestsDB;
+    private DatabaseReference userDataDB;
+    //User Auth Listener
+    AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            if (currentUser != null) {
+                userDataDB = FirebaseDatabase.getInstance().getReference("Users");
+                User user = new User(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), FirebaseInstanceId.getInstance().getToken());
+                userDataDB.child(currentUser.getUid()).setValue(user);
+                //Add Read interests listener
+                userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                userInterestsDB.addValueEventListener(userInterestslistener);
+                authListenerCounter++;
+
+                //Button visibility login
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_login).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(true);
+                //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(true);
+                //Menu Header
+                txtv_user.setText(currentUser.getDisplayName());
+                txtv_mail.setText(currentUser.getEmail());
+                rtb.setRating(3);
+                linea.setVisibility(View.VISIBLE);
+
+                Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).transform(new CircleTransform()).into(img_profile);
+                //Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).into(img_profile);
+            } else {
+                //Button visibility logout
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                //navigationView.getMenu().findItem(R.id.initiates_search).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_login).setVisible(true);
+                navigationView.getMenu().findItem(R.id.initiates_initiative).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_manage).setVisible(false);
+                navigationView.getMenu().findItem(R.id.initiates_settings).setVisible(false);
+                //navigationView.getMenu().findItem(R.id.initiates_recent).setVisible(false);
+                //Menu Header
+                txtv_mail.setText(msg);
+                txtv_user.setText("");
+                rtb.setRating(0);
+                linea.setVisibility(View.GONE);
+                img_profile.setImageResource(android.R.color.transparent);
+                //Remove Read interests listener
+                if (authListenerCounter > 0) {
+                    userInterestsDB.removeEventListener(userInterestslistener);
+                    authListenerCounter--;
+                }
+            }
+        }
+    };
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!ConnectivityStatus.isConnected(getApplicationContext())) {
+                ((NotificationHelper) getApplication()).Setc(6);
+            } else {
+            }
 
         }
     };
@@ -578,46 +584,86 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (!ConnectivityStatus.isConnected(getApplicationContext())) {
-                ((NotificationHelper) getApplication()).Setc(6);
-            } else {
-            }
-
-        }
-    };
-
     //Toolbar set
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         if (item.getItemId() == android.R.id.home) {
-            if(drawer.isDrawerOpen(Gravity.LEFT)) {
-                drawer.closeDrawer(Gravity.LEFT);
-            }else{
-                drawer.openDrawer(Gravity.LEFT);
-            }
+            if (back_button_active) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                OvershootInterpolator interpolator;
+                interpolator = new OvershootInterpolator(1);
 
-        }else if (item.getItemId()== R.id.toolbar_filter) {
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else if (polylineActive && initiativePath != null) {
+                    initiativePath.remove();
+                    polylineActive = false;
+                    on_way = false;
+                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                    Titulo.setText("Kamal");
+                    Titulo.setTextSize(18);
+                    toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+                } else if (opened_df) {
+                    descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
+                    opened_df = false;
+                    initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                    Titulo.setText("Kamal");
+                    Titulo.setTextSize(18);
+                    uiSettings.setAllGesturesEnabled(true);
+                    uiSettings.setMyLocationButtonEnabled(true);
+                } else if (opened_pf) {
+                    previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
+                    opened_pf = false;
+                    toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+                    toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+                    toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                    final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                    upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                    getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                } else if (opened_bottom) {
+                    vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
+                    opened_bottom = false;
+                    toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                    final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                    upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                    getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                } else {
+                    return super.onOptionsItemSelected(item);
+                }
+
+            } else {
+                if (drawer.isDrawerOpen(Gravity.LEFT)) {
+                    drawer.closeDrawer(Gravity.LEFT);
+                } else {
+                    drawer.openDrawer(Gravity.LEFT);
+                }
+            }
+        } else if (item.getItemId() == R.id.toolbar_filter) {
             OvershootInterpolator interpolator;
             interpolator = new OvershootInterpolator(1);
-            if(opened_bottom){
+            if (opened_bottom) {
                 vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = false;
-            } else{
+                toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            } else {
                 vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = true;
+                toolbar.setNavigationIcon(R.drawable.ic_back);
+                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_back);
+                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                back_button_active = true;
             }
-        }else if (item.getItemId()== R.id.toolbar_ir) {
+        } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
         }
         return super.onOptionsItemSelected(item);
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -640,6 +686,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         opened_df = false;
         opened_pf = false;
         on_way = false;
+        back_button_active = false;
 
         setContentView(R.layout.activity_initiatives);
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
@@ -706,7 +753,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         mLastPosY = event.getY();
                         return true;
                     case (MotionEvent.ACTION_MOVE):
-                        if (!on_way){
+                        if (!on_way) {
                             currentPosition = event.getY();
                             float deltaY = mLastPosY - currentPosition;
                             float transY = View.TRANSLATION_Y.get(v);
@@ -725,10 +772,17 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             previewFragment.animate().setInterpolator(interpolator).translationY(previewFragment.getMeasuredHeight()).setDuration(600);
                             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
                             Titulo.setText("Kamal");
+                            MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
+                            item.setVisible(true);
                             Titulo.setTextSize(18);
                             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
-                        } else{ //Cuando toca el preview
-                            if (!opened_df && !on_way){
+                            toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+                            final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+                            upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                            getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                            opened_pf = false;
+                        } else { //Cuando toca el preview
+                            if (!opened_df && !on_way) {
                                 DescriptionFragment DF = new DescriptionFragment();
                                 DF.setArguments(selectedInitiative);
                                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -738,12 +792,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 descriptionFragment.animate().setInterpolator(interpolator).translationYBy(-descriptionFragment.getMeasuredHeight()).setDuration(600);
                                 trans.commit();
                                 TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                                Initiative initiative = (Initiative) initiativeHashMap.get(selectedMarker);
                                 Titulo.setText(selectedInitiative.getString("Titulo"));
                                 Titulo.setTextSize(25);
-                                initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 17));
-                                initiativesMap.moveCamera(CameraUpdateFactory.scrollBy(0, 500));
+                                initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                                initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
                                 opened_df = true;
+                                uiSettings.setAllGesturesEnabled(false);
+                                uiSettings.setMyLocationButtonEnabled(false);
+
                             }
                         }
                         return true;
@@ -785,11 +841,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             interpolator = new OvershootInterpolator(1);
                             descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
                             opened_df = false;
+                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                            Titulo.setText("Kamal");
+                            Titulo.setTextSize(18);
+                            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+                            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                            uiSettings.setAllGesturesEnabled(true);
+                            uiSettings.setMyLocationButtonEnabled(true);
                         }
-                        TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                        Titulo.setText("Kamal");
-                        Titulo.setTextSize(18);
-                        toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                         return true;
                     default:
                         return v.onTouchEvent(event);
@@ -891,16 +950,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         //User & mail headers
 
-        txtv_user = (TextView)view.findViewById(R.id.initiates_user);
-        txtv_mail = (TextView)view.findViewById(R.id.initiates_mail);
-        img_profile = (ImageView)view.findViewById(R.id.initiates_img_profile);
+        txtv_user = (TextView) view.findViewById(R.id.initiates_user);
+        txtv_mail = (TextView) view.findViewById(R.id.initiates_mail);
+        img_profile = (ImageView) view.findViewById(R.id.initiates_img_profile);
         rtb = (RatingBar) view.findViewById(R.id.inRatingMenu);
-        linea = (View) view.findViewById(R.id.linea);
+        linea = view.findViewById(R.id.linea);
 
 
-
-        userInterests=new Interests(false,false,false,false, false, true, false);
-        vista= findViewById(R.id.bottom_menu);
+        userInterests = new Interests(false, false, false, false, false, true, false);
+        vista = findViewById(R.id.bottom_menu);
 
     }
 
@@ -949,11 +1007,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
 
         interested = new LatLng(start.getLatitud(), start.getLongitud());
-        initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(interested, 15));
-        UiSettings settings = initiativesMap.getUiSettings();
-        settings.setCompassEnabled(false);
-        settings.setMapToolbarEnabled(false);
-        settings.setZoomControlsEnabled(false);
+        initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(interested, 15));
+        uiSettings = initiativesMap.getUiSettings();
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setMapToolbarEnabled(false);
+        uiSettings.setZoomControlsEnabled(false);
         initiativesMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -968,8 +1026,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 selectedInitiative.putString("Descripcion", initiative.Descripcion);
                 selectedInitiative.putString("Nombre", initiative.Nombre);
                 selectedInitiative.putString("Direccion", initiative.Direccion);
-                DateFormat formatter = new SimpleDateFormat("HH:mm");
-                DateFormat formatter1 = new SimpleDateFormat("HH:mm");
+                DateFormat formatter = new SimpleDateFormat("E, d MMM • HH:mm");
+                DateFormat formatter1 = new SimpleDateFormat("E, d MMM • HH:mm");
                 selectedInitiative.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
                 selectedInitiative.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
                 //le paso los datos al fragment
@@ -977,19 +1035,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 DF.setArguments(selectedInitiative);
                 lastMarkerPosition = marker.getPosition();
                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-
+                toolbar.setNavigationIcon(R.drawable.ic_back);
+                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_back);
+                back_button_active = true;
+                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
                 trans.replace(R.id.previewFragment, DF);
-                if (opened_bottom){
+                if (opened_bottom) {
                     vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                     opened_bottom = false;
                 }
-                //Log
                 if ((previewFragment.getTranslationY() >= previewFragment.getHeight()) && !on_way) {
                     previewFragment.animate().setInterpolator(interpolator).translationYBy(-previewFragment.getMeasuredHeight()).setDuration(600);
                     opened_pf = true;
                 }
                 trans.commit();
-                Log.d("MAP", "Entro a " + marker.getTitle());
                 return false;
             }
         });
@@ -1024,15 +1084,28 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     public void onDirectionSuccess(Direction direction, String rawBody) {
                         String status = direction.getStatus();
                         if (status.equals(RequestResult.OK)) {
+                            uiSettings.setAllGesturesEnabled(true);
+                            uiSettings.setMyLocationButtonEnabled(true);
+                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                            builder.include(selectedMarker.getPosition());
+                            builder.include(new LatLng(start.getLatitud(), start.getLongitud()));
                             Route route = direction.getRouteList().get(0);
                             Leg leg = route.getLegList().get(0);
+                            LatLngBounds bounds = builder.build();
+                            int padding = 30; // offset from edges of the map in pixels
+                            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+                            initiativesMap.animateCamera(cu);
                             ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
                             PolylineOptions polylineOptions = DirectionConverter.createPolyline(getApplicationContext(), directionPositionList, 3, R.color.Primary);
                             initiativePath = initiativesMap.addPolyline(polylineOptions);
                             polylineActive = true;
                             on_way = true;
+                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                            Titulo.setText("Camino a: " + selectedInitiative.getString("Titulo"));
+                            Titulo.setTextSize(25);
                         }
                     }
+
                     @Override
                     public void onDirectionFailure(Throwable t) {
                         // Do something
@@ -1056,22 +1129,34 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
             Titulo.setText("Kamal");
             Titulo.setTextSize(18);
+            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {
             descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
             opened_df = false;
-            initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 17));
+            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
             Titulo.setText("Kamal");
             Titulo.setTextSize(18);
+            uiSettings.setAllGesturesEnabled(true);
+            uiSettings.setMyLocationButtonEnabled(true);
         } else if (opened_pf) {
             previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
             opened_pf = false;
             MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
             item.setVisible(true);
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+            toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+            final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+            upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+            getSupportActionBar().setHomeAsUpIndicator(upArrow);
         } else if (opened_bottom) {
             vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
             opened_bottom = false;
+            toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+            final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
+            upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
+            getSupportActionBar().setHomeAsUpIndicator(upArrow);
         } else {
             super.onBackPressed();
         }

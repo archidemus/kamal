@@ -8,7 +8,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/toolbar_ir"
-        android:title="Ir!"
+        android:title="Ir"
         app:showAsAction="always|withText"
         />
 </menu>

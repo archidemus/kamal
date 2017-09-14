@@ -86,7 +86,7 @@ public class ListAdapter extends ArrayAdapter<String>{
 
     public class ViewHolder {
         ImageView imageView;
-        TextView text;;
+        TextView text;
         TextView descripcion;
         RelativeLayout ll;
     }

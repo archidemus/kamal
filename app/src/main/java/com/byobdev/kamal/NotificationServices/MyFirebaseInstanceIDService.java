@@ -15,7 +15,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService{
     public void onTokenRefresh() {
         if(FirebaseAuth.getInstance().getCurrentUser()!=null){
             String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-            DatabaseReference tokenDB= FirebaseDatabase.getInstance().getReference("Users");;
+            DatabaseReference tokenDB= FirebaseDatabase.getInstance().getReference("Users");
             tokenDB.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("notificationToken").setValue(refreshedToken);
         }
 
