@@ -52,6 +52,8 @@ public class PreviewFragment extends Fragment {
 
         Nombre = (TextView) getView().findViewById(R.id.inOrganizer);
         Nombre.setText(getArguments().getString("Nombre"));
+        Titulo = (TextView) getView().findViewById(R.id.inTitle);
+        Titulo.setText(getArguments().getString("Titulo"));
         //Descripcion = (TextView) getView().findViewById(R.id.inShortDesc);
         //Descripcion.setText(getArguments().getString("Descripcion"));
         Lugar = (TextView) getView().findViewById(R.id.inPlace);
