@@ -325,7 +325,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 //getting image from gallery
 
                 //Setting image to ImageView
-                Picasso.with(this).load(filePath).resize(100,100).into(imgView);
+                Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
             } catch (Exception e) {
                 e.printStackTrace();
             }
