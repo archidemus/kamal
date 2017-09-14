@@ -67,7 +67,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autoLink="none"
+                        android:hint="Máximo 20 caracteres"
                         android:inputType="text"
+                        android:maxLength="20"
                         android:textSize="16sp" />
 
 

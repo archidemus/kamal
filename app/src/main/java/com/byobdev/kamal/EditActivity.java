@@ -345,13 +345,6 @@ public class EditActivity extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
 
-            try {
-                Picasso.with(this).load(filePath).resize(100,100).into(imgView);
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             if(filePath != null) {
                 pd.show();
 
@@ -366,6 +359,17 @@ public class EditActivity extends AppCompatActivity {
                         pd.dismiss();
                         Toast.makeText(EditActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
                         imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                        try {
+                            //getting image from gallery
+
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+                            //Setting image to ImageView
+                            //Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
+                            imgView.setImageBitmap(bitmap);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
