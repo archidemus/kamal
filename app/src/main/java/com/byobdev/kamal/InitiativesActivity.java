@@ -603,6 +603,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     Titulo.setText("Kamal");
                     Titulo.setTextSize(18);
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+                    initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 } else if (opened_df) {
                     descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
                     opened_df = false;
