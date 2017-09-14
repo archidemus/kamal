@@ -116,6 +116,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         k[0] = 1;
                     }
                 }
+                if(k[0] ==1){
+                    return;
+                }
+                String Title="Iniciativa de "+Tipo+" a "+(int)distanceInMeters+" metros!";
+                String Body=Titulo+": "+Descripcion;
+                if(((NotificationHelper)MyFirebaseMessagingService.this.getApplication()).cvalue()<=3){
+                    sendNotification(Title, Body);
+                    SystemClock.sleep(120*1000);
+                }
+                else if(((NotificationHelper)MyFirebaseMessagingService.this.getApplication()).cvalue()>3){
+                    notificacion();
+                    ((NotificationHelper)MyFirebaseMessagingService.this.getApplication()).ColapsoMensaje();
+                    SystemClock.sleep(300*1000);
+                }
 
             }
             @Override
@@ -125,26 +139,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         });
 
-        try{
-            Thread.sleep(3000);
-        }catch (Exception e){
-            Log.d("Exception", e.toString());
-        }
-
-        if(k[0] ==1){
-            return;
-        }
-        String Title="Iniciativa de "+Tipo+" a "+(int)distanceInMeters+" metros!";
-        String Body=Titulo+": "+Descripcion;
-        if(((NotificationHelper)this.getApplication()).cvalue()<=3){
-            sendNotification(Title, Body);
-            SystemClock.sleep(120*1000);
-        }
-        else if(((NotificationHelper)this.getApplication()).cvalue()>3){
-            notificacion();
-            ((NotificationHelper)this.getApplication()).ColapsoMensaje();
-            SystemClock.sleep(300*1000);
-        }
 
     }
 
