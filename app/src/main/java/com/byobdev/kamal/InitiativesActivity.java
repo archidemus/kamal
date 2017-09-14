@@ -739,7 +739,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 trans.commit();
                                 TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
                                 Initiative initiative = (Initiative) initiativeHashMap.get(selectedMarker);
-                                Titulo.setText(selectedInitiative.getString("Descripcion"));
+                                Titulo.setText(selectedInitiative.getString("Titulo"));
                                 Titulo.setTextSize(25);
                                 initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 17));
                                 initiativesMap.moveCamera(CameraUpdateFactory.scrollBy(0, 500));
