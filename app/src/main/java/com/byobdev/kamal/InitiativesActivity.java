@@ -610,6 +610,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     Titulo.setTextSize(18);
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                    back_button_active = false;
                 } else if (opened_df) {
                     View df = findViewById(R.id.descriptionFragment);
                     df.getLocationOnScreen(fragment_pos);
@@ -635,6 +636,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
                         upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                         getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                        back_button_active = false;
                     }
                 } else if (opened_bottom) {
                     View ob = findViewById(R.id.bottom_menu);
@@ -646,12 +648,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
                         upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                         getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                        back_button_active = false;
                     }
                 } else {
                     return super.onOptionsItemSelected(item);
                 }
-                back_button_active = false;
-
             } else {
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
@@ -669,6 +670,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
                 upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                 getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                back_button_active = false;
             } else {
                 vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = true;
@@ -799,6 +801,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                             getSupportActionBar().setHomeAsUpIndicator(upArrow);
                             opened_pf = false;
+                            back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
                                 DescriptionFragment DF = new DescriptionFragment();
@@ -814,9 +817,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 Titulo.setTextSize(25);
                                 initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                                 initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
-                                opened_df = true;
                                 uiSettings.setAllGesturesEnabled(false);
                                 uiSettings.setMyLocationButtonEnabled(false);
+                                opened_df = true;
 
                             }
                         }
@@ -1174,13 +1177,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if ((pf.getHeight() + fragment_pos[1]) == maxY){
                 previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                 opened_pf = false;
-                MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
-                item.setVisible(true);
+                toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
                 toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
                 upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                 getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                back_button_active = false;
             }
         } else if (opened_bottom) {
             View ob = findViewById(R.id.bottom_menu);
@@ -1192,6 +1195,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
                 upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                 getSupportActionBar().setHomeAsUpIndicator(upArrow);
+                back_button_active = false;
             }
         } else {
             super.onBackPressed();
