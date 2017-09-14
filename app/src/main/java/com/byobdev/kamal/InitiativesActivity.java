@@ -1300,10 +1300,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
             paint.setShader(shader);
             paint.setAntiAlias(true);
-
             float r = size / 2f;
             canvas.drawCircle(r, r, r, paint);
-
             squaredBitmap.recycle();
             return bitmap;
         }

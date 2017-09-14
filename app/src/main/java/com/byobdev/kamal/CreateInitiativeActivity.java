@@ -2,6 +2,8 @@ package com.byobdev.kamal;
 
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -56,6 +58,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Button button;
     ArrayAdapter<CharSequence> adapter;
     Place place;
+    String url;
     MenuItem check;
 
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -298,14 +301,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
 
-            try {
-                //getting image from gallery
 
-                //Setting image to ImageView
-                Picasso.with(this).load(filePath).resize(100,100).into(imgView);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             if(filePath != null) {
                 pd.show();
 
@@ -320,6 +316,17 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                         pd.dismiss();
                         Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
                         imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                        try {
+                            //getting image from gallery
+
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+                            //Setting image to ImageView
+                            //Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
+                            imgView.setImageBitmap(bitmap);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -353,6 +360,19 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+    public String getPath(Uri uri)//Se obtiene la ruta de la imagen, usando un cursor que apunta a la imagen, el cual es cerrado para evitar problemas de punteros
+    {
+        String res= null;
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if(cursor != null && cursor.moveToFirst())
+        {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            res = cursor.getString(column_index);
+            cursor.close();
+        }
+        return res;
     }
 
 
