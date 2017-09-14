@@ -610,7 +610,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     Titulo.setTextSize(18);
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                    back_button_active = false;
                 } else if (opened_df) {
                     View df = findViewById(R.id.descriptionFragment);
                     df.getLocationOnScreen(fragment_pos);
