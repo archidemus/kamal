@@ -67,8 +67,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autoLink="none"
+                        android:hint="Máximo 40 caracteres"
                         android:inputType="text"
-                        android:textSize="16sp" />
+                        android:maxLength="40"
+                        android:textSize="16sp"/>
 
 
                 </LinearLayout>
@@ -112,8 +114,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.00"
+                android:hint="Máximo 500 caracteres"
                 android:inputType="textMultiLine"
-                android:textSize="16sp" />
+                android:maxLength="500"
+                android:textSize="16sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

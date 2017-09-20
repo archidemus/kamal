@@ -62,6 +62,7 @@ public class LocationGPS extends Service implements LocationListener{
                 Toast.makeText(context.getApplicationContext(), "No fue posible determinar la ubicación", Toast.LENGTH_LONG).show();
             }
             else {
+
                 this.canGetLoc = true;
                 if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
                     return null;

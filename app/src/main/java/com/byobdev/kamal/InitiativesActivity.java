@@ -610,7 +610,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     Titulo.setTextSize(18);
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                    back_button_active = false;
                 } else if (opened_df) {
                     View df = findViewById(R.id.descriptionFragment);
                     df.getLocationOnScreen(fragment_pos);
@@ -1216,7 +1215,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 getFragmentManager().popBackStack();
             }
         }
-        getApplicationContext().unregisterReceiver(receiver);
+        //getApplicationContext().unregisterReceiver(receiver);
 
     }
 
@@ -1275,7 +1274,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public void onResume() {
 
         super.onResume();  // Always call the superclass method first
-        getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        //  getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
 
@@ -1300,10 +1299,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
             paint.setShader(shader);
             paint.setAntiAlias(true);
-
             float r = size / 2f;
             canvas.drawCircle(r, r, r, paint);
-
             squaredBitmap.recycle();
             return bitmap;
         }
