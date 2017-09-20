@@ -16,6 +16,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.byobdev.kamal.InitiativesActivity;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -57,7 +60,8 @@ public class LocationGPS extends Service implements LocationListener{
 
             if (!isNetOn && !isGPSOn) {
                 Toast.makeText(context.getApplicationContext(), "No fue posible determinar la ubicación", Toast.LENGTH_LONG).show();
-            } else {
+            }
+            else {
                 this.canGetLoc = true;
                 if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
                     return null;
