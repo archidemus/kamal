@@ -101,6 +101,7 @@ import static com.byobdev.kamal.R.id.map;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
+import static java.lang.Integer.parseInt;
 
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
@@ -374,11 +375,39 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            if(opened_df == false){
+
+            }
+            final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
             if (currentUser != null) {
                 userDataDB = FirebaseDatabase.getInstance().getReference("Users");
-                User user = new User(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), FirebaseInstanceId.getInstance().getToken());
-                userDataDB.child(currentUser.getUid()).setValue(user);
+                userDataDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        // for (DataSnapshot child : snapshot.getChildren())
+                        // Create a LinearLayout element
+                        float rating;
+                        int nVotos;
+                        if(snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("rating").getValue() == null){
+                            rating = 0.0f;
+                            nVotos=0;
+                            userDataDB.child(currentUser.getUid()).child("Nvotos").setValue(nVotos);
+                            userDataDB.child(currentUser.getUid()).child("rating").setValue(rating);
+
+                        }
+                        else{
+                            rating = Float.parseFloat(snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("rating").getValue().toString());
+                        }
+                        userDataDB.child(currentUser.getUid()).child("Email").setValue(currentUser.getEmail());
+                        userDataDB.child(currentUser.getUid()).child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
+                        userDataDB.child(currentUser.getUid()).child("Name").setValue(currentUser.getDisplayName());
+                        rtb.setRating(rating);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        System.out.println("The read failed: " + databaseError.getCode());
+                    }
+                });
                 //Add Read interests listener
                 userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 userInterestsDB.addValueEventListener(userInterestslistener);
@@ -395,7 +424,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 //Menu Header
                 txtv_user.setText(currentUser.getDisplayName());
                 txtv_mail.setText(currentUser.getEmail());
-                rtb.setRating(3);
                 linea.setVisibility(View.VISIBLE);
 
                 Picasso.with(getApplicationContext()).load(currentUser.getProviderData().get(0).getPhotoUrl()).transform(new CircleTransform()).into(img_profile);
@@ -1050,6 +1078,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 DateFormat formatter1 = new SimpleDateFormat("E, d MMM • HH:mm");
                 selectedInitiative.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
                 selectedInitiative.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
+                selectedInitiative.putString("Uid", initiative.Uid);
                 //le paso los datos al fragment
                 PreviewFragment DF = new PreviewFragment();
                 DF.setArguments(selectedInitiative);
