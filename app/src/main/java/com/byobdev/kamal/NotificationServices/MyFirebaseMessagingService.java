@@ -123,12 +123,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String Body=Titulo+": "+Descripcion;
                 if(((NotificationHelper)MyFirebaseMessagingService.this.getApplication()).cvalue()<=3){
                     sendNotification(Title, Body);
-                    SystemClock.sleep(120*1000);
+                    SystemClock.sleep(1000);
                 }
                 else if(((NotificationHelper)MyFirebaseMessagingService.this.getApplication()).cvalue()>3){
                     notificacion();
                     ((NotificationHelper)MyFirebaseMessagingService.this.getApplication()).ColapsoMensaje();
-                    SystemClock.sleep(300*1000);
+                    SystemClock.sleep(1000);
                 }
 
             }

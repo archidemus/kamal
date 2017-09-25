@@ -27,6 +27,7 @@ public class PreviewFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.toolbar_filter).setVisible(false);
+        menu.findItem(R.id.keyword_filter).setVisible(false);
         menu.findItem(R.id.toolbar_ir).setVisible(true);
     }
 
