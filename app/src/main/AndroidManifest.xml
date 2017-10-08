@@ -48,6 +48,9 @@
             android:name=".ListActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".VerCommentsActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".EditActivity"
             android:screenOrientation="portrait" />
         <activity
