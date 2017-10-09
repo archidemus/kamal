@@ -43,6 +43,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.squareup.picasso.Transformation;
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
@@ -211,39 +212,96 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Initiative initiative = dataSnapshot.getValue(Initiative.class);
             float markerColor = HUE_AZURE;
             Marker aux;
-            if (initiative.Estado == 0) {//aun no inicia
-                markerColor = HUE_AZURE;
-            } else if (initiative.Estado == 1) {//en curso
-                markerColor = HUE_GREEN;
-            } else if (initiative.Estado == 2) {//por terminar
-                markerColor = HUE_RED;
-            } else if (initiative.Estado == 3) {//termino
+            if (initiative.Estado == 3) {//termino
                 return;
             }
             if (markerHashMap.get(dataSnapshot.getKey()) != null) {
                 return;
             }
-            aux = initiativesMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                    .icon(BitmapDescriptorFactory
-                            .defaultMarker(markerColor))
-            );
-            initiativeHashMap.put(aux.getId(), initiative);
-            markerHashMap.put(dataSnapshot.getKey(), aux);
-            keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
+
             if (initiative.Tipo.equals("Comida")) {
+
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker))
+                    );
+                }
                 aux.setVisible(comidaOn);
                 comidaInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Deporte")) {
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker))
+                    );
+                }
                 aux.setVisible(deporteOn);
                 deporteInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Teatro")) {
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker))
+                    );
+                }
                 aux.setVisible(teatroOn);
                 teatroInitiativeIDList.add(dataSnapshot.getKey());
-            } else if (initiative.Tipo.equals("Musica")) {
+            } else{//musica
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker))
+                    );
+                }
                 aux.setVisible(musicaOn);
                 musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
+            initiativeHashMap.put(aux.getId(), initiative);
+            markerHashMap.put(dataSnapshot.getKey(), aux);
+            keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
+
+
         }
 
         @Override
@@ -254,14 +312,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return;
             }
             if (initiative.Estado == 0) {//aun no inicia
-                aux.setIcon(BitmapDescriptorFactory
-                        .defaultMarker(HUE_AZURE));
+                if (initiative.Tipo.equals("Comida")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgraymarker));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgraymarker));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergraymarker));
+                } else {//musica
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgraymarker));
+                }
             } else if (initiative.Estado == 1) {//en curso
-                aux.setIcon(BitmapDescriptorFactory
-                        .defaultMarker(HUE_GREEN));
+                if (initiative.Tipo.equals("Comida")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgreenmarker));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgreenmarker));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergreenmarker));
+                } else {//musica
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgreenmarker));
+                }
             } else if (initiative.Estado == 2) {//por terminar
-                aux.setIcon(BitmapDescriptorFactory
-                        .defaultMarker(HUE_RED));
+                if (initiative.Tipo.equals("Comida")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker));
+                } else {//musica
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker));
+                }
             } else if (initiative.Estado == 3) {//terminado
                 initiativeHashMap.remove(aux.getId());
                 markerHashMap.remove(dataSnapshot.getKey());
@@ -427,6 +506,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         }
     };
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
 
     public String getSector(double latitude, double longitude) {
         return Integer.toString((int) (latitude * 50)) + "," + Integer.toString((int) (longitude * 50));
