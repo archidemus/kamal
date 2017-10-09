@@ -1228,6 +1228,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 Intent login = new Intent();
                 login.setClassName("com.byobdev.kamal", "com.byobdev.kamal.LoginActivity");
                 startActivityForResult(login, 0);
+                break;
             case R.id.initiates_initiative:
                 if (FirebaseAuth.getInstance().getCurrentUser() == null) {
                     Intent intentMain3 = new Intent(this, LoginActivity.class);
