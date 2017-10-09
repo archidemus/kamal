@@ -6,13 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/textLightPrimary"
     android:orientation="vertical">
-    <ImageView
-        android:id="@+id/inImage"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:src="@drawable/kamal_not_found"
-        android:scaleType="center"
-        android:layout_gravity="center"/>
     <ScrollView
         android:layout_width="match_parent"
         android:id="@+id/scrollViewFragment"
@@ -25,21 +18,32 @@
             android:orientation="vertical"
             android:weightSum="1">
 
+            <ImageView
+                android:id="@+id/inImage"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:src="@drawable/kamal_not_found"
+                android:scaleType="center"
+                android:layout_gravity="center"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingRight="@dimen/vertical_margin"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingBottom="@dimen/horizontal_margin">
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
                     <de.hdodenhof.circleimageview.CircleImageView
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/profile_image"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
                         android:src="@drawable/kamal_not_found"
                         app:civ_border_width="0dp"
-                        app:civ_border_color="#FF000000"
+                        app:civ_border_color="#FFFFFF"
                         android:layout_gravity="center"/>
                 </LinearLayout>
                 <LinearLayout
@@ -47,35 +51,6 @@
                     android:layout_height="wrap_content"
                     android:padding="8dp"
                     android:orientation="vertical">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/hI"
-                            android:textSize="12sp"
-                            android:text="00:00"
-                            android:textAllCaps="true"
-                            />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:text=" → "
-                            android:textAllCaps="true"
-                            />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/hT"
-                            android:textSize="12sp"
-                            android:text="00:00"
-                            android:textAllCaps="true"
-                            />
-                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -109,70 +84,108 @@
                         android:maxLines="2"
                         android:ellipsize="marquee"
                         android:text="Lugar"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/hI"
+                            android:textSize="12sp"
+                            android:text="00:00"
+                            android:textAllCaps="true"
+                            />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="12sp"
+                            android:text=" → "
+                            android:textAllCaps="true"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/hT"
+                            android:textSize="12sp"
+                            android:text="00:00"
+                            android:textAllCaps="true"
+                            />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Descripción"
-                android:textColor="@color/Primary"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"/>
-
             <TextView
                 android:id="@+id/inShortDesc"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textDarkPrimary"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:layout_marginTop="@dimen/fab_margin"/>
-
+                android:textColor="@color/textDarkSecondary"
+                android:paddingRight="@dimen/vertical_margin"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingTop="@dimen/horizontal_margin"
+                android:paddingBottom="@dimen/horizontal_margin"
+                android:text="Esto es un texto de prueba"
+                />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Consultas"
-                android:textColor="@color/Primary"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"/>
+                android:textColor="@color/textDarkPrimary"
+                android:textStyle="bold"
+                android:textSize="16dp"
+                android:padding="@dimen/vertical_margin"/>
             <ListView
                 android:id="@+id/comment_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/vertical_margin"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingTop="@dimen/horizontal_margin"
+                android:paddingBottom="@dimen/horizontal_margin">
 
             </ListView>
             <Button
                 android:id="@+id/VerComentario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="VER MÁS"
+                android:text="VER TODOS"
                 android:background="@android:color/transparent"
                 android:textColor="@color/Primary"
-                android:paddingLeft="8dp"
                 android:onClick="VerComentarios"
-                android:paddingRight="8dp"/>
-            <LinearLayout
+                android:paddingRight="@dimen/vertical_margin"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingTop="@dimen/horizontal_margin"
+                android:paddingBottom="@dimen/horizontal_margin"/>
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/vertical_margin"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingTop="@dimen/horizontal_margin"
+                android:paddingBottom="@dimen/horizontal_margin"
+                android:orientation="horizontal">
                 <EditText
                     android:id="@+id/CommentInput"
-                    android:layout_width="310dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoLink="none"
                     android:hint="Nueva Consulta..."
                     android:inputType="text"
                     android:maxLength="40"
-                    android:textSize="16sp"/>
+                    android:layout_toLeftOf="@+id/SendComment"
+                    android:layout_toStartOf="@id/SendComment"
+                    android:textSize="@dimen/section_title"/>
 
                 <ImageButton
                     android:id="@+id/SendComment"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:background="@android:color/transparent"
                     android:clickable="true"
                     app:srcCompat="@drawable/ic_send" />
-            </LinearLayout>
+            </RelativeLayout>
 
         </LinearLayout>
     </ScrollView>
