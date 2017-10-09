@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/keyword_filter"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Filtrar por Palabra"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
+    <item
         android:id="@+id/toolbar_filter"
         android:icon="@drawable/ic_tune"
         android:title="Filtrar"

@@ -22,9 +22,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -40,6 +43,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.squareup.picasso.Transformation;
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
@@ -97,6 +101,7 @@ import java.util.Vector;
 
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+import static android.R.attr.key;
 import static com.byobdev.kamal.R.id.map;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
@@ -111,14 +116,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public Interests userInterests;
     public HashMap initiativeHashMap;
     public HashMap markerHashMap;
+    public HashMap keywordVisibilityHashmap;
     public List<String> comidaInitiativeIDList;
     public List<String> deporteInitiativeIDList;
     public List<String> teatroInitiativeIDList;
     public List<String> musicaInitiativeIDList;
-    public boolean comidaOn = false;
-    public boolean deporteOn = false;
-    public boolean teatroOn = false;
-    public boolean musicaOn = false;
+    public boolean comidaOn = true;
+    public boolean deporteOn = true;
+    public boolean teatroOn = true;
+    public boolean musicaOn = true;
     public int authListenerCounter = 0;
     //Menu
     DrawerLayout drawer;
@@ -207,38 +213,96 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Initiative initiative = dataSnapshot.getValue(Initiative.class);
             float markerColor = HUE_AZURE;
             Marker aux;
-            if (initiative.Estado == 0) {//aun no inicia
-                markerColor = HUE_AZURE;
-            } else if (initiative.Estado == 1) {//en curso
-                markerColor = HUE_GREEN;
-            } else if (initiative.Estado == 2) {//por terminar
-                markerColor = HUE_RED;
-            } else if (initiative.Estado == 3) {//termino
+            if (initiative.Estado == 3) {//termino
                 return;
             }
             if (markerHashMap.get(dataSnapshot.getKey()) != null) {
                 return;
             }
-            aux = initiativesMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(initiative.Latitud, initiative.Longitud))
-                    .icon(BitmapDescriptorFactory
-                            .defaultMarker(markerColor))
-            );
-            initiativeHashMap.put(aux.getId(), initiative);
-            markerHashMap.put(dataSnapshot.getKey(), aux);
+
             if (initiative.Tipo.equals("Comida")) {
+
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker))
+                    );
+                }
                 aux.setVisible(comidaOn);
                 comidaInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Deporte")) {
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker))
+                    );
+                }
                 aux.setVisible(deporteOn);
                 deporteInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Teatro")) {
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker))
+                    );
+                }
                 aux.setVisible(teatroOn);
                 teatroInitiativeIDList.add(dataSnapshot.getKey());
-            } else if (initiative.Tipo.equals("Musica")) {
+            } else{//musica
+                if (initiative.Estado == 0) {//aun no inicia
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgraymarker))
+                    );
+                } else if (initiative.Estado == 1) {//en curso
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgreenmarker))
+                    );
+                } else {//por terminar
+                    aux = initiativesMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(initiative.Latitud, initiative.Longitud))
+                            .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker))
+                    );
+                }
                 aux.setVisible(musicaOn);
                 musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
+            initiativeHashMap.put(aux.getId(), initiative);
+            markerHashMap.put(dataSnapshot.getKey(), aux);
+            keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
+
+
         }
 
         @Override
@@ -249,17 +313,39 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 return;
             }
             if (initiative.Estado == 0) {//aun no inicia
-                aux.setIcon(BitmapDescriptorFactory
-                        .defaultMarker(HUE_AZURE));
+                if (initiative.Tipo.equals("Comida")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgraymarker));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgraymarker));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergraymarker));
+                } else {//musica
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgraymarker));
+                }
             } else if (initiative.Estado == 1) {//en curso
-                aux.setIcon(BitmapDescriptorFactory
-                        .defaultMarker(HUE_GREEN));
+                if (initiative.Tipo.equals("Comida")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgreenmarker));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgreenmarker));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergreenmarker));
+                } else {//musica
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgreenmarker));
+                }
             } else if (initiative.Estado == 2) {//por terminar
-                aux.setIcon(BitmapDescriptorFactory
-                        .defaultMarker(HUE_RED));
+                if (initiative.Tipo.equals("Comida")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker));
+                } else {//musica
+                    aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker));
+                }
             } else if (initiative.Estado == 3) {//terminado
                 initiativeHashMap.remove(aux.getId());
                 markerHashMap.remove(dataSnapshot.getKey());
+                keywordVisibilityHashmap.remove(dataSnapshot.getKey());
                 aux.remove();
                 if (initiative.Tipo.equals("Comida")) {
                     for (int i = 0; i < comidaInitiativeIDList.size(); i++) {
@@ -303,6 +389,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
             initiativeHashMap.remove(aux.getId());
             markerHashMap.remove(dataSnapshot.getKey());
+            keywordVisibilityHashmap.remove(dataSnapshot.getKey());
             aux.remove();
             if (initiative.Tipo.equals("Comida")) {
                 for (int i = 0; i < comidaInitiativeIDList.size(); i++) {
@@ -348,22 +435,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
-            //double latitud=initiativesMap.getCameraPosition().target.latitude;
-            //double longitud=initiativesMap.getCameraPosition().target.longitude;
-            //String newSector=getSector(latitud,longitud);
-            //initiativesMap.clear();
-            //removeListeners();
-            //loadInitiatives();
+
             updateInitiatives();
-            /*if(!(newSector.equals(currentSector))){
-                initiativesMap.clear();
-                removeListeners();
-                initListeners(latitud,longitud);
-                currentSector=newSector;
-
-
-            }*/
-
 
         }
     };
@@ -462,13 +535,61 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
     };
 
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
     public String getSector(double latitude, double longitude) {
         return Integer.toString((int) (latitude * 50)) + "," + Integer.toString((int) (longitude * 50));
     }
+    public void filterByKeyword(String keyword){
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        Initiative initiative;
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
+            if(!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) || !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())){
+                keywordVisibilityHashmap.put(pair.getKey(),false);
+                pair.getValue().setVisible(false);
+            }
 
+        }
+    }
+    public void resetFilter(){
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        Initiative initiative;
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
+            if(!(boolean)keywordVisibilityHashmap.get(pair.getKey())){
+                if(initiative.Tipo.equals("Comida")){
+                    pair.getValue().setVisible(comidaOn);
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    pair.getValue().setVisible(musicaOn);
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    pair.getValue().setVisible(deporteOn);
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    pair.getValue().setVisible(teatroOn);
+                }
+                keywordVisibilityHashmap.put(pair.getKey(),true);
+            }
+
+
+        }
+
+    }
     void removeListeners() {
         initiativeHashMap.clear();
         markerHashMap.clear();
+        keywordVisibilityHashmap.clear();
         comidaInitiativeIDList.clear();
         teatroInitiativeIDList.clear();
         deporteInitiativeIDList.clear();
@@ -526,6 +647,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
         for (String aux : keys) {
             markerHashMap.remove(aux);
+            keywordVisibilityHashmap.remove(aux);
         }
         for (String aux : markerIds) {
             initiativeHashMap.remove(aux);
@@ -634,8 +756,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     polylineActive = false;
                     on_way = false;
                     TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                    Titulo.setText("Kamal");
-                    Titulo.setTextSize(18);
+                    Titulo.setText("");
+                    Titulo.setTextSize(0);
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 } else if (opened_df) {
@@ -646,8 +768,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         opened_df = false;
                         initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                         TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                        Titulo.setText("Kamal");
-                        Titulo.setTextSize(18);
+                        Titulo.setText("");
+                        Titulo.setTextSize(0);
                         uiSettings.setAllGesturesEnabled(true);
                         uiSettings.setMyLocationButtonEnabled(true);
                     }
@@ -658,6 +780,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                         opened_pf = false;
                         toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+                        toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
                         toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                         toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                         final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
@@ -717,6 +840,33 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.toolbar_ir).setVisible(false);
+        SearchView search=(SearchView)menu.findItem(R.id.keyword_filter).getActionView();
+        //search.setIconifiedByDefault(false);
+        search.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                resetFilter();
+                return false;
+            }
+        });
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query.length() != 0) {
+                    filterByKeyword(query);
+                }
+                return false;
+            }
+        });
+
         for (int i = 0; i < menu.size(); i++) {
             Drawable drawable = menu.getItem(i).getIcon();
             if (drawable != null) {
@@ -746,31 +896,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //nm2.cancel(getIntent().getExtras().getInt("notificationID")); //para rescatar id
         nm2.cancelAll();
 
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        comidaOn = settings.getBoolean("comida", false);
-        deporteOn = settings.getBoolean("deporte", false);
-        teatroOn = settings.getBoolean("teatro", false);
-        musicaOn = settings.getBoolean("musica", false);
         final View iniciativaDeportes = findViewById(R.id.botonDeportes);
         final View iniciativaComida = findViewById(R.id.botonComida);
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
-        if (comidaOn) {
-            iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
-        }
-        if (deporteOn) {
-            iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
-        }
-        if (teatroOn) {
-            iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
-        }
-        if (musicaOn) {
-            iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
-        }
-
 
         initiativeHashMap = new HashMap();
         markerHashMap = new HashMap();
+        keywordVisibilityHashmap=new HashMap();
         comidaInitiativeIDList = new Vector<>();
         teatroInitiativeIDList = new Vector<>();
         deporteInitiativeIDList = new Vector<>();
@@ -780,6 +913,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
+        TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+        Titulo.setText("");
+        Titulo.setTextSize(0);
+
 
         //Maps
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
@@ -818,10 +955,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             interpolator = new OvershootInterpolator(1);
                             previewFragment.animate().setInterpolator(interpolator).translationY(previewFragment.getMeasuredHeight()).setDuration(600);
                             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                            Titulo.setText("Kamal");
+                            Titulo.setText("");
                             MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
                             item.setVisible(true);
-                            Titulo.setTextSize(18);
+                            Titulo.setTextSize(0);
+                            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
                             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                             toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                             final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
@@ -890,8 +1028,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
                             opened_df = false;
                             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                            Titulo.setText("Kamal");
-                            Titulo.setTextSize(18);
+                            Titulo.setText("");
+                            Titulo.setTextSize(0);
                             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                             uiSettings.setAllGesturesEnabled(true);
@@ -1028,13 +1166,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         if (authListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(authListener);
         }
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("deporte", deporteOn);
-        editor.putBoolean("comida", comidaOn);
-        editor.putBoolean("teatro", teatroOn);
-        editor.putBoolean("musica", musicaOn);
-        editor.commit();
 
     }
 
@@ -1182,8 +1313,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             polylineActive = false;
             on_way = false;
             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-            Titulo.setText("Kamal");
-            Titulo.setTextSize(18);
+            Titulo.setText("");
+            Titulo.setTextSize(0);
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {
@@ -1194,8 +1325,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 opened_df = false;
                 initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                Titulo.setText("Kamal");
-                Titulo.setTextSize(18);
+                Titulo.setText("");
+                Titulo.setTextSize(0);
                 uiSettings.setAllGesturesEnabled(true);
                 uiSettings.setMyLocationButtonEnabled(true);
             }
@@ -1206,6 +1337,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                 opened_pf = false;
                 toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
                 toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
