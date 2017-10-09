@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/Primary">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@color/textLightPrimary">
 
     <ImageView
         android:id="@+id/logInLogo"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:src="@drawable/kamal_logo"/>
+        android:src="@drawable/kamal_logo_blanco"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,7 +24,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:text="@string/log_in_with"
-            android:textColor="@color/Accent"/>
+            android:textColor="@color/Primary"/>
 
         <View
             android:layout_width="match_parent"
@@ -30,7 +32,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="16dp"
             android:layout_toLeftOf="@id/logInSeparator"
-            android:background="@color/Accent"
+            android:background="@color/Primary"
             />
 
         <View
@@ -39,7 +41,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
             android:layout_toRightOf="@id/logInSeparator"
-            android:background="@color/Accent"/>
+            android:background="@color/Primary"/>
 
     </RelativeLayout>
 
@@ -51,17 +53,29 @@
 
 
         <com.facebook.login.widget.LoginButton
+            xmlns:facebook="http://schemas.android.com/apk/res-auto"
             android:id="@+id/facebookBtn"
-            android:layout_width="102dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="14sp"
+            android:paddingBottom="14sp"
+            android:paddingLeft="15dp"
             android:layout_gravity="center"
             android:layout_marginBottom="30dp"
-            android:layout_marginTop="30dp" />
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginLeft="50dp"
+            facebook:com_facebook_login_text="Facebook"
+            facebook:com_facebook_logout_text="Facebook"
+            android:elevation="3dp"
+            />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/googleBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginLeft="50dp"
             android:gravity="center"
             android:text="Google" />
     </LinearLayout>

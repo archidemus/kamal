@@ -1,21 +1,22 @@
 package com.byobdev.kamal.DBClasses;
 
-import static android.R.attr.name;
-import static com.byobdev.kamal.R.string.email;
-
 /**
- * Created by carlos on 20-09-17.
+ * Created by crono on 06-10-17.
  */
 
 public class Comment {
-    public String Uid;
+
     public String Nombre;
-    public String Text;
-    public Comment(String Uid, String Nombre,String Text){
-        this.Uid=Uid;
-        this.Nombre=Nombre;
-        this.Text=Text;
+    public String Image;
+    public String Comentario;
+
+
+    public Comment(String Nombre, String Image, String Comentario){
+        this.Nombre = Nombre;
+        this.Image = Image;
+        this.Comentario = Comentario;
     }
 
-    public Comment (){}
+    public Comment(){ }
+
 }
