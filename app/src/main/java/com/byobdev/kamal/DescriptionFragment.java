@@ -58,6 +58,7 @@ public class DescriptionFragment extends Fragment {
     String[] keyLista;
     String[] descriptionLista;
     String[] imageLista;
+    String[] respuesaLista;
     private DatabaseReference mDatabase;
     FirebaseUser currentUser;
     FirebaseAuth.AuthStateListener authListener  = new FirebaseAuth.AuthStateListener(){
@@ -177,12 +178,14 @@ public class DescriptionFragment extends Fragment {
                     SectorLista = new String[3];
                     descriptionLista = new String[3];
                     imageLista = new String[3];
+                    respuesaLista = new String[3];
                 }else if(t==2){
                     completarLista = new String[2];
                     keyLista = new String[2];
                     SectorLista = new String[2];
                     descriptionLista = new String[2];
                     imageLista = new String[2];
+                    respuesaLista = new String[2];
 
                 }else if(t==1){
                     completarLista = new String[1];
@@ -190,23 +193,26 @@ public class DescriptionFragment extends Fragment {
                     SectorLista = new String[1];
                     descriptionLista = new String[1];
                     imageLista = new String[1];
+                    respuesaLista = new String[1];
                 }
                 int r = t;
                 t=0;
                 if(r > 0){
                     for (final DataSnapshot child : snapshot.getChildren()) {
                         // Create a LinearLayout element
+                        if(t==3){
+                            break;
+                        }
                         if(child.child("Comentario").getValue().toString().equals("Creador")){
 
                         }else{
+                            respuesaLista[t] = child.child("Respuesta").getValue().toString();
                             completarLista[t] = child.child("Nombre").getValue().toString();
                             keyLista[t] = child.getKey().toString();
                             descriptionLista[t] = child.child("Comentario").getValue().toString();
                             imageLista[t] = child.child("Image").getValue().toString();
                             t++;
-                            if(t==r){
-                                break;
-                            }
+
                         }
 
 
@@ -216,7 +222,7 @@ public class DescriptionFragment extends Fragment {
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarLista);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyLista,descriptionLista,imageLista,lista);
+                    adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyLista,descriptionLista,imageLista,lista, respuesaLista);
                     lista.setAdapter(adapter);
                 }
 
@@ -255,7 +261,7 @@ public class DescriptionFragment extends Fragment {
         Key=mDatabase.push().getKey();
 
         DatabaseReference comments = FirebaseDatabase.getInstance().getReference("Comments/");
-        Comment comment = new Comment(currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), Comentario.getText().toString());
+        Comment comment = new Comment(currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), Comentario.getText().toString(), "");
         comments.child(getArguments().getString("imagen")).child(Key).setValue(comment);
         Comentario.setText("");
         Toast.makeText(getApplicationContext(), "Consulta enviada", Toast.LENGTH_LONG).show();

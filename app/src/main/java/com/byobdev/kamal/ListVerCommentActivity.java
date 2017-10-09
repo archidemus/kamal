@@ -29,13 +29,25 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
     private String[] imageLista;
     private String[] descripcionLista;
     private ListView lista;
+    private String[] respuestaLista;
 
-    public ListVerCommentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista) {
+    customButtonListener customListner;
+
+    public interface customButtonListener {
+        void getPosition1(int position);
+    }
+
+    public void setCustomButtonListner(customButtonListener listener) {
+        this.customListner = listener;
+    }
+
+    public ListVerCommentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista, String[] respuestaLista) {
         super(context, R.layout.activity_ver_comment, dataItem);
         this.context = context;
         this.imageLista=imageLista;
         this.descripcionLista=descripcionLista;
         this.lista=lista;
+        this.respuestaLista = respuestaLista;
     }
 
     @Override
@@ -48,6 +60,8 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
             viewHolder.text = (TextView) convertView.findViewById(R.id.childTextViewVerComment);
             viewHolder.imageView=(ImageView) convertView.findViewById(R.id.childVerImagecomment);
             viewHolder.descripcion=(TextView) convertView.findViewById(R.id.Vercomment);
+            viewHolder.respuesta=(TextView) convertView.findViewById(R.id.VerRespuesta);
+            viewHolder.respuestaContenido=(TextView) convertView.findViewById(R.id.VerRespuestaContenido);
             viewHolder.ll=(RelativeLayout) convertView.findViewById(R.id.listaVerComment);
             String image=imageLista[position];
 
@@ -63,6 +77,20 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
         final String temp = getItem(position);
         viewHolder.text.setText(temp);
         viewHolder.descripcion.setText(descripcionLista[position]);
+        if(respuestaLista[position].equals("")){
+            viewHolder.respuesta.setVisibility(View.GONE); // Esta linea no funciona
+        }else{
+
+            viewHolder.respuestaContenido.setText(respuestaLista[position]);
+        }
+        viewHolder.ll.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(customListner!=null){
+                    customListner.getPosition1(position);}
+
+            }
+        });
         return convertView;
     }
 
@@ -70,6 +98,8 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
         ImageView imageView;
         TextView text;
         TextView descripcion;
+        TextView respuesta;
+        TextView respuestaContenido;
         RelativeLayout ll;
     }
     public class CircleTransform implements Transformation {

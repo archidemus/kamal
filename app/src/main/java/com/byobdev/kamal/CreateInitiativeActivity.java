@@ -241,7 +241,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
             key2=mDatabase.push().getKey();
             DatabaseReference comments = FirebaseDatabase.getInstance().getReference("Comments/");
-            Comment comment = new Comment(nombre, key, "Creador");
+            Comment comment = new Comment(nombre, key, "Creador","");
             comments.child(key).child(key2).setValue(comment);
 
             finish();
