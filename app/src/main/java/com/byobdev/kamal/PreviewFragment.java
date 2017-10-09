@@ -9,7 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class PreviewFragment extends Fragment {
@@ -23,6 +30,8 @@ public class PreviewFragment extends Fragment {
     TextView hFin;
     String image;
     Button Editar;
+    RatingBar rtb;
+    private DatabaseReference mDatabase;
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
@@ -64,6 +73,26 @@ public class PreviewFragment extends Fragment {
         //hFin.setText(getArguments().getString("hFin"));
         Image = (ImageView) getView().findViewById(R.id.inImage);
         image = getArguments().getString("imagen");
+        rtb = (RatingBar) getView().findViewById(R.id.inRatingpreview);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                // for (DataSnapshot child : snapshot.getChildren())
+                // Create a LinearLayout element
+                rtb.setRating(Float.parseFloat(snapshot.child("rating").getValue().toString()));
+
+
+
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+
+        });
 
         if (image.equals("")){
             if(Image.getVisibility() == View.VISIBLE){

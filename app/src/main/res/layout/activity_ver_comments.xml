@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/verComments"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarConfigComments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Primary"
+        app:theme="@style/ToolBarStyle"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consultas"
+        android:textColor="@color/Primary"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"/>
+
+    <ListView
+        android:id="@+id/verCommentList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <EditText
+            android:id="@+id/VerCommentInput"
+            android:layout_width="310dp"
+            android:layout_height="wrap_content"
+            android:autoLink="none"
+            android:hint="Nueva Consulta..."
+            android:inputType="text"
+            android:maxLength="40"
+            android:textSize="16sp"/>
+
+        <ImageButton
+            android:id="@+id/VerSendComment"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            app:srcCompat="@drawable/ic_send" />
+    </LinearLayout>
+</LinearLayout>

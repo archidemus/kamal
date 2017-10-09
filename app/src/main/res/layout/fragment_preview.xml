@@ -38,7 +38,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/inTitle"
                         android:textSize="20sp"
-                        android:text="Titulo jasdkfasdkl sd fksadj kj"
+                        android:text="Titulo "
                         android:maxLines="2"
                         android:ellipsize="marquee"
                         />
@@ -62,12 +62,12 @@
                             android:textAllCaps="true"/>
                     </LinearLayout>
                     <RatingBar
-                        android:id="@+id/inRating"
+                        android:id="@+id/inRatingpreview"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="?android:attr/ratingBarStyleSmall"
                         android:numStars="5"
-                        android:stepSize="0.1"
+                        android:stepSize="0.5"
                         android:isIndicator="true"/>
 
                     <TextView

@@ -93,6 +93,23 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                                 // for (DataSnapshot child : snapshot.getChildren())
                                 // Create a LinearLayout element
                                 snapshot.child(keyLista[position]).getRef().removeValue();
+
+
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                System.out.println("The read failed: " + databaseError.getCode());
+                            }
+
+                        });
+                        mDatabase2 = FirebaseDatabase.getInstance().getReference("Comments");
+                        mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                // for (DataSnapshot child : snapshot.getChildren())
+                                // Create a LinearLayout element
+                                snapshot.child(keyLista[position]).getRef().removeValue();
+
                                 finish();
                                 startActivity(getIntent());
 

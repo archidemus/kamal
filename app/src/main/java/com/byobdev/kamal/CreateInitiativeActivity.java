@@ -21,6 +21,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.byobdev.kamal.DBClasses.Comment;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -76,7 +78,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     int PLACE_PICKER_REQUEST = 1;
     int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
-    String key;
+    String key, key2;
     final Calendar calendar2 = Calendar.getInstance();
 
     Date dateInits, dateFins;
@@ -236,6 +238,11 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             userInitiatives.child(key).child("image").setValue(key);
+
+            key2=mDatabase.push().getKey();
+            DatabaseReference comments = FirebaseDatabase.getInstance().getReference("Comments/");
+            Comment comment = new Comment(nombre, key, "Creador");
+            comments.child(key).child(key2).setValue(comment);
 
             finish();
         }
