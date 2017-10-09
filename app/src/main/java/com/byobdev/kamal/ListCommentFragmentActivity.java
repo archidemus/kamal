@@ -31,13 +31,15 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
     private String[] imageLista;
     private String[] descripcionLista;
     private ListView lista;
+    private String[] respuestaLista;
 
-    public ListCommentFragmentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista) {
+    public ListCommentFragmentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista, String[] respuestaLista) {
         super(context, R.layout.activity_comment_fragment, dataItem);
         this.context = context;
         this.imageLista=imageLista;
         this.descripcionLista=descripcionLista;
         this.lista=lista;
+        this.respuestaLista = respuestaLista;
     }
 
     @Override
@@ -50,6 +52,8 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
             viewHolder.text = (TextView) convertView.findViewById(R.id.childTextViewComment);
             viewHolder.imageView=(ImageView) convertView.findViewById(R.id.childImagecomment);
             viewHolder.descripcion=(TextView) convertView.findViewById(R.id.comment);
+            viewHolder.respuesta=(TextView) convertView.findViewById(R.id.VerRespuestaFragment);
+            viewHolder.respuestaContenido=(TextView) convertView.findViewById(R.id.VerRespuestaContenidoFragment);
             viewHolder.ll=(RelativeLayout) convertView.findViewById(R.id.listaComment);
             String image=imageLista[position];
 
@@ -65,6 +69,12 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
         final String temp = getItem(position);
         viewHolder.text.setText(temp);
         viewHolder.descripcion.setText(descripcionLista[position]);
+        if(respuestaLista[position].equals("")){
+            viewHolder.respuesta.setVisibility(View.GONE); // Esta linea no funciona
+        }else{
+
+            viewHolder.respuestaContenido.setText(respuestaLista[position]);
+        }
         return convertView;
     }
 
@@ -72,6 +82,8 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
         ImageView imageView;
         TextView text;
         TextView descripcion;
+        TextView respuesta;
+        TextView respuestaContenido;
         RelativeLayout ll;
     }
     public class CircleTransform implements Transformation {

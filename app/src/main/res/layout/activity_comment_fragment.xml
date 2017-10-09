@@ -34,6 +34,22 @@
             android:layout_below="@+id/childTextViewComment"
             android:layout_marginLeft="105dp"
             android:textSize="10sp"/>
+        <TextView
+            android:id="@+id/VerRespuestaFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/comment"
+            android:text="Respuesta: "
+            android:textStyle="bold"
+            android:layout_marginLeft="105dp"
+            android:textSize="10sp"/>
+        <TextView
+            android:id="@+id/VerRespuestaContenidoFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/comment"
+            android:layout_marginLeft="159dp"
+            android:textSize="10sp"/>
 
 
     </RelativeLayout>
