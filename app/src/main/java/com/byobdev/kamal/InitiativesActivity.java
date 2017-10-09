@@ -525,7 +525,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            if(!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) || !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())){
+            if(!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) && !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())){
                 keywordVisibilityHashmap.put(pair.getKey(),false);
                 pair.getValue().setVisible(false);
             }
@@ -832,6 +832,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
             @Override
             public boolean onQueryTextSubmit(String query) {
+                resetFilter();
                 if (query.length() != 0) {
                     filterByKeyword(query);
                 }
