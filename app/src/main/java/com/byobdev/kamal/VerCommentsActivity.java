@@ -263,5 +263,9 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
 
 
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
 }

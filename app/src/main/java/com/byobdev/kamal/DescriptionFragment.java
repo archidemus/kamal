@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.app.FragmentManager;
 
 import com.byobdev.kamal.DBClasses.Comment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.R.attr.fragment;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static java.lang.String.valueOf;
 
@@ -269,11 +272,17 @@ public class DescriptionFragment extends Fragment {
     }
 
     public void VerComentarios(){
-        final Intent intentMain2 = new Intent(getActivity(), VerCommentsActivity.class);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+        final Intent intentMain2 = new Intent(getApplicationContext(), VerCommentsActivity.class);
        // mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives").child(Sector).child(nombre);
         intentMain2.putExtra("IDIniciativa",getArguments().getString("imagen"));
         intentMain2.putExtra("Titulo",getArguments().getString("Titulo"));
-        getActivity().startActivity(intentMain2);
+        startActivity(intentMain2);
     }
+
 
 }
