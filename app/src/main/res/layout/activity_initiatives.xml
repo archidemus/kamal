@@ -90,7 +90,7 @@
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 android:padding="16dp"
-                                android:background="@color/textLightPrimary">
+                                android:background="@color/textLightSecondary">
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -108,11 +108,11 @@
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 android:padding="16dp"
-                                android:background="@color/textLightPrimary">
+                                android:background="@color/textLightSecondary">
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/ic_bottom_sport" />
+                                    app:srcCompat="@drawable/ic_bottom_sport" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 android:padding="16dp"
-                                android:background="@color/textLightPrimary">
+                                android:background="@color/textLightSecondary">
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 android:padding="16dp"
-                                android:background="@color/textLightPrimary">
+                                android:background="@color/textLightSecondary">
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -176,6 +176,18 @@
                 android:background="@color/textLightPrimary"
                 android:translationY="400dp"
                 />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:translationY="5dp"
+                android:translationX="5dp">
+                <ImageButton
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    android:onClick="centerMap"/>
+                />
+            </FrameLayout>
         </FrameLayout>
     </LinearLayout>
 

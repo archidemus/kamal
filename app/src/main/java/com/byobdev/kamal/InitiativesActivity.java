@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -14,10 +15,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +32,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +43,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -43,7 +52,12 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.squareup.picasso.Transformation;
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
@@ -107,9 +121,11 @@ import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZUR
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 import static java.lang.Integer.parseInt;
+import com.google.android.gms.location.LocationListener;
 
-
-public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
@@ -126,6 +142,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean teatroOn = true;
     public boolean musicaOn = true;
     public int authListenerCounter = 0;
+    //current position marker
+    LocationRequest mLocationRequest;
+    GoogleApiClient mGoogleApiClient;
+    Location mLastLocation;
+    Marker mCurrLocationMarker;
     //Menu
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
@@ -150,6 +171,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     RatingBar rtb;
     ImageView img_profile;
     View linea;
+    float lastCameraZoom;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
     //User Interests Listener
@@ -435,11 +457,42 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
-
             updateInitiatives();
+
+            /*if(initiativesMap.getCameraPosition().zoom<40){
+                if(lastCameraZoom<40){
+                    updateInitiatives();
+                }
+                else{
+                    unloadClusters();
+                    loadInitiatives();
+                }
+            }
+            else{
+                if(lastCameraZoom<40){
+                    removeListeners();
+                    loadClusters();
+                }
+                else{
+                    updateClusters();
+                }
+
+            }
+            lastCameraZoom=initiativesMap.getCameraPosition().zoom;*/
 
         }
     };
+
+    public void unloadClusters(){
+
+    }
+    public void loadClusters(){
+
+    }
+    public void updateClusters(){
+
+    }
+
     private float mLastPosY;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
@@ -553,7 +606,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            if(!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) || !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())){
+            if(!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) && !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())){
                 keywordVisibilityHashmap.put(pair.getKey(),false);
                 pair.getValue().setVisible(false);
             }
@@ -853,16 +906,18 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(String query) {
+                resetFilter();
+                if (query.length() != 0) {
+                    filterByKeyword(query);
+                }
                 return false;
             }
 
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (query.length() != 0) {
-                    filterByKeyword(query);
-                }
+
                 return false;
             }
         });
@@ -1169,20 +1224,194 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
     }
 
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Se necesita permiso de ubicación")
+                        .setMessage("Esta aplicación necesita el permiso de ubicación para funcionar correctamente")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(InitiativesActivity.this,
+                                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION );
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        //initiativesMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    public void centerMap(View view){
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                .zoom(15)
+                .bearing(0)
+                .build();
+        initiativesMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
+
+    @Override
+    public void onLocationChanged(Location location)
+    {
+        mLastLocation = location;
+        if (mCurrLocationMarker == null) {
+
+            mCurrLocationMarker = initiativesMap.addMarker(new MarkerOptions()
+                    .flat(true)
+                    .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_circle))
+                    .anchor(0.5f, 0.5f)
+                    .position(
+                            new LatLng(location.getLatitude(), location
+                                    .getLongitude())));
+        }
+        animateMarker(mCurrLocationMarker, location);
+
+    }
+
+    public void animateMarker(final Marker marker, final Location location) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        final LatLng startLatLng = marker.getPosition();
+        final double startRotation = marker.getRotation();
+        final long duration = 500;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+
+                double lng = t * location.getLongitude() + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * location.getLatitude() + (1 - t)
+                        * startLatLng.latitude;
+
+                float rotation = (float) (t * location.getBearing() + (1 - t)
+                        * startRotation);
+
+                marker.setPosition(new LatLng(lat, lng));
+                marker.setRotation(rotation);
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         initiativesMap = googleMap;
         start = new LocationGPS(getApplicationContext());
         final LatLng interested;
-
+        initiativesMap.setMinZoomPreference(13);
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
         }
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            initiativesMap.setMyLocationEnabled(true);
+        //current location marker
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //Location Permission already granted
+                buildGoogleApiClient();
+                //initiativesMap.setMyLocationEnabled(true);
+            } else {
+                //Request Location Permission
+                checkLocationPermission();
+            }
+        }
+        else {
+            buildGoogleApiClient();
+            //initiativesMap.setMyLocationEnabled(true);
         }
 
         interested = new LatLng(start.getLatitud(), start.getLongitud());
@@ -1195,6 +1424,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //Agrego datos del pin
+                if(marker.getId().equals(mCurrLocationMarker.getId())){
+                    return false;
+                }
                 OvershootInterpolator interpolator;
                 interpolator = new OvershootInterpolator(1);
                 selectedMarker = marker;
@@ -1242,6 +1474,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             public void onMapLoaded() {
                 loadInitiatives();
                 initiativesMap.setOnCameraIdleListener(cameraIdleListener);
+                lastCameraZoom=initiativesMap.getCameraPosition().zoom;
             }
         });
     }
@@ -1309,7 +1542,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         int maxY = mdispSize.y;
         float currentPosition;
         int fragment_pos[] = new int[2];
-
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (polylineActive && initiativePath != null) {
@@ -1370,6 +1602,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onPause() {
         super.onPause();
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
