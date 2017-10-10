@@ -1,9 +1,14 @@
 package com.byobdev.kamal;
 
+import android.app.DialogFragment;
 import android.content.Intent;
+import android.media.Rating;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -39,6 +44,10 @@ import static java.lang.String.valueOf;
 public class DescriptionFragment extends Fragment {
 
     TextView Titulo;
+    Button btnRate;
+    TextView date, creator, title;
+    RatingBar rtb2;
+
     TextView Nombre;
     TextView Descripcion;
     ImageView Image;
@@ -47,7 +56,7 @@ public class DescriptionFragment extends Fragment {
     TextView hFin;
     String image;
     EditText Comentario;
-    Button Editar;
+    Button Calificar;
     ListView lista;
     RatingBar rtb;
     String Key;
@@ -58,6 +67,7 @@ public class DescriptionFragment extends Fragment {
     String[] keyLista;
     String[] descriptionLista;
     String[] imageLista;
+    FirebaseAuth firebaseAuth;
     private DatabaseReference mDatabase;
     FirebaseUser currentUser;
     FirebaseAuth.AuthStateListener authListener  = new FirebaseAuth.AuthStateListener(){
@@ -67,34 +77,6 @@ public class DescriptionFragment extends Fragment {
 
         }
     };
-
-    public RatingBar.OnRatingBarChangeListener ListenerRating = new RatingBar.OnRatingBarChangeListener() {
-        @Override
-        public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-            rtb.setRating(v);
-            final float rait = v;
-            final DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-            mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    // for (DataSnapshot child : snapshot.getChildren())
-                    // Create a LinearLayout element
-                    int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
-                    int nVotos2 = nVotos+1;
-                    userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
-                    userInitiatives.child("Nvotos").setValue(nVotos2);
-
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-
-            });
-        }
-    };
-
 
 
     @Override
@@ -144,6 +126,14 @@ public class DescriptionFragment extends Fragment {
         Image = (ImageView) getView().findViewById(R.id.inImage);
         image = getArguments().getString("imagen");
         rtb = (RatingBar) getView().findViewById(R.id.inRating);
+        Calificar = (Button) getView().findViewById(R.id.btn_Rating);
+        Calificar.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                ratingSend();
+            }
+        });
+
+
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -151,7 +141,6 @@ public class DescriptionFragment extends Fragment {
                 // for (DataSnapshot child : snapshot.getChildren())
                 // Create a LinearLayout element
                 rtb.setRating(Float.parseFloat(snapshot.child("rating").getValue().toString()));
-                rtb.setOnRatingBarChangeListener(ListenerRating);
 
             }
             @Override
@@ -160,6 +149,27 @@ public class DescriptionFragment extends Fragment {
             }
 
         });
+        rtb.setIsIndicator(true);
+
+        FirebaseAuth.AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                if (firebaseAuth.getCurrentUser() != null) {
+                    if (mDatabase.toString().equals(currentUser.getUid())) {
+                        Calificar.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    Calificar.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+        FirebaseAuth.getInstance().addAuthStateListener(authListener);
+
+        /*DatabaseReference opData = FirebaseDatabase.getInstance().getReference("Initiatives").child(getArguments().getString("Estado"));
+        if(!opData.toString().equals("0")){
+            Calificar.setVisibility(View.INVISIBLE);
+        }*/
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Comments").child(getArguments().getString("imagen"));
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -242,7 +252,7 @@ public class DescriptionFragment extends Fragment {
                 Image.setVisibility(View.VISIBLE);
             }
             String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
-            Picasso.with(this.getContext())
+            Picasso.with(this.getActivity())
                     .load(url)
                     .error(R.drawable.kamal_logo)
                     .into(Image);
@@ -270,4 +280,102 @@ public class DescriptionFragment extends Fragment {
         getActivity().startActivity(intentMain2);
     }
 
+    public void ratingSend(){
+        /*final float rait = rtb.getRating();
+        final DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                // for (DataSnapshot child : snapshot.getChildren())
+                // Create a LinearLayout element
+                int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
+                int nVotos2 = nVotos+1;
+                userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
+                userInitiatives.child("Nvotos").setValue(nVotos2);
+
+                Toast.makeText(getActivity(),"Calificación realizada",Toast.LENGTH_LONG).show();
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+
+        });*/
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        final View dialog = inflater.inflate(R.layout.rating_dialog, null);
+        builder.setView(dialog);
+        builder.setCancelable(true); //No idea if this works
+
+        ImageView imagen2 =(ImageView) dialog.findViewById(R.id.img_rate);
+        rtb2 = (RatingBar) dialog.findViewById(R.id.ratingBar);
+        btnRate = (Button) dialog.findViewById(R.id.btn_Rate);
+        date = (TextView) dialog.findViewById(R.id.rate_date);
+        title = (TextView) dialog.findViewById(R.id.rate_title);
+        creator = (TextView) dialog.findViewById(R.id.rate_creator);
+
+        creator.setText("Por ".concat(Nombre.getText().toString()));
+        title.setText(getArguments().getString("Titulo"));
+        date.setText(hInicio.getText().toString().concat("\n").concat(hFin.getText().toString()));
+        String imagen = getArguments().getString("imagen");
+
+        if (imagen.equals("")){
+            if(imagen2.getVisibility() == View.VISIBLE){
+                imagen2.setVisibility(View.GONE);
+            }
+        }else{
+            if(imagen2.getVisibility() == View.GONE){
+                imagen2.setVisibility(View.VISIBLE);
+            }
+            String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
+            Picasso.with(this.getActivity())
+                    .load(url)
+                    .error(R.drawable.kamal_logo)
+                    .into(imagen2);
+        }
+
+
+        btnRate.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                rateThis();
+            }
+        });
+        builder.show();
+
+
+    }
+    public void rateThis(){
+
+            final DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+
+                    // for (DataSnapshot child : snapshot.getChildren())
+                    // Create a LinearLayout element
+                    final float rait = rtb2.getRating();
+                    int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
+                    int nVotos2 = nVotos+1;
+                    userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
+                    userInitiatives.child("Nvotos").setValue(nVotos2);
+
+                    Toast.makeText(getActivity(),"Calificación realizada",Toast.LENGTH_LONG).show();
+
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+
+            });
+
+    }
 }
