@@ -53,7 +53,7 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
-        if (convertView == null) {
+
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.activity_ver_comment, null);
             viewHolder = new ViewHolder();
@@ -71,9 +71,7 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
                     .error(R.drawable.kamal_logo).transform(new CircleTransform())
                     .into(viewHolder.imageView);
             convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+
         final String temp = getItem(position);
         viewHolder.text.setText(temp);
         viewHolder.descripcion.setText(descripcionLista[position]);
