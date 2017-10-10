@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
+import static android.R.attr.rating;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class DescriptionFragment extends Fragment {
@@ -79,6 +80,9 @@ public class DescriptionFragment extends Fragment {
     String[] descriptionListaAux;
     String[] imageListaAux;
     String[] respuesaListaAux;
+
+    boolean rated=false;
+    float rating=0f;
     private DatabaseReference mDatabase;
     FirebaseUser currentUser;
     FirebaseAuth.AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
@@ -106,6 +110,7 @@ public class DescriptionFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
 
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Titulo = (TextView) getView().findViewById(R.id.inTitle);
@@ -450,28 +455,6 @@ public class DescriptionFragment extends Fragment {
     }
 
     public void ratingSend(){
-        /*final float rait = rtb.getRating();
-        final DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-        mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                // for (DataSnapshot child : snapshot.getChildren())
-                // Create a LinearLayout element
-                int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
-                int nVotos2 = nVotos+1;
-                userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
-                userInitiatives.child("Nvotos").setValue(nVotos2);
-
-                Toast.makeText(getActivity(),"Calificación realizada",Toast.LENGTH_LONG).show();
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-
-        });*/
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
@@ -494,6 +477,24 @@ public class DescriptionFragment extends Fragment {
         title.setText(getArguments().getString("Titulo"));
         date.setText(hInicio.getText().toString().concat("\n").concat(hFin.getText().toString()));
         String imagen = getArguments().getString("imagen");
+
+        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+getArguments().getString("Uid"));
+        mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue()!=null){
+                    rating=Float.parseFloat(dataSnapshot.getValue().toString());
+                    rtb2.setRating(rating);
+                    rated=true;
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
 
@@ -546,17 +547,29 @@ public class DescriptionFragment extends Fragment {
 
             final DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
             DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
+
             mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
 
                     // for (DataSnapshot child : snapshot.getChildren())
                     // Create a LinearLayout element
-                    final float rait = rtb2.getRating();
-                    int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
-                    int nVotos2 = nVotos+1;
-                    userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
-                    userInitiatives.child("Nvotos").setValue(nVotos2);
+                    if(rated){
+                        final float rait = rtb2.getRating();
+                        int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
+                        userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)-rating+rait)/nVotos);
+                        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+getArguments().getString("Uid"));
+                        mDatabase2.setValue(rait);
+                    }
+                    else{
+                        final float rait = rtb2.getRating();
+                        int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
+                        int nVotos2 = nVotos+1;
+                        userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
+                        userInitiatives.child("Nvotos").setValue(nVotos2);
+                        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+getArguments().getString("Uid"));
+                        mDatabase2.setValue(rait);
+                    }
 
                     Toast.makeText(getActivity(),"Calificación realizada",Toast.LENGTH_LONG).show();
 
@@ -567,6 +580,7 @@ public class DescriptionFragment extends Fragment {
                 }
 
             });
+
 
     }
 

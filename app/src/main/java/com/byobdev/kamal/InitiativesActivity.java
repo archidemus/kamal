@@ -1446,6 +1446,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 selectedInitiative.putString("Uid", initiative.Uid);
                 selectedInitiative.putString("Latitud", initiative.Latitud.toString());
                 selectedInitiative.putString("Longitud", initiative.Longitud.toString());
+                selectedInitiative.putString("ID", initiative.Longitud.toString());
 
                 //le paso los datos al fragment
                 PreviewFragment DF = new PreviewFragment();
