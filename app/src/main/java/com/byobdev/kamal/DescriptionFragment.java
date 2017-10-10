@@ -1,8 +1,11 @@
 package com.byobdev.kamal;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Rating;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.app.DialogFragment;
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.R.attr.dial;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static java.lang.String.valueOf;
 
@@ -339,7 +343,7 @@ public class DescriptionFragment extends Fragment {
 
         ImageView imagen2 =(ImageView) dialog.findViewById(R.id.img_rate);
         rtb2 = (RatingBar) dialog.findViewById(R.id.ratingBar);
-        btnRate = (Button) dialog.findViewById(R.id.btn_Rate);
+       // btnRate = (Button) dialog.findViewById(R.id.btn_Rate);
         date = (TextView) dialog.findViewById(R.id.rate_date);
         title = (TextView) dialog.findViewById(R.id.rate_title);
         creator = (TextView) dialog.findViewById(R.id.rate_creator);
@@ -348,6 +352,21 @@ public class DescriptionFragment extends Fragment {
         title.setText(getArguments().getString("Titulo"));
         date.setText(hInicio.getText().toString().concat("\n").concat(hFin.getText().toString()));
         String imagen = getArguments().getString("imagen");
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setPositiveButton("Calificar", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                rateThis();
+            }
+        });
 
         if (imagen.equals("")){
             if(imagen2.getVisibility() == View.VISIBLE){
@@ -365,12 +384,19 @@ public class DescriptionFragment extends Fragment {
         }
 
 
-        btnRate.setOnClickListener(new View.OnClickListener(){
+        /*btnRate.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 rateThis();
+
             }
-        });
-        builder.show();
+        });*/
+        AlertDialog dialogo = builder.create();
+        dialogo.show();
+        Button b = dialogo.getButton(DialogInterface.BUTTON_NEGATIVE);
+        b.setTextColor(getResources().getColor(R.color.Primary));
+        Button b1 = dialogo.getButton(DialogInterface.BUTTON_POSITIVE);
+        b1.setTextColor(getResources().getColor(R.color.Primary));
+
 
 
     }
