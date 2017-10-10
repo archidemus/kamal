@@ -9,7 +9,7 @@ public class Comment {
     public String Nombre;
     public String Image;
     public String Comentario;
-
+ 
 
     public Comment(String Nombre, String Image, String Comentario){
         this.Nombre = Nombre;
