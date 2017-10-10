@@ -1205,11 +1205,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 selectedInitiative.putString("Descripcion", initiative.Descripcion);
                 selectedInitiative.putString("Nombre", initiative.Nombre);
                 selectedInitiative.putString("Direccion", initiative.Direccion);
+                selectedInitiative.putString("Estado", Integer.toString(initiative.Estado));
                 DateFormat formatter = new SimpleDateFormat("E, d MMM • HH:mm");
                 DateFormat formatter1 = new SimpleDateFormat("E, d MMM • HH:mm");
                 selectedInitiative.putString("hInicio", formatter.format(new Date(initiative.fechaInicio)));
                 selectedInitiative.putString("hFin", formatter1.format(new Date(initiative.fechaFin)));
                 selectedInitiative.putString("Uid", initiative.Uid);
+                selectedInitiative.putString("Latitud", initiative.Latitud.toString());
+                selectedInitiative.putString("Longitud", initiative.Longitud.toString());
+
                 //le paso los datos al fragment
                 PreviewFragment DF = new PreviewFragment();
                 DF.setArguments(selectedInitiative);
