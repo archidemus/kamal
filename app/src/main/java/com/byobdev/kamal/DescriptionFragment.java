@@ -42,10 +42,12 @@ public class DescriptionFragment extends Fragment {
     TextView Nombre;
     TextView Descripcion;
     ImageView Image;
+    ImageView OrgImage;
     TextView Lugar;
     TextView hInicio;
     TextView hFin;
     String image;
+    String orgImage;
     EditText Comentario;
     Button Editar;
     ListView lista;
@@ -117,6 +119,7 @@ public class DescriptionFragment extends Fragment {
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //Titulo = (TextView) getView().findViewById(R.id.inTitle);
         //Titulo.setText(getArguments().getString("Titulo"));
+        OrgImage = (ImageView) getView().findViewById(R.id.profile_image);
         Nombre = (TextView) getView().findViewById(R.id.inOrganizer);
         Nombre.setText(getArguments().getString("Nombre"));
         Descripcion = (TextView) getView().findViewById(R.id.inShortDesc);
@@ -146,12 +149,27 @@ public class DescriptionFragment extends Fragment {
         rtb = (RatingBar) getView().findViewById(R.id.inRating);
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 // for (DataSnapshot child : snapshot.getChildren())
                 // Create a LinearLayout element
                 rtb.setRating(Float.parseFloat(snapshot.child("rating").getValue().toString()));
                 rtb.setOnRatingBarChangeListener(ListenerRating);
+                orgImage = snapshot.child("ImageURL").getValue().toString();
+                if (orgImage.equals("")){
+                    if(OrgImage.getVisibility() == View.VISIBLE){
+                        OrgImage.setVisibility(View.GONE);
+                    }
+                }else{
+                    if(OrgImage.getVisibility() == View.GONE){
+                        OrgImage.setVisibility(View.VISIBLE);
+                    }
+                    Picasso.with(DescriptionFragment.this.getContext())
+                            .load(orgImage)
+                            .error(R.drawable.kamal_not_found)
+                            .into(OrgImage);
+                }
 
             }
             @Override
@@ -228,11 +246,6 @@ public class DescriptionFragment extends Fragment {
 
         });
 
-
-
-
-
-
         if (image.equals("")){
             if(Image.getVisibility() == View.VISIBLE){
                 Image.setVisibility(View.GONE);
@@ -244,7 +257,7 @@ public class DescriptionFragment extends Fragment {
             String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
             Picasso.with(this.getContext())
                     .load(url)
-                    .error(R.drawable.kamal_logo)
+                    .error(R.drawable.kamal_not_found)
                     .into(Image);
         }
     }
