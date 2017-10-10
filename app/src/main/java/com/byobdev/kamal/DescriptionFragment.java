@@ -1,19 +1,16 @@
 package com.byobdev.kamal;
 
-import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.Rating;
-import android.provider.CalendarContract;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +20,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.byobdev.kamal.DBClasses.Comment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,17 +36,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static android.R.attr.dial;
 import static com.facebook.FacebookSdk.getApplicationContext;
-import static java.lang.String.valueOf;
 
 public class DescriptionFragment extends Fragment {
 
-    TextView Titulo;
-    Button btnRate;
+
     TextView date, creator, title;
     RatingBar rtb2;
-
+    Location loc1, loc2;
     TextView Nombre;
     TextView Descripcion;
     ImageView Image;
@@ -59,11 +51,14 @@ public class DescriptionFragment extends Fragment {
     TextView hInicio;
     TextView hFin;
     String image;
+    String Latitud;
+    String Longitud;
     EditText Comentario;
     Button Calificar;
     ListView lista;
     RatingBar rtb;
     String Key;
+    String estado;
     ImageButton sendCom;
     Button verComent;
     String[] completarLista;
@@ -74,10 +69,10 @@ public class DescriptionFragment extends Fragment {
     FirebaseAuth firebaseAuth;
     private DatabaseReference mDatabase;
     FirebaseUser currentUser;
-    FirebaseAuth.AuthStateListener authListener  = new FirebaseAuth.AuthStateListener(){
+    FirebaseAuth.AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            currentUser  = firebaseAuth.getCurrentUser();
+            currentUser = firebaseAuth.getCurrentUser();
 
         }
     };
@@ -86,7 +81,7 @@ public class DescriptionFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_description, container, false);
-        ImageView i = (ImageView)rootView.findViewById(R.id.inImage);
+        ImageView i = (ImageView) rootView.findViewById(R.id.inImage);
 
         return rootView;
     }
@@ -97,7 +92,7 @@ public class DescriptionFragment extends Fragment {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
 
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
@@ -115,14 +110,14 @@ public class DescriptionFragment extends Fragment {
         hFin.setText(getArguments().getString("hFin"));
         lista = (ListView) getView().findViewById(R.id.comment_list);
         sendCom = (ImageButton) getView().findViewById(R.id.SendComment);
-        sendCom.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        sendCom.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 SendComment();
             }
         });
         verComent = (Button) getView().findViewById(R.id.VerComentario);
-        verComent.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        verComent.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 VerComentarios();
             }
         });
@@ -131,12 +126,35 @@ public class DescriptionFragment extends Fragment {
         image = getArguments().getString("imagen");
         rtb = (RatingBar) getView().findViewById(R.id.inRating);
         Calificar = (Button) getView().findViewById(R.id.btn_Rating);
-        Calificar.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        Calificar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 ratingSend();
             }
         });
+        estado = getArguments().getString("Estado");
 
+        Latitud = getArguments().getString("Latitud");
+        Longitud = getArguments().getString("Longitud");
+
+
+        loc1 = new Location("");
+        loc1.setLatitude(Double.parseDouble(Latitud));
+        loc1.setLongitude(Double.parseDouble(Longitud));
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        loc2 = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+        final double distanceInMeters = loc1.distanceTo(loc2);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -163,11 +181,20 @@ public class DescriptionFragment extends Fragment {
                     if (mDatabase.toString().equals(currentUser.getUid())) {
                         Calificar.setVisibility(View.INVISIBLE);
                     }
+                    else  if(estado.equals("0")){
+                        Calificar.setVisibility(View.INVISIBLE);
+                    }
+                    else if(distanceInMeters > 100){
+                        Calificar.setVisibility(View.INVISIBLE);
+                    }
                 } else {
                     Calificar.setVisibility(View.INVISIBLE);
                 }
             }
         };
+
+
+
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
 
         /*DatabaseReference opData = FirebaseDatabase.getInstance().getReference("Initiatives").child(getArguments().getString("Estado"));
