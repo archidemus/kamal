@@ -56,6 +56,7 @@ public class DescriptionFragment extends Fragment {
     TextView hFin;
     String image;
     String orgImage;
+    String Uid;
     String Latitud;
     String Longitud;
     EditText Comentario;
@@ -142,7 +143,7 @@ public class DescriptionFragment extends Fragment {
 
         Latitud = getArguments().getString("Latitud");
         Longitud = getArguments().getString("Longitud");
-
+        Uid = getArguments().getString("Uid");
 
         loc1 = new Location("");
         loc1.setLatitude(Double.parseDouble(Latitud));
@@ -186,8 +187,6 @@ public class DescriptionFragment extends Fragment {
                             .error(R.drawable.kamal_not_found)
                             .into(OrgImage);
                 }
-
-
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -202,7 +201,7 @@ public class DescriptionFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if (firebaseAuth.getCurrentUser() != null) {
-                    if (mDatabase.toString().equals(currentUser.getUid())) {
+                    if (Uid.equals(currentUser.getUid())) {
                         Calificar.setVisibility(View.INVISIBLE);
                     }
                     else  if(estado.equals("0")){
