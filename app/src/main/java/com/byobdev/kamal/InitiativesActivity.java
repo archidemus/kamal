@@ -1040,6 +1040,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 uiSettings.setAllGesturesEnabled(false);
                                 uiSettings.setMyLocationButtonEnabled(false);
                                 opened_df = true;
+
                             }
                         }
                         return true;

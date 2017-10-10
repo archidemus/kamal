@@ -51,6 +51,12 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
     String[] descriptionLista;
     String[] imageLista;
     String[] respuesaLista;
+    String[] completarListaAux;
+    String[] SectorListaAux;
+    String[] keyListaAux;
+    String[] descriptionListaAux;
+    String[] imageListaAux;
+    String[] respuesaListaAux;
     ListView lista;
     String Key;
     ImageButton sendCom;
@@ -158,6 +164,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 int t=0;
+                int aux=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
                     t++;
@@ -172,6 +179,12 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                 descriptionLista = new String[t-1];
                 imageLista = new String[t-1];
                 respuesaLista = new String[t-1];
+                aux =t-1;
+                completarListaAux = new String[t-1];
+                keyListaAux = new String[t-1];
+                descriptionListaAux = new String[t-1];
+                imageListaAux = new String[t-1];
+                respuesaListaAux = new String[t-1];
                 t=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
@@ -191,6 +204,15 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                     }
 
                 }
+
+                for(int i=0;i<aux;i++){
+                    completarListaAux[i] = completarLista[t-1];
+                    keyListaAux[i] = keyLista[t-1];
+                    descriptionListaAux[i] = descriptionLista[t-1];
+                    imageListaAux[i] = imageLista[t-1];
+                    respuesaListaAux[i] =respuesaLista[t-1];
+                    t--;
+                }
                 if(k[0] ==0){
                     TextView noHay = new TextView(VerCommentsActivity.this);
                     noHay.setText("No existen consultas sobre esta iniciativa");
@@ -199,9 +221,9 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                 }else{
                     com.byobdev.kamal.ListVerCommentActivity adapter;
                     ArrayList<String> dataItems = new ArrayList<String>();
-                    List<String> dataTemp = Arrays.asList(completarLista);
+                    List<String> dataTemp = Arrays.asList(completarListaAux);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListVerCommentActivity(VerCommentsActivity.this, dataItems,keyLista,descriptionLista,imageLista,lista, respuesaLista);
+                    adapter = new com.byobdev.kamal.ListVerCommentActivity(VerCommentsActivity.this, dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux);
                     adapter.setCustomButtonListner(VerCommentsActivity.this);
                     lista.setAdapter(adapter);
                 }
@@ -228,7 +250,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
         Comment comment = new Comment(currentUser.getDisplayName(), currentUser.getPhotoUrl().toString(), Comentario.getText().toString(), "");
         comments.child(getIntent().getStringExtra("IDIniciativa")).child(Key).setValue(comment);
         Comentario.setText("");
-        Toast.makeText(getApplicationContext(), "Consulta enviada", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Comentario enviado", Toast.LENGTH_LONG).show();
         finish();
         startActivity(getIntent());
     }

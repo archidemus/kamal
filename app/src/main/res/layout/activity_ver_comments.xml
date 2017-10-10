@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/verComments"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/verComments"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:focusable="true"
+              android:focusableInTouchMode="true"
+              android:weightSum="1">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarConfigComments"
@@ -18,15 +21,15 @@
         android:text="Comentarios"
         android:textSize="@dimen/section_title"
         android:textColor="@color/textDarkPrimary"
-        android:padding="@dimen/vertical_margin"/>
-
+        android:padding="@dimen/vertical_margin"
+        android:textStyle="bold"/>
     <ListView
         android:id="@+id/verCommentList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="392dp"
         android:paddingLeft="@dimen/vertical_margin"
-        android:paddingRight="@dimen/vertical_margin"/>
-
+        android:paddingRight="@dimen/vertical_margin"
+        android:layout_weight="1.88"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +37,8 @@
         android:paddingLeft="@dimen/vertical_margin"
         android:paddingTop="@dimen/horizontal_margin"
         android:paddingBottom="@dimen/horizontal_margin"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_gravity="bottom">
         <EditText
             android:id="@+id/VerCommentInput"
             android:layout_width="match_parent"
