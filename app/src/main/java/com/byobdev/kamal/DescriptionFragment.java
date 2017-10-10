@@ -51,6 +51,7 @@ public class DescriptionFragment extends Fragment {
     TextView hInicio;
     TextView hFin;
     String image;
+    String Uid;
     String Latitud;
     String Longitud;
     EditText Comentario;
@@ -135,7 +136,7 @@ public class DescriptionFragment extends Fragment {
 
         Latitud = getArguments().getString("Latitud");
         Longitud = getArguments().getString("Longitud");
-
+        Uid = getArguments().getString("Uid");
 
         loc1 = new Location("");
         loc1.setLatitude(Double.parseDouble(Latitud));
@@ -178,7 +179,7 @@ public class DescriptionFragment extends Fragment {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
                 if (firebaseAuth.getCurrentUser() != null) {
-                    if (mDatabase.toString().equals(currentUser.getUid())) {
+                    if (Uid.equals(currentUser.getUid())) {
                         Calificar.setVisibility(View.INVISIBLE);
                     }
                     else  if(estado.equals("0")){
