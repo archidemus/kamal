@@ -162,7 +162,9 @@
             <ListView
                 android:id="@+id/comment_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingRight="@dimen/vertical_margin"/>
             <Button
                 android:id="@+id/VerComentario"
                 android:layout_width="match_parent"

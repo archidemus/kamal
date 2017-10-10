@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -54,7 +55,7 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
             viewHolder.descripcion=(TextView) convertView.findViewById(R.id.comment);
             viewHolder.respuesta=(TextView) convertView.findViewById(R.id.VerRespuestaFragment);
             viewHolder.respuestaContenido=(TextView) convertView.findViewById(R.id.VerRespuestaContenidoFragment);
-            viewHolder.ll=(RelativeLayout) convertView.findViewById(R.id.listaComment);
+            viewHolder.ll=(LinearLayout) convertView.findViewById(R.id.listaComment);
             String image=imageLista[position];
 
            String url = image;
@@ -85,7 +86,7 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
         TextView descripcion;
         TextView respuesta;
         TextView respuestaContenido;
-        RelativeLayout ll;
+        LinearLayout ll;
     }
     public class CircleTransform implements Transformation {
         @Override

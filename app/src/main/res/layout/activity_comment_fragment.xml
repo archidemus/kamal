@@ -1,49 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/listaComment">
+    android:layout_height="wrap_content"
+    android:id="@+id/listaComment"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/horizontal_margin"
+    android:paddingTop="@dimen/horizontal_margin">
 
     <ImageView
         android:id="@+id/childImagecomment"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/kamal_logo" />
-    <RelativeLayout
-        android:layout_width="wrap_content"
+        android:src="@drawable/kamal_not_found"
+        android:layout_marginRight="@dimen/horizontal_margin" />
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="@+id/childImagecomment">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/childTextViewComment"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:textSize="13dp"
-            android:textStyle="bold"
-            android:layout_marginLeft="105dp"/>
+            android:textStyle="bold"/>
         <TextView
             android:id="@+id/comment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_below="@+id/childTextViewComment"
-            android:layout_marginLeft="105dp"
             android:textSize="10sp"/>
         <TextView
             android:id="@+id/VerRespuestaFragment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_below="@+id/comment"
             android:text="Respuesta: "
             android:textStyle="bold"
-            android:layout_marginLeft="105dp"
             android:textSize="10sp"/>
         <TextView
             android:id="@+id/VerRespuestaContenidoFragment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_below="@+id/comment"
-            android:layout_marginLeft="159dp"
             android:textSize="10sp"/>
-    </RelativeLayout>
-</RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
