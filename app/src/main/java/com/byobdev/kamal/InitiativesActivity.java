@@ -1346,6 +1346,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             new LatLng(location.getLatitude(), location
                                     .getLongitude())));
         }
+        mCurrLocationMarker.setZIndex(100);
         animateMarker(mCurrLocationMarker, location);
 
     }
