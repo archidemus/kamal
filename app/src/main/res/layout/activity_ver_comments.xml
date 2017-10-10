@@ -16,36 +16,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Consultas"
-        android:textColor="@color/Primary"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"/>
+        android:textSize="@dimen/section_title"
+        android:textColor="@color/textDarkPrimary"
+        android:padding="@dimen/vertical_margin"/>
 
     <ListView
         android:id="@+id/verCommentList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></ListView>
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/vertical_margin"
+        android:paddingRight="@dimen/vertical_margin"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:paddingRight="@dimen/vertical_margin"
+        android:paddingLeft="@dimen/vertical_margin"
+        android:paddingTop="@dimen/horizontal_margin"
+        android:paddingBottom="@dimen/horizontal_margin"
+        android:orientation="horizontal">
         <EditText
             android:id="@+id/VerCommentInput"
-            android:layout_width="310dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="none"
             android:hint="Nueva Consulta..."
             android:inputType="text"
             android:maxLength="40"
-            android:textSize="16sp"/>
+            android:layout_toLeftOf="@+id/VerSendComment"
+            android:layout_toStartOf="@id/VerSendComment"
+            android:textSize="@dimen/section_title"/>
 
         <ImageButton
             android:id="@+id/VerSendComment"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:background="@android:color/transparent"
             android:clickable="true"
             app:srcCompat="@drawable/ic_send" />
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>
