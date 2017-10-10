@@ -171,6 +171,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     RatingBar rtb;
     ImageView img_profile;
     View linea;
+    float lastCameraZoom;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
     //User Interests Listener
@@ -457,10 +458,40 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         @Override
         public void onCameraIdle() {
 
-            updateInitiatives();
+            if(initiativesMap.getCameraPosition().zoom<40){
+                if(lastCameraZoom<40){
+                    updateInitiatives();
+                }
+                else{
+                    unloadClusters();
+                    loadInitiatives();
+                }
+            }
+            else{
+                if(lastCameraZoom<40){
+                    removeListeners();
+                    loadClusters();
+                }
+                else{
+                    updateClusters();
+                }
+
+            }
+            lastCameraZoom=initiativesMap.getCameraPosition().zoom;
 
         }
     };
+
+    public void unloadClusters(){
+
+    }
+    public void loadClusters(){
+
+    }
+    public void updateClusters(){
+
+    }
+
     private float mLastPosY;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
@@ -1358,7 +1389,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativesMap = googleMap;
         start = new LocationGPS(getApplicationContext());
         final LatLng interested;
-
+        initiativesMap.setMinZoomPreference(13);
         boolean success = googleMap.setMapStyle(new MapStyleOptions(getResources().getString(R.string.style_json)));
         if (!success) {
             Log.e(TAG, "Style parsing failed.");
@@ -1438,6 +1469,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             public void onMapLoaded() {
                 loadInitiatives();
                 initiativesMap.setOnCameraIdleListener(cameraIdleListener);
+                lastCameraZoom=initiativesMap.getCameraPosition().zoom;
             }
         });
     }
