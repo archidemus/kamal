@@ -457,8 +457,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
+            updateInitiatives();
 
-            if(initiativesMap.getCameraPosition().zoom<40){
+            /*if(initiativesMap.getCameraPosition().zoom<40){
                 if(lastCameraZoom<40){
                     updateInitiatives();
                 }
@@ -477,7 +478,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
 
             }
-            lastCameraZoom=initiativesMap.getCameraPosition().zoom;
+            lastCameraZoom=initiativesMap.getCameraPosition().zoom;*/
 
         }
     };
