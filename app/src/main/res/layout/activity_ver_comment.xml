@@ -26,12 +26,12 @@
             android:layout_height="match_parent"
             android:textSize="13dp"
             android:textStyle="bold"
-            android:text="Nombre de alguien"/>
+            android:text=""/>
         <TextView
             android:id="@+id/Vercomment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Pregunta de alguien"
+            android:text=""
             android:textSize="10sp"/>
         <TextView
             android:id="@+id/VerRespuesta"
@@ -44,7 +44,7 @@
             android:id="@+id/VerRespuestaContenido"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Esta es una respuesta"
+            android:text=""
             android:textSize="10sp"/>
 
 
