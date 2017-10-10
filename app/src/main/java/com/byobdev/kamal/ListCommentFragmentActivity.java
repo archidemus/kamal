@@ -69,10 +69,11 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
         final String temp = getItem(position);
         viewHolder.text.setText(temp);
         viewHolder.descripcion.setText(descripcionLista[position]);
-        if(respuestaLista[position].equals("")){
-            viewHolder.respuesta.setVisibility(View.GONE); // Esta linea no funciona
+        if(respuestaLista[position] == null){
+            viewHolder.respuesta.setVisibility(View.GONE);
+        }else if(respuestaLista[position].equals("")) {
+            viewHolder.respuesta.setVisibility(View.GONE); // Esta linea no funcionaelse
         }else{
-
             viewHolder.respuestaContenido.setText(respuestaLista[position]);
         }
         return convertView;
