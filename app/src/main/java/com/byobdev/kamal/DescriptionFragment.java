@@ -26,6 +26,7 @@ import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.app.FragmentManager;
 
 import com.byobdev.kamal.DBClasses.Comment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static android.R.attr.dial;
+import static android.R.attr.fragment;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static java.lang.String.valueOf;
 
@@ -62,7 +64,7 @@ public class DescriptionFragment extends Fragment {
     String image;
     String orgImage;
     EditText Comentario;
-    Button Calificar;
+    TextView Calificar;
     ListView lista;
     RatingBar rtb;
     String Key;
@@ -134,7 +136,7 @@ public class DescriptionFragment extends Fragment {
         Image = (ImageView) getView().findViewById(R.id.inImage);
         image = getArguments().getString("imagen");
         rtb = (RatingBar) getView().findViewById(R.id.inRating);
-        Calificar = (Button) getView().findViewById(R.id.btn_Rating);
+        Calificar = (TextView) getView().findViewById(R.id.btn_Rating);
         Calificar.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 ratingSend();
@@ -300,11 +302,16 @@ public class DescriptionFragment extends Fragment {
     }
 
     public void VerComentarios(){
-        final Intent intentMain2 = new Intent(getActivity(), VerCommentsActivity.class);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.addToBackStack(null);
+
+// Commit the transaction
+        transaction.commit();
+        final Intent intentMain2 = new Intent(getApplicationContext(), VerCommentsActivity.class);
        // mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives").child(Sector).child(nombre);
         intentMain2.putExtra("IDIniciativa",getArguments().getString("imagen"));
         intentMain2.putExtra("Titulo",getArguments().getString("Titulo"));
-        getActivity().startActivity(intentMain2);
+        startActivity(intentMain2);
     }
 
     public void ratingSend(){
@@ -427,4 +434,5 @@ public class DescriptionFragment extends Fragment {
             });
 
     }
+
 }

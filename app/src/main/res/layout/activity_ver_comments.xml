@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Consultas"
+        android:text="Comentarios"
         android:textSize="@dimen/section_title"
         android:textColor="@color/textDarkPrimary"
         android:padding="@dimen/vertical_margin"/>
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autoLink="none"
-            android:hint="Nueva Consulta..."
+            android:hint="Nuevo comenterio..."
             android:inputType="text"
             android:maxLength="40"
             android:layout_toLeftOf="@+id/VerSendComment"
