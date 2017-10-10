@@ -263,6 +263,8 @@ public class DescriptionFragment extends Fragment {
             String url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+getArguments().getString("imagen")+"?alt=media";
             Picasso.with(this.getContext())
                     .load(url)
+                    .fit()
+                    .centerCrop()
                     .error(R.drawable.kamal_not_found)
                     .into(Image);
         }
