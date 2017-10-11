@@ -77,7 +77,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
     StorageReference storageRef = mStoragebase.getReferenceFromUrl("gs://prime-boulevard-168121.appspot.com/Images");
     ProgressDialog pd;
-    Uri filePath;
+    Uri filePath=null;
     String direccion;
     int PLACE_PICKER_REQUEST = 1;
     int PICK_IMAGE_REQUEST = 111;
@@ -249,6 +249,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Comment comment = new Comment(nombre, key, "Creador","");
             comments.child(key).child(key2).setValue(comment);
 
+            if(filePath==null){
+                Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
+                finish();
+            }
             StorageReference childRef = storageRef.child(key);
             //uploading the image
             final UploadTask uploadTask = childRef.putFile(filePath);
@@ -257,7 +261,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
                     imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
                     finish();
                     try {

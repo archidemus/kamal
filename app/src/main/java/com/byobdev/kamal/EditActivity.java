@@ -279,7 +279,11 @@ public class EditActivity extends AppCompatActivity {
             userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             userInitiatives.child(key).child("image").setValue(key);
-            Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
+
+            if(filePath==null){
+                Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
             StorageReference childRef = storageRef.child(key);
             //uploading the image
@@ -289,7 +293,7 @@ public class EditActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     pd.dismiss();
-                    Toast.makeText(EditActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditActivity.this, "Iniciativa editada", Toast.LENGTH_SHORT).show();
                     imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
                     finish();
                     try {
