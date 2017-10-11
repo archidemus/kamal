@@ -1,49 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/textLightPrimary"
-    android:orientation="vertical">
-    <ScrollView
+    android:id="@+id/scrollViewFragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:id="@+id/scrollViewFragment"
         android:layout_height="wrap_content">
+
         <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/linear1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:background="@color/textLightPrimary"
             android:orientation="vertical"
             android:weightSum="1">
+
             <ImageView
                 android:id="@+id/inImage"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:src="@drawable/kamal_not_found"
+                android:layout_gravity="center"
                 android:scaleType="center"
-                android:layout_gravity="center"/>
+                android:src="@drawable/kamal_not_found"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:paddingBottom="@dimen/horizontal_margin"
                 android:paddingLeft="@dimen/vertical_margin"
                 android:paddingRight="@dimen/vertical_margin"
-                android:paddingTop="@dimen/horizontal_margin"
-                android:paddingBottom="@dimen/horizontal_margin">
+                android:paddingTop="@dimen/horizontal_margin">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
+
                     <de.hdodenhof.circleimageview.CircleImageView
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/profile_image"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:layout_gravity="center"
                         android:src="@drawable/kamal_not_found"
-                        app:civ_border_width="0dp"
                         app:civ_border_color="#FF000000"
-                        android:layout_gravity="center"/>
+                        app:civ_border_width="0dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -57,11 +65,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Por "
-                            android:textSize="15sp" />
+                            android:textSize="15sp"/>
+
                         <TextView
                             android:id="@+id/inOrganizer"
                             android:layout_width="match_parent"
@@ -69,29 +79,29 @@
                             android:ellipsize="marquee"
                             android:maxLines="1"
                             android:text="Organizador"
-                            android:textSize="15sp" />
+                            android:textSize="15sp"/>
                     </LinearLayout>
 
                     <RatingBar
                         android:id="@+id/inRating"
+                        style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:numStars="5"
-                        android:stepSize="0.5"
-                        style="?android:attr/ratingBarStyleSmall"
-                        android:layout_gravity="center_vertical"/>
+                        android:stepSize="0.5"/>
+
                     <TextView
                         android:id="@+id/btn_Rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:background="@android:color/transparent"
                         android:onClick="ratingSend"
+                        android:padding="0dp"
                         android:text="CALIFICAR"
                         android:textColor="@color/Primary"
-                        android:textSize="15sp"
-                        android:layout_gravity="center_vertical"
-                        android:padding="0dp"/>
-
+                        android:textSize="15sp"/>
 
 
                 </LinearLayout>
@@ -110,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:text="00:00"
                     android:textAllCaps="true"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/rate_row"
@@ -118,7 +128,7 @@
                     android:layout_height="wrap_content"
                     android:text=" → "
                     android:textAllCaps="true"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/hT"
@@ -126,85 +136,98 @@
                     android:layout_height="wrap_content"
                     android:text="00:00"
                     android:textAllCaps="true"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"/>
             </LinearLayout>
+
             <TextView
                 android:id="@+id/inPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_horizontal_margin"
                 android:ellipsize="marquee"
                 android:maxLines="2"
-                android:text="Lugar"
-                android:textSize="14sp"
                 android:paddingLeft="@dimen/vertical_margin"
                 android:paddingRight="@dimen/vertical_margin"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
+                android:text="Lugar"
+                android:textSize="14sp"/>
 
             <TextView
                 android:id="@+id/inShortDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textDarkPrimary"
                 android:paddingLeft="@dimen/vertical_margin"
                 android:paddingRight="@dimen/vertical_margin"
                 android:paddingTop="@dimen/horizontal_margin"
-                android:text="Texto de prueba"/>
+                android:text="Texto de prueba"
+                android:textColor="@color/textDarkPrimary"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/vertical_margin"
                 android:text="Comentarios"
                 android:textColor="@color/textDarkPrimary"
-                android:textStyle="bold"
                 android:textSize="@dimen/section_title"
-                android:padding="@dimen/vertical_margin"/>
+                android:textStyle="bold"/>
+        </LinearLayout>
 
-            <ListView
-                android:id="@+id/comment_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/vertical_margin"
-                android:paddingRight="@dimen/vertical_margin"/>
+        <ListView
+            android:id="@+id/comment_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linear1"
+            android:paddingLeft="@dimen/vertical_margin"
+            android:paddingRight="@dimen/vertical_margin"
+            android:scrollbars="none"/>
+
+        <LinearLayout
+            android:id="@+id/linear2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/comment_list"
+            android:orientation="vertical">
+
             <Button
                 android:id="@+id/VerComentario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="VER TODOS"
                 android:background="@android:color/transparent"
-                android:textColor="@color/Primary"
                 android:onClick="VerComentarios"
+                android:paddingLeft="@dimen/vertical_margin"
                 android:paddingRight="@dimen/vertical_margin"
-                android:paddingLeft="@dimen/vertical_margin"/>
+                android:text="VER TODOS"
+                android:textColor="@color/Primary"/>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingRight="@dimen/vertical_margin"
-                android:paddingLeft="@dimen/vertical_margin">
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingRight="@dimen/vertical_margin">
+
                 <ImageButton
                     android:id="@+id/SendComment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    app:srcCompat="@drawable/ic_send"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:background="@android:color/transparent"
+                    android:clickable="true"
                     android:paddingLeft="@dimen/horizontal_margin"
                     android:paddingRight="@dimen/horizontal_margin"
-                    android:paddingTop="@dimen/horizontal_margin"/>
+                    android:paddingTop="@dimen/horizontal_margin"
+                    app:srcCompat="@drawable/ic_send"/>
+
                 <EditText
                     android:id="@+id/CommentInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/SendComment"
                     android:autoLink="none"
                     android:hint="Nuevo comentario..."
                     android:inputType="text"
                     android:maxLength="40"
-                    android:textSize="16sp"
-                    android:layout_toLeftOf="@id/SendComment"/>
+                    android:textSize="16sp"/>
             </RelativeLayout>
-
         </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+    </RelativeLayout>
+</ScrollView>
