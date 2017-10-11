@@ -97,7 +97,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent i = getIntent();
-                        DatabaseReference Respuesta = FirebaseDatabase.getInstance().getReference("Comments/"+i.getStringExtra("IDIniciativa")+"/"+SectorLista[position]);
+                        DatabaseReference Respuesta = FirebaseDatabase.getInstance().getReference("Comments/"+i.getStringExtra("IDIniciativa")+"/"+SectorListaAux[position]);
                         Respuesta.child("Respuesta").setValue(edt.getText().toString());
                         finish();
                         startActivity(getIntent());
@@ -180,6 +180,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                 imageLista = new String[t-1];
                 respuesaLista = new String[t-1];
                 aux =t-1;
+                SectorListaAux = new String[t-1];
                 completarListaAux = new String[t-1];
                 keyListaAux = new String[t-1];
                 descriptionListaAux = new String[t-1];
@@ -206,6 +207,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                 }
 
                 for(int i=0;i<aux;i++){
+                    SectorListaAux[i] = SectorLista[t-1];
                     completarListaAux[i] = completarLista[t-1];
                     keyListaAux[i] = keyLista[t-1];
                     descriptionListaAux[i] = descriptionLista[t-1];
