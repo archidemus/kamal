@@ -253,37 +253,40 @@ public class CreateInitiativeActivity extends AppCompatActivity{
                 Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
                 finish();
             }
-            StorageReference childRef = storageRef.child(key);
-            //uploading the image
-            final UploadTask uploadTask = childRef.putFile(filePath);
+            else{
+                StorageReference childRef = storageRef.child(key);
+                //uploading the image
+                final UploadTask uploadTask = childRef.putFile(filePath);
 
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
-                    imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
-                    finish();
-                    try {
-                        //getting image from gallery
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pd.dismiss();
+                        Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
+                        imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                        finish();
+                        try {
+                            //getting image from gallery
 
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
-                        //Setting image to ImageView
-                        //Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
-                        imgView.setImageBitmap(bitmap);
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+                            //Setting image to ImageView
+                            //Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
+                            imgView.setImageBitmap(bitmap);
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    pd.dismiss();
-                    Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
-                    imagen = null;
-                }
-            });
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                        imagen = null;
+                    }
+                });
+            }
+
 
         }
     }
