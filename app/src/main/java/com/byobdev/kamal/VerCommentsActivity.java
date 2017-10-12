@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -139,7 +140,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
         final Drawable upArrow = getResources().getDrawable(R.drawable.ic_back);
         upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
         getSupportActionBar().setHomeAsUpIndicator(upArrow);
-        final LinearLayout ll = (LinearLayout) findViewById(R.id.verComments);
+        final RelativeLayout ll = (RelativeLayout) findViewById(R.id.verComments);
         FirebaseAuth.AuthStateListener authListener  = new FirebaseAuth.AuthStateListener(){
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
