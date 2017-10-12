@@ -39,6 +39,8 @@ import com.google.firebase.storage.UploadTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import android.widget.EditText;
 import android.graphics.Bitmap;
@@ -51,6 +53,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import static java.security.AccessController.getContext;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class CreateInitiativeActivity extends AppCompatActivity{
@@ -73,7 +77,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
     StorageReference storageRef = mStoragebase.getReferenceFromUrl("gs://prime-boulevard-168121.appspot.com/Images");
     ProgressDialog pd;
-    Uri filePath;
+    Uri filePath=null;
     String direccion;
     int PLACE_PICKER_REQUEST = 1;
     int PICK_IMAGE_REQUEST = 111;
@@ -198,6 +202,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     };
 
     public void createInitiative(MenuItem menuItem) throws ParseException {
+        Toast.makeText(CreateInitiativeActivity.this, "Subiendo Imagen", Toast.LENGTH_SHORT).show();
         Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
         String fechainicioprueba = fechaInicio.getText().toString();
         if( titulo.getText().toString().equals("")){
@@ -244,7 +249,45 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             Comment comment = new Comment(nombre, key, "Creador","");
             comments.child(key).child(key2).setValue(comment);
 
-            finish();
+            if(filePath==null){
+                Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            else{
+                StorageReference childRef = storageRef.child(key);
+                //uploading the image
+                final UploadTask uploadTask = childRef.putFile(filePath);
+
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pd.dismiss();
+                        Toast.makeText(CreateInitiativeActivity.this, "Iniciativa Creada", Toast.LENGTH_SHORT).show();
+                        imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
+                        finish();
+                        try {
+                            //getting image from gallery
+
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
+                            //Setting image to ImageView
+                            //Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
+                            imgView.setImageBitmap(bitmap);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
+                        imagen = null;
+                    }
+                });
+            }
+
+
         }
     }
 
@@ -288,10 +331,13 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_PICK);
-            startActivityForResult(Intent.createChooser(intent, "Seleccione imagen"), PICK_IMAGE_REQUEST);
+            // start picker to get image for cropping and then use the image in cropping activity
+            CropImage.activity()
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setAspectRatio(400,200)
+                    .setFixAspectRatio(true)
+                    .setRequestedSize(400,200)
+                    .start(this);
         }
     }
 
@@ -326,49 +372,18 @@ public class CreateInitiativeActivity extends AppCompatActivity{
             }
         }
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            filePath = data.getData();
-            if(filePath != null) {
-                pd.show();
-
-                StorageReference childRef = storageRef.child(key);
-
-                //uploading the image
-                final UploadTask uploadTask = childRef.putFile(filePath);
-
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        pd.dismiss();
-                        Toast.makeText(CreateInitiativeActivity.this, "Subida Exitosa", Toast.LENGTH_SHORT).show();
-                        imagen = uploadTask.getSnapshot().getDownloadUrl().toString();
-                        try {
-                            //getting image from gallery
-
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), filePath);
-                            //Setting image to ImageView
-                            //Picasso.with(this).load(filePath).fit().error(R.drawable.kamal_logo).into(imgView);
-                            imgView.setImageBitmap(bitmap);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        pd.dismiss();
-                        Toast.makeText(CreateInitiativeActivity.this, "Error en la subida -> " + e, Toast.LENGTH_SHORT).show();
-                        imagen = null;
-                    }
-                });
-            }
-            else {
-                Toast.makeText(CreateInitiativeActivity.this, "Error en la subida", Toast.LENGTH_SHORT).show();
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                filePath = result.getUri();
+                imgView.setImageURI(filePath);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
             }
         }
 
     }
+
 
 
 
