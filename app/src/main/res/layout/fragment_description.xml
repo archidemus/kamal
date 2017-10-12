@@ -174,7 +174,7 @@
         <ListView
             android:id="@+id/comment_list"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="70dp"
             android:layout_below="@id/linear1"
             android:paddingLeft="@dimen/vertical_margin"
             android:paddingRight="@dimen/vertical_margin"/>
@@ -197,7 +197,7 @@
                 android:onClick="VerComentarios"
                 android:paddingLeft="@dimen/vertical_margin"
                 android:paddingRight="@dimen/vertical_margin"
-                android:text="VER TODOS"
+                android:text="VER MÁS"
                 android:textColor="@color/Primary"/>
 
             <RelativeLayout

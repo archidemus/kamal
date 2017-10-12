@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -40,6 +42,7 @@ import java.util.List;
 
 
 import static android.R.attr.rating;
+import static android.R.attr.x;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class DescriptionFragment extends Fragment {
@@ -307,6 +310,15 @@ public class DescriptionFragment extends Fragment {
                         respuesaListaAux[i] =respuesaLista[t-1];
                         t--;
                     }
+
+                    if(r<= 2){
+                        lista.getLayoutParams().height = 200;
+                    }
+                    else if(r== 3){
+                        lista.getLayoutParams().height = 450;
+                    }else{
+                        lista.getLayoutParams().height = 700;
+                    }
                     com.byobdev.kamal.ListCommentFragmentActivity adapter;
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarListaAux);
@@ -314,7 +326,7 @@ public class DescriptionFragment extends Fragment {
                     adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux);
                     lista.setAdapter(adapter);
                 }
-                if(r<4){
+                if(r<=4){
                     verComent.setVisibility(View.GONE);
                 }
 
@@ -413,11 +425,23 @@ public class DescriptionFragment extends Fragment {
 
                     }
                     for(int i=0;i<aux;i++){
+                        if(t==0){
+                            break;
+                        }
                         completarListaAux[i] = completarLista[t-1];
                         keyListaAux[i] = keyLista[t-1];
                         descriptionListaAux[i] = descriptionLista[t-1];
                         imageListaAux[i] = imageLista[t-1];
                         respuesaListaAux[i] =respuesaLista[t-1];
+                        t--;
+                    }
+                    if(r<= 2){
+                        lista.getLayoutParams().height = 200;
+                    }
+                    else if(r== 3){
+                        lista.getLayoutParams().height = 450;
+                    }else{
+                        lista.getLayoutParams().height = 700;
                     }
                     com.byobdev.kamal.ListCommentFragmentActivity adapter;
                     ArrayList<String> dataItems = new ArrayList<String>();
