@@ -210,6 +210,14 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
 
                 }
 
+                if(currentUser == null){
+                    sendCom.setVisibility(View.GONE);
+                    Comentario.setVisibility(View.GONE);
+                }
+                else{
+                    sendCom.setVisibility(View.VISIBLE);
+                    Comentario.setVisibility(View.VISIBLE);
+                }
                 for(int i=0;i<aux;i++){
                     SectorListaAux[i] = SectorLista[t-1];
                     completarListaAux[i] = completarLista[t-1];

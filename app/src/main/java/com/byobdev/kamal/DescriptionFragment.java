@@ -311,6 +311,14 @@ public class DescriptionFragment extends Fragment {
                         t--;
                     }
 
+                    if(currentUser == null){
+                        sendCom.setVisibility(View.GONE);
+                        Comentario.setVisibility(View.GONE);
+                    }
+                    else{
+                        sendCom.setVisibility(View.VISIBLE);
+                        Comentario.setVisibility(View.VISIBLE);
+                    }
                     if(r<= 2){
                         lista.getLayoutParams().height = 200;
                     }
@@ -423,6 +431,14 @@ public class DescriptionFragment extends Fragment {
 
 
 
+                    }
+                    if(currentUser == null){
+                        sendCom.setVisibility(View.GONE);
+                        Comentario.setVisibility(View.GONE);
+                    }
+                    else{
+                        sendCom.setVisibility(View.VISIBLE);
+                        Comentario.setVisibility(View.VISIBLE);
                     }
                     for(int i=0;i<aux;i++){
                         if(t==0){
