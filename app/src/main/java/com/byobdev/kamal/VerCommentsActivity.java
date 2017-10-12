@@ -191,9 +191,12 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
                     if(child.child("Comentario").getValue().toString().equals("Creador")){
-                        if(currentUser.getDisplayName().equals(child.child("Nombre").getValue().toString())){
-                            organizador = true;
+                        if(currentUser != null){
+                            if(currentUser.getDisplayName().equals(child.child("Nombre").getValue().toString())){
+                                organizador = true;
+                            }
                         }
+
 
                     }else{
                         respuesaLista[t] = child.child("Respuesta").getValue().toString();
