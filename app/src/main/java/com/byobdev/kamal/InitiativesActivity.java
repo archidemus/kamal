@@ -202,23 +202,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 } else {
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
                 }
-                if (userInterests.radio500m) {
-                    FirebaseMessaging.getInstance().subscribeToTopic("radio500m");
-                } else {
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("radio500m");
-                }
-                if (userInterests.radio3km) {
-                    FirebaseMessaging.getInstance().subscribeToTopic("radio3km");
-                } else {
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("radio3km");
-                }
-                if (userInterests.radio10km) {
-                    FirebaseMessaging.getInstance().subscribeToTopic("radio10km");
-                } else {
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("radio10km");
-                }
             } else {
                 userInterests = new Interests(false, false, false, false, false, true, false);
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("Deporte");
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("Musica");
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Interests");
+                mDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(userInterests);
+
             }
 
         }
