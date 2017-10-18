@@ -311,6 +311,14 @@ public class DescriptionFragment extends Fragment {
                         t--;
                     }
 
+                    if(currentUser == null){
+                        sendCom.setVisibility(View.GONE);
+                        Comentario.setVisibility(View.GONE);
+                    }
+                    else{
+                        sendCom.setVisibility(View.VISIBLE);
+                        Comentario.setVisibility(View.VISIBLE);
+                    }
                     if(r<= 2){
                         lista.getLayoutParams().height = 200;
                     }
@@ -424,6 +432,14 @@ public class DescriptionFragment extends Fragment {
 
 
                     }
+                    if(currentUser == null){
+                        sendCom.setVisibility(View.GONE);
+                        Comentario.setVisibility(View.GONE);
+                    }
+                    else{
+                        sendCom.setVisibility(View.VISIBLE);
+                        Comentario.setVisibility(View.VISIBLE);
+                    }
                     for(int i=0;i<aux;i++){
                         if(t==0){
                             break;
@@ -502,7 +518,7 @@ public class DescriptionFragment extends Fragment {
         date.setText(hInicio.getText().toString().concat("\n").concat(hFin.getText().toString()));
         String imagen = getArguments().getString("imagen");
 
-        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+getArguments().getString("Uid"));
+        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+currentUser.getUid());
         mDatabase2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -582,7 +598,7 @@ public class DescriptionFragment extends Fragment {
                         final float rait = rtb2.getRating();
                         int nVotos = Integer.parseInt(snapshot.child("Nvotos").getValue().toString());
                         userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)-rating+rait)/nVotos);
-                        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+getArguments().getString("Uid"));
+                        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+currentUser.getUid());
                         mDatabase2.setValue(rait);
                     }
                     else{
@@ -591,7 +607,7 @@ public class DescriptionFragment extends Fragment {
                         int nVotos2 = nVotos+1;
                         userInitiatives.child("rating").setValue(((Float.parseFloat(snapshot.child("rating").getValue().toString())*nVotos)+rait)/nVotos2);
                         userInitiatives.child("Nvotos").setValue(nVotos2);
-                        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+getArguments().getString("Uid"));
+                        DatabaseReference mDatabase2 = FirebaseDatabase.getInstance().getReference("Rating/"+ getArguments().getString("imagen")+"/"+currentUser.getUid());
                         mDatabase2.setValue(rait);
                     }
 
