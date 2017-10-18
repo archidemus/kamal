@@ -34,6 +34,11 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
     private ListView lista;
     private String[] respuestaLista;
 
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
+    }
+
     public ListCommentFragmentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista, String[] respuestaLista) {
         super(context, R.layout.activity_comment_fragment, dataItem);
         this.context = context;
