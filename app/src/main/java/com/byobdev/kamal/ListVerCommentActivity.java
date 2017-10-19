@@ -31,24 +31,26 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
     private String[] descripcionLista;
     private ListView lista;
     private String[] respuestaLista;
+    private int organizador;
 
     customButtonListener customListner;
 
     public interface customButtonListener {
-        void getPosition1(int position);
+        void setRespuesta(int position);
     }
 
     public void setCustomButtonListner(customButtonListener listener) {
         this.customListner = listener;
     }
 
-    public ListVerCommentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista, String[] respuestaLista) {
+    public ListVerCommentActivity(Context context, ArrayList<String> dataItem, String[] keyLista, String[] descripcionLista, String[] imageLista, ListView lista, String[] respuestaLista,int organizador) {
         super(context, R.layout.activity_ver_comment, dataItem);
         this.context = context;
         this.imageLista=imageLista;
         this.descripcionLista=descripcionLista;
         this.lista=lista;
         this.respuestaLista = respuestaLista;
+        this.organizador = organizador;
     }
 
     @Override
@@ -62,6 +64,7 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
             viewHolder.imageView=(ImageView) convertView.findViewById(R.id.childVerImagecomment);
             viewHolder.descripcion=(TextView) convertView.findViewById(R.id.Vercomment);
             viewHolder.respuesta=(TextView) convertView.findViewById(R.id.VerRespuesta);
+            viewHolder.Responder = (TextView) convertView.findViewById(R.id.Responder1);
             viewHolder.respuestaContenido=(TextView) convertView.findViewById(R.id.VerRespuestaContenido);
             viewHolder.ll=(LinearLayout) convertView.findViewById(R.id.listaVerComment);
             String image=imageLista[position];
@@ -79,19 +82,24 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
         if(respuestaLista[position] == null){
             viewHolder.respuesta.setVisibility(View.GONE);
         }else if(respuestaLista[position].equals("")){
-            viewHolder.respuesta.setVisibility(View.GONE); // Esta linea no funciona
+            viewHolder.respuesta.setVisibility(View.GONE);
         }else{
-
+            viewHolder.Responder.setVisibility(View.GONE);
             viewHolder.respuestaContenido.setText(respuestaLista[position]);
         }
-        viewHolder.ll.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if(customListner!=null){
-                    customListner.getPosition1(position);}
 
-            }
-        });
+        if(organizador==0){
+            viewHolder.Responder.setVisibility(View.GONE);
+        }else{
+            viewHolder.Responder.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    if(customListner!=null){
+                        customListner.setRespuesta(position);}
+
+                }
+            });
+        }
         return convertView;
     }
 
@@ -100,6 +108,7 @@ public class ListVerCommentActivity extends ArrayAdapter<String> {
         TextView text;
         TextView descripcion;
         TextView respuesta;
+        TextView Responder;
         TextView respuestaContenido;
         LinearLayout ll;
     }

@@ -32,15 +32,6 @@
             android:padding="@dimen/vertical_margin"
             android:textStyle="bold"/>
     </LinearLayout>
-
-    <ListView
-        android:id="@+id/verCommentList"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:paddingLeft="@dimen/vertical_margin"
-        android:paddingRight="@dimen/vertical_margin"
-        android:layout_weight="1.88"
-        android:layout_below="@+id/linear1"/>
     <RelativeLayout
         android:id="@+id/commentBar"
         android:layout_width="match_parent"
@@ -49,7 +40,7 @@
         android:paddingLeft="@dimen/vertical_margin"
         android:paddingTop="@dimen/horizontal_margin"
         android:paddingBottom="@dimen/horizontal_margin"
-        android:layout_below="@+id/verCommentList">
+        android:layout_below="@+id/linear1">
         <EditText
             android:id="@+id/VerCommentInput"
             android:layout_width="match_parent"
@@ -66,10 +57,21 @@
             android:id="@+id/VerSendComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:background="@android:color/transparent"
             android:clickable="true"
             app:srcCompat="@drawable/ic_send" />
     </RelativeLayout>
+
+    <ListView
+        android:id="@+id/verCommentList"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:paddingLeft="@dimen/vertical_margin"
+        android:paddingRight="@dimen/vertical_margin"
+        android:layout_weight="1.88"
+        android:layout_below="@+id/commentBar"/>
+
 </RelativeLayout>

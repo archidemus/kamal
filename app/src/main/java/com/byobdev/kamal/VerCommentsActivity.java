@@ -67,61 +67,9 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
     int prevPosition=-1;
     boolean selected=false, organizador = false;
     MenuItem edit;
+    int ORG=0;
 
 
-    //Toolbar set
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.list_comment, menu);
-        edit = menu.findItem(R.id.editcomment);
-        edit.setVisible(false);
-        for (int i = 0; i < menu.size(); i++) {
-            Drawable drawable = menu.getItem(i).getIcon();
-            if (drawable != null) {
-                drawable.mutate();
-                drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-            }
-        }
-        edit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(VerCommentsActivity.this);
-                LayoutInflater inflater = VerCommentsActivity.this.getLayoutInflater();
-                final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
-                alert.setView(dialogView);
-
-                final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
-                alert.setTitle("Respuesta");
-                alert.setMessage("Escribe una respuesta a la consulta");
-                alert.setPositiveButton("Aceptar", new Dialog.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = getIntent();
-                        DatabaseReference Respuesta = FirebaseDatabase.getInstance().getReference("Comments/"+i.getStringExtra("IDIniciativa")+"/"+SectorListaAux[position]);
-                        Respuesta.child("Respuesta").setValue(edt.getText().toString());
-                        finish();
-                        startActivity(getIntent());
-                        dialog.dismiss();
-
-
-                    }
-                });
-                alert.setNegativeButton("Cancelar", new Dialog.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                    }
-                });
-
-                alert.show();
-                return true;
-            }
-        });
-        return true;
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,6 +142,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                         if(currentUser != null){
                             if(currentUser.getDisplayName().equals(child.child("Nombre").getValue().toString())){
                                 organizador = true;
+                                ORG=1;
                             }
                         }
 
@@ -237,7 +186,7 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarListaAux);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListVerCommentActivity(VerCommentsActivity.this, dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux);
+                    adapter = new com.byobdev.kamal.ListVerCommentActivity(VerCommentsActivity.this, dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux, ORG);
                     adapter.setCustomButtonListner(VerCommentsActivity.this);
                     lista.setAdapter(adapter);
                 }
@@ -269,36 +218,46 @@ public class VerCommentsActivity extends AppCompatActivity implements ListVerCom
         startActivity(getIntent());
     }
 
+
     @Override
-    public void getPosition1(int position) {
-
-        if(organizador){
-            if(prevPosition!=-1){
-                lista.getChildAt(prevPosition).setBackgroundResource(0);
-            }
-            if(position == prevPosition && selected){
-                lista.getChildAt(prevPosition).setBackgroundResource(0);
-                edit.setVisible(false);
-                selected=false;
-            }
-            else if(position == prevPosition && !selected){
-                lista.getChildAt(prevPosition).setBackgroundResource(R.color.gray_holo_light);
-                edit.setVisible(true);
-                selected=true;
-            }
-            else{
-                this.position=position;
-                this.prevPosition=this.position;
-                lista.getChildAt(position).setBackgroundResource(R.color.gray_holo_light);
-                edit.setVisible(true);
-                selected=true;
-            }
-        }
-
-
-
-
+    public void setRespuesta(int position) {
+        Responder1(position);
     }
+
+    public void Responder1(final int position){
+        AlertDialog.Builder alert = new AlertDialog.Builder(VerCommentsActivity.this);
+        LayoutInflater inflater = VerCommentsActivity.this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+        alert.setView(dialogView);
+
+        final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+        alert.setTitle("Respuesta");
+        alert.setMessage("Escribe una respuesta a la consulta");
+        alert.setPositiveButton("Aceptar", new Dialog.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent i = getIntent();
+                DatabaseReference Respuesta = FirebaseDatabase.getInstance().getReference("Comments/"+i.getStringExtra("IDIniciativa")+"/"+SectorListaAux[position]);
+                Respuesta.child("Respuesta").setValue(edt.getText().toString());
+                finish();
+                startActivity(getIntent());
+                dialog.dismiss();
+
+
+            }
+        });
+        alert.setNegativeButton("Cancelar", new Dialog.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

@@ -1,5 +1,6 @@
 package com.byobdev.kamal;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +47,7 @@ import static android.R.attr.rating;
 import static android.R.attr.x;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class DescriptionFragment extends Fragment {
+public class DescriptionFragment extends Fragment implements ListCommentFragmentActivity.customButtonListener {
 
 
     TextView date, creator, title;
@@ -76,6 +78,7 @@ public class DescriptionFragment extends Fragment {
     String[] descriptionLista;
     String[] imageLista;
     String[] respuesaLista;
+    String[] SectorLista;
     FirebaseAuth firebaseAuth;
     String[] completarListaAux;
     String[] SectorListaAux;
@@ -83,9 +86,13 @@ public class DescriptionFragment extends Fragment {
     String[] descriptionListaAux;
     String[] imageListaAux;
     String[] respuesaListaAux;
+    int ORG=0;
 
     boolean rated=false;
     float rating=0f;
+    int position;
+    int prevPosition=-1;
+    boolean selected=false, organizador = false;
     private DatabaseReference mDatabase;
     FirebaseUser currentUser;
     FirebaseAuth.AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
@@ -251,6 +258,7 @@ public class DescriptionFragment extends Fragment {
                 }
                 if(t>=3){
                     aux =3;
+                    SectorListaAux = new String[3];
                     completarListaAux = new String[3];
                     keyListaAux = new String[3];
                     descriptionListaAux = new String[3];
@@ -258,6 +266,7 @@ public class DescriptionFragment extends Fragment {
                     respuesaListaAux = new String[3];
                 }else if(t==2){
                     aux =2;
+                    SectorListaAux = new String[2];
                     completarListaAux = new String[2];
                     keyListaAux = new String[2];
                     descriptionListaAux = new String[2];
@@ -265,12 +274,14 @@ public class DescriptionFragment extends Fragment {
                     respuesaListaAux = new String[2];
                 }else if(t==1){
                     aux =1;
+                    SectorListaAux = new String[1];
                     completarListaAux = new String[1];
                     keyListaAux = new String[1];
                     descriptionListaAux = new String[1];
                     imageListaAux = new String[1];
                     respuesaListaAux = new String[1];
                 }
+                SectorLista = new String[t-1];
                 completarLista = new String[t-1];
                 keyLista = new String[t-1];
                 descriptionLista = new String[t-1];
@@ -285,8 +296,14 @@ public class DescriptionFragment extends Fragment {
                             break;
                         }
                         if(child.child("Comentario").getValue().toString().equals("Creador")){
-
+                            if(currentUser != null){
+                                if(currentUser.getDisplayName().equals(child.child("Nombre").getValue().toString())){
+                                    organizador = true;
+                                    ORG =1;
+                                }
+                            }
                         }else{
+                            SectorLista[t] = child.getKey();
                             respuesaLista[t] = child.child("Respuesta").getValue().toString();
                             completarLista[t] = child.child("Nombre").getValue().toString();
                             keyLista[t] = child.getKey().toString();
@@ -303,6 +320,7 @@ public class DescriptionFragment extends Fragment {
                         if(t==0){
                             break;
                         }
+                        SectorListaAux[i] = SectorLista[t-1];
                         completarListaAux[i] = completarLista[t-1];
                         keyListaAux[i] = keyLista[t-1];
                         descriptionListaAux[i] = descriptionLista[t-1];
@@ -319,19 +337,23 @@ public class DescriptionFragment extends Fragment {
                         sendCom.setVisibility(View.VISIBLE);
                         Comentario.setVisibility(View.VISIBLE);
                     }
-                    if(r<= 2){
-                        lista.getLayoutParams().height = 200;
+                    if(r==1){
+
+                    }
+                    else if(r== 2){
+                        lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
                     }
                     else if(r== 3){
-                        lista.getLayoutParams().height = 450;
+                        lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 140, getResources().getDisplayMetrics());
                     }else{
-                        lista.getLayoutParams().height = 700;
+                        lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 220, getResources().getDisplayMetrics());
                     }
                     com.byobdev.kamal.ListCommentFragmentActivity adapter;
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarListaAux);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux);
+                    adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux, ORG);
+                    adapter.setCustomButtonListner(DescriptionFragment.this);
                     lista.setAdapter(adapter);
                 }
                 if(r<=4){
@@ -387,6 +409,7 @@ public class DescriptionFragment extends Fragment {
                 }
                 if(t>=3){
                     aux =3;
+                    SectorListaAux = new String[3];
                     completarListaAux = new String[3];
                     keyListaAux = new String[3];
                     descriptionListaAux = new String[3];
@@ -394,6 +417,7 @@ public class DescriptionFragment extends Fragment {
                     respuesaListaAux = new String[3];
                 }else if(t==2){
                     aux =2;
+                    SectorListaAux = new String[2];
                     completarListaAux = new String[2];
                     keyListaAux = new String[2];
                     descriptionListaAux = new String[2];
@@ -401,12 +425,14 @@ public class DescriptionFragment extends Fragment {
                     respuesaListaAux = new String[2];
                 }else if(t==1){
                     aux =1;
+                    SectorListaAux = new String[1];
                     completarListaAux = new String[1];
                     keyListaAux = new String[1];
                     descriptionListaAux = new String[1];
                     imageListaAux = new String[1];
                     respuesaListaAux = new String[1];
                 }
+                SectorLista = new String[t-1];
                 completarLista = new String[t-1];
                 keyLista = new String[t-1];
                 descriptionLista = new String[t-1];
@@ -420,6 +446,7 @@ public class DescriptionFragment extends Fragment {
                         if(child.child("Comentario").getValue().toString().equals("Creador")){
 
                         }else{
+                            SectorLista[t] = child.getKey();
                             respuesaLista[t] = child.child("Respuesta").getValue().toString();
                             completarLista[t] = child.child("Nombre").getValue().toString();
                             keyLista[t] = child.getKey().toString();
@@ -444,6 +471,7 @@ public class DescriptionFragment extends Fragment {
                         if(t==0){
                             break;
                         }
+                        SectorListaAux[i] = SectorLista[t-1];
                         completarListaAux[i] = completarLista[t-1];
                         keyListaAux[i] = keyLista[t-1];
                         descriptionListaAux[i] = descriptionLista[t-1];
@@ -451,19 +479,23 @@ public class DescriptionFragment extends Fragment {
                         respuesaListaAux[i] =respuesaLista[t-1];
                         t--;
                     }
-                    if(r<= 2){
-                        lista.getLayoutParams().height = 200;
+                    if(r==1){
+
+                    }
+                    else if(r== 2){
+                        lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
                     }
                     else if(r== 3){
-                        lista.getLayoutParams().height = 450;
+                        lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 140, getResources().getDisplayMetrics());
                     }else{
-                        lista.getLayoutParams().height = 700;
+                        lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 220, getResources().getDisplayMetrics());
                     }
                     com.byobdev.kamal.ListCommentFragmentActivity adapter;
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarListaAux);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux);
+                    adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux, ORG);
+                    adapter.setCustomButtonListner(DescriptionFragment.this);
                     lista.setAdapter(adapter);
                 }
                 if(r>4){
@@ -623,5 +655,153 @@ public class DescriptionFragment extends Fragment {
 
 
     }
+    @Override
+    public void setRespuesta(int position) {
+        Responder1(position);
+    }
+
+    public void Responder1(final int position){
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+        alert.setView(dialogView);
+
+        final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+        alert.setTitle("Respuesta");
+        alert.setMessage("Escribe una respuesta a la consulta");
+        alert.setPositiveButton("Aceptar", new Dialog.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference Respuesta = FirebaseDatabase.getInstance().getReference("Comments/"+getArguments().getString("imagen")+"/"+SectorListaAux[position]);
+                Respuesta.child("Respuesta").setValue(edt.getText().toString());
+                dialog.dismiss();
+                mDatabase = FirebaseDatabase.getInstance().getReference("Comments").child(getArguments().getString("imagen"));
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        int t=0;
+                        int aux=0;
+                        for (final DataSnapshot child : snapshot.getChildren()) {
+                            // Create a LinearLayout element
+                            t++;
+
+                        }
+                        if(t>=3){
+                            aux =3;
+                            SectorListaAux = new String[3];
+                            completarListaAux = new String[3];
+                            keyListaAux = new String[3];
+                            descriptionListaAux = new String[3];
+                            imageListaAux = new String[3];
+                            respuesaListaAux = new String[3];
+                        }else if(t==2){
+                            aux =2;
+                            SectorListaAux = new String[2];
+                            completarListaAux = new String[2];
+                            keyListaAux = new String[2];
+                            descriptionListaAux = new String[2];
+                            imageListaAux = new String[2];
+                            respuesaListaAux = new String[2];
+                        }else if(t==1){
+                            aux =1;
+                            SectorListaAux = new String[1];
+                            completarListaAux = new String[1];
+                            keyListaAux = new String[1];
+                            descriptionListaAux = new String[1];
+                            imageListaAux = new String[1];
+                            respuesaListaAux = new String[1];
+                        }
+                        SectorLista = new String[t-1];
+                        completarLista = new String[t-1];
+                        keyLista = new String[t-1];
+                        descriptionLista = new String[t-1];
+                        imageLista = new String[t-1];
+                        respuesaLista = new String[t-1];
+                        int r = t;
+                        t=0;
+                        if(r > 0){
+                            for (final DataSnapshot child : snapshot.getChildren()) {
+                                // Create a LinearLayout element
+                                if(child.child("Comentario").getValue().toString().equals("Creador")){
+
+                                }else{
+                                    SectorLista[t] = child.getKey();
+                                    respuesaLista[t] = child.child("Respuesta").getValue().toString();
+                                    completarLista[t] = child.child("Nombre").getValue().toString();
+                                    keyLista[t] = child.getKey().toString();
+                                    descriptionLista[t] = child.child("Comentario").getValue().toString();
+                                    imageLista[t] = child.child("Image").getValue().toString();
+                                    t++;
+
+                                }
+
+
+
+                            }
+                            if(currentUser == null){
+                                sendCom.setVisibility(View.GONE);
+                                Comentario.setVisibility(View.GONE);
+                            }
+                            else{
+                                sendCom.setVisibility(View.VISIBLE);
+                                Comentario.setVisibility(View.VISIBLE);
+                            }
+                            for(int i=0;i<aux;i++){
+                                if(t==0){
+                                    break;
+                                }
+                                SectorListaAux[i] = SectorLista[t-1];
+                                completarListaAux[i] = completarLista[t-1];
+                                keyListaAux[i] = keyLista[t-1];
+                                descriptionListaAux[i] = descriptionLista[t-1];
+                                imageListaAux[i] = imageLista[t-1];
+                                respuesaListaAux[i] =respuesaLista[t-1];
+                                t--;
+                            }
+                            if(r==1){
+
+                            }
+                            else if(r== 2){
+                                lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+                            }
+                            else if(r== 3){
+                                lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 140, getResources().getDisplayMetrics());
+                            }else{
+                                lista.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 220, getResources().getDisplayMetrics());
+                            }
+                            com.byobdev.kamal.ListCommentFragmentActivity adapter;
+                            ArrayList<String> dataItems = new ArrayList<String>();
+                            List<String> dataTemp = Arrays.asList(completarListaAux);
+                            dataItems.addAll(dataTemp);
+                            adapter = new com.byobdev.kamal.ListCommentFragmentActivity(getActivity(), dataItems,keyListaAux,descriptionListaAux,imageListaAux,lista, respuesaListaAux, ORG);
+                            adapter.setCustomButtonListner(DescriptionFragment.this);
+                            lista.setAdapter(adapter);
+                        }
+                        if(r>4){
+                            verComent.setVisibility(View.VISIBLE);
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        System.out.println("The read failed: " + databaseError.getCode());
+                    }
+
+                });
+
+            }
+        });
+        alert.setNegativeButton("Cancelar", new Dialog.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
+    }
+
 
 }

@@ -30,6 +30,14 @@
             android:layout_height="match_parent"
             android:textSize="10sp"/>
         <TextView
+            android:id="@+id/Responder"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Responder"
+            android:textColor="@color/Primary"
+            android:textStyle="bold"
+            android:textSize="10sp"/>
+        <TextView
             android:id="@+id/VerRespuestaFragment"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

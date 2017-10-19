@@ -171,11 +171,43 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/RelativeComments"
+            android:layout_below="@id/linear1"
+            android:paddingLeft="@dimen/vertical_margin"
+            android:paddingRight="@dimen/vertical_margin">
+
+            <ImageButton
+                android:id="@+id/SendComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:paddingLeft="@dimen/horizontal_margin"
+                android:paddingRight="@dimen/horizontal_margin"
+                android:paddingTop="@dimen/horizontal_margin"
+                app:srcCompat="@drawable/ic_send"/>
+
+            <EditText
+                android:id="@+id/CommentInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/SendComment"
+                android:autoLink="none"
+                android:hint="Nuevo comentario..."
+                android:inputType="text"
+                android:maxLength="40"
+                android:textSize="16sp"/>
+        </RelativeLayout>
         <ListView
             android:id="@+id/comment_list"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_below="@id/linear1"
+            android:layout_height="0dp"
+            android:layout_below="@id/RelativeComments"
             android:paddingLeft="@dimen/vertical_margin"
             android:paddingRight="@dimen/vertical_margin"/>
 
@@ -200,36 +232,6 @@
                 android:text="VER MÁS"
                 android:textColor="@color/Primary"/>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/vertical_margin"
-                android:paddingRight="@dimen/vertical_margin">
-
-                <ImageButton
-                    android:id="@+id/SendComment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:paddingLeft="@dimen/horizontal_margin"
-                    android:paddingRight="@dimen/horizontal_margin"
-                    android:paddingTop="@dimen/horizontal_margin"
-                    app:srcCompat="@drawable/ic_send"/>
-
-                <EditText
-                    android:id="@+id/CommentInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/SendComment"
-                    android:autoLink="none"
-                    android:hint="Nuevo comentario..."
-                    android:inputType="text"
-                    android:maxLength="40"
-                    android:textSize="16sp"/>
-            </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
 </ScrollView>
