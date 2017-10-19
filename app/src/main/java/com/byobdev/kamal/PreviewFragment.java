@@ -2,6 +2,7 @@ package com.byobdev.kamal;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,13 +32,24 @@ public class PreviewFragment extends Fragment {
     String image;
     Button Editar;
     RatingBar rtb;
+    boolean searchViewOpened;
+    String searchViewText;
     private DatabaseReference mDatabase;
-
+    SearchView search;
+    MenuItem searchItem;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.toolbar_filter).setVisible(false);
-        menu.findItem(R.id.keyword_filter).setVisible(false);
         menu.findItem(R.id.toolbar_ir).setVisible(true);
+        searchViewText=getArguments().getString("searchViewText");
+        searchViewOpened=getArguments().getBoolean("searchViewOpened");
+        searchItem=menu.findItem(R.id.keyword_filter);
+        search=(SearchView)menu.findItem(R.id.keyword_filter).getActionView();
+        if(searchViewOpened){
+            search.setIconified(false);
+            search.setQuery(searchViewText,false);
+
+        }
     }
 
     @Override

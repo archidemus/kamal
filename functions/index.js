@@ -41,7 +41,7 @@ exports.pushNotification = functions.database.ref('/Initiatives/{pushId}/{sector
 });
 
 // [START generateThumbnailTrigger]
-exports.generateThumbnail = functions.storage.object().onChange(event => {
+/*exports.generateThumbnail = functions.storage.object().onChange(event => {
 // [END generateThumbnailTrigger]
   // [START eventAttributes]
   const object = event.data; // The Storage object.
@@ -99,7 +99,7 @@ exports.generateThumbnail = functions.storage.object().onChange(event => {
   }).then(() => fs.unlinkSync(tempFilePath));
   // [END thumbnailGeneration]
 });
-// [END generateThumbnail]
+// [END generateThumbnail]*/
 
 
 

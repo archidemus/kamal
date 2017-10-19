@@ -137,6 +137,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public List<String> deporteInitiativeIDList;
     public List<String> teatroInitiativeIDList;
     public List<String> musicaInitiativeIDList;
+    SearchView search;
     public boolean comidaOn = true;
     public boolean deporteOn = true;
     public boolean teatroOn = true;
@@ -451,40 +452,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         public void onCameraIdle() {
             updateInitiatives();
 
-            /*if(initiativesMap.getCameraPosition().zoom<40){
-                if(lastCameraZoom<40){
-                    updateInitiatives();
-                }
-                else{
-                    unloadClusters();
-                    loadInitiatives();
-                }
-            }
-            else{
-                if(lastCameraZoom<40){
-                    removeListeners();
-                    loadClusters();
-                }
-                else{
-                    updateClusters();
-                }
-
-            }
-            lastCameraZoom=initiativesMap.getCameraPosition().zoom;*/
-
         }
     };
-
-    public void unloadClusters(){
-
-    }
-    public void loadClusters(){
-
-    }
-    public void updateClusters(){
-
-    }
-
     private float mLastPosY;
     //int notificationID = 10;
     private DatabaseReference userInterestsDB;
@@ -580,6 +549,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         }
     };
 
+
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
@@ -592,6 +562,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public String getSector(double latitude, double longitude) {
         return Integer.toString((int) (latitude * 50)) + "," + Integer.toString((int) (longitude * 50));
     }
+
     public void filterByKeyword(String keyword){
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
         Initiative initiative;
@@ -825,7 +796,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                         opened_pf = false;
                         toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
-                        toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
                         toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                         toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                         final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
@@ -885,12 +855,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.toolbar_ir).setVisible(false);
-        SearchView search=(SearchView)menu.findItem(R.id.keyword_filter).getActionView();
+        search=(SearchView)menu.findItem(R.id.keyword_filter).getActionView();
         //search.setIconifiedByDefault(false);
         search.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 resetFilter();
+
                 return false;
             }
         });
@@ -1006,7 +977,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
                             item.setVisible(true);
                             Titulo.setTextSize(0);
-                            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
                             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                             toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                             final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
@@ -1439,6 +1409,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 selectedInitiative.putString("Latitud", initiative.Latitud.toString());
                 selectedInitiative.putString("Longitud", initiative.Longitud.toString());
                 selectedInitiative.putString("ID", initiative.Longitud.toString());
+                selectedInitiative.putString("searchViewText", search.getQuery().toString());
+                selectedInitiative.putBoolean("searchViewOpened", !search.isIconified());
+
 
                 //le paso los datos al fragment
                 PreviewFragment DF = new PreviewFragment();
@@ -1567,7 +1540,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                 opened_pf = false;
                 toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
-                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
                 toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
