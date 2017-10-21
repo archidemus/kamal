@@ -51,6 +51,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Calendar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -117,11 +118,16 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 
 import static android.R.attr.key;
 import static com.byobdev.kamal.R.id.map;
+import static com.byobdev.kamal.R.id.rangeView;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 import static java.lang.Integer.parseInt;
 import com.google.android.gms.location.LocationListener;
+
+import org.jetbrains.annotations.NotNull;
+
+import me.bendik.simplerangeview.SimpleRangeView;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -133,6 +139,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public HashMap initiativeHashMap;
     public HashMap markerHashMap;
     public HashMap keywordVisibilityHashmap;
+    public HashMap timeVisibilityHashmap;
     public List<String> comidaInitiativeIDList;
     public List<String> deporteInitiativeIDList;
     public List<String> teatroInitiativeIDList;
@@ -173,6 +180,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     ImageView img_profile;
     View linea;
     float lastCameraZoom;
+    SimpleRangeView rangeview;
+    int currentHour;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
     //User Interests Listener
@@ -316,6 +325,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativeHashMap.put(aux.getId(), initiative);
             markerHashMap.put(dataSnapshot.getKey(), aux);
             keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
+            timeVisibilityHashmap.put(dataSnapshot.getKey(), true);
 
 
         }
@@ -361,6 +371,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 initiativeHashMap.remove(aux.getId());
                 markerHashMap.remove(dataSnapshot.getKey());
                 keywordVisibilityHashmap.remove(dataSnapshot.getKey());
+                timeVisibilityHashmap.remove(dataSnapshot.getKey());
                 aux.remove();
                 if (initiative.Tipo.equals("Comida")) {
                     for (int i = 0; i < comidaInitiativeIDList.size(); i++) {
@@ -405,6 +416,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativeHashMap.remove(aux.getId());
             markerHashMap.remove(dataSnapshot.getKey());
             keywordVisibilityHashmap.remove(dataSnapshot.getKey());
+            timeVisibilityHashmap.remove(dataSnapshot.getKey());
             aux.remove();
             if (initiative.Tipo.equals("Comida")) {
                 for (int i = 0; i < comidaInitiativeIDList.size(); i++) {
@@ -584,16 +596,16 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
             if(!(boolean)keywordVisibilityHashmap.get(pair.getKey())){
                 if(initiative.Tipo.equals("Comida")){
-                    pair.getValue().setVisible(comidaOn);
+                    pair.getValue().setVisible(comidaOn && (boolean)timeVisibilityHashmap.get(pair.getKey()));
                 }
                 else if(initiative.Tipo.equals("Musica")){
-                    pair.getValue().setVisible(musicaOn);
+                    pair.getValue().setVisible(musicaOn && (boolean)timeVisibilityHashmap.get(pair.getKey()));
                 }
                 else if(initiative.Tipo.equals("Deporte")){
-                    pair.getValue().setVisible(deporteOn);
+                    pair.getValue().setVisible(deporteOn && (boolean)timeVisibilityHashmap.get(pair.getKey()));
                 }
                 else if(initiative.Tipo.equals("Teatro")){
-                    pair.getValue().setVisible(teatroOn);
+                    pair.getValue().setVisible(teatroOn && (boolean)timeVisibilityHashmap.get(pair.getKey()));
                 }
                 keywordVisibilityHashmap.put(pair.getKey(),true);
             }
@@ -664,6 +676,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         for (String aux : keys) {
             markerHashMap.remove(aux);
             keywordVisibilityHashmap.remove(aux);
+            timeVisibilityHashmap.remove(aux);
+
         }
         for (String aux : markerIds) {
             initiativeHashMap.remove(aux);
@@ -922,6 +936,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         initiativeHashMap = new HashMap();
         markerHashMap = new HashMap();
         keywordVisibilityHashmap=new HashMap();
+        timeVisibilityHashmap=new HashMap();
         comidaInitiativeIDList = new Vector<>();
         teatroInitiativeIDList = new Vector<>();
         deporteInitiativeIDList = new Vector<>();
@@ -1170,10 +1185,71 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         super.onStart();
         //User Auth Listener
         //Read initiatives listener
+        Calendar rightNow = Calendar.getInstance();
+        currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+        rangeview=(SimpleRangeView) findViewById(rangeView);
+        rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+            @Override
+            public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
+                return String.valueOf((currentHour+pos*2)%24);
+            }
+        });
+        rangeview.setOnChangeRangeListener(new SimpleRangeView.OnChangeRangeListener() {
+            @Override
+            public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
+                timeFilterReset();
+                timeFilter((currentHour+start*2)%24,(currentHour+end*2)%24);
+            }
+        });
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
         //initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
         //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
         //initiativesDB.addChildEventListener(initiativesListener);
+    }
+
+    public void timeFilter(int start,int end){
+        if(start==end){
+            return;
+        }
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        Initiative initiative;
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
+            SimpleDateFormat formatter = new SimpleDateFormat("HH");
+            int horaInicio=Integer.parseInt(formatter.format(new Date(initiative.fechaInicio)));
+            int horaTermino=Integer.parseInt(formatter.format(new Date(initiative.fechaFin)));
+            if(horaTermino<start || horaInicio>end){
+                timeVisibilityHashmap.put(pair.getKey(),false);
+                pair.getValue().setVisible(false);
+            }
+
+        }
+    }
+    public void timeFilterReset(){
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        Initiative initiative;
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
+            if(!(boolean)timeVisibilityHashmap.get(pair.getKey())){
+                if(initiative.Tipo.equals("Comida")){
+                    pair.getValue().setVisible(comidaOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    pair.getValue().setVisible(musicaOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    pair.getValue().setVisible(deporteOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    pair.getValue().setVisible(teatroOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                timeVisibilityHashmap.put(pair.getKey(),true);
+            }
+
+
+        }
     }
 
     @Override

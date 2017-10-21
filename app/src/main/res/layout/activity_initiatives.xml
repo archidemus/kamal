@@ -176,6 +176,24 @@
                 android:background="@color/textLightPrimary"
                 android:translationY="400dp"
                 />
+            <me.bendik.simplerangeview.SimpleRangeView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/rangeView"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="200dp"
+                android:layout_width="417dp"
+                android:layout_height="wrap_content"
+                android:rotation="270"
+                app:labelColor="@color/textDarkPrimary"
+                app:fixedLabelColor="@color/textDarkPrimary"
+                app:lineColor="@color/textDarkPrimary"
+                app:fixedLineColor="@color/textDarkPrimary"
+                app:count="13"
+                app:start="0"
+                app:end="12"
+                app:movable="true"
+                app:minDistance="2"
+                />
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
