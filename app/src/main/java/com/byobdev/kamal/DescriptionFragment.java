@@ -185,7 +185,7 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
         final double distanceInMeters = loc1.distanceTo(loc2);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {

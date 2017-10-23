@@ -861,6 +861,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
+        } else if(item.getItemId()==R.id.time_filter){
+            if(rangeview.getVisibility()==View.VISIBLE){
+                rangeview.setVisibility(View.INVISIBLE);
+                
+            }
+            else{
+                rangeview.setVisibility(View.VISIBLE);
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }

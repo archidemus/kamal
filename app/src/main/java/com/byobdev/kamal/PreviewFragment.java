@@ -89,7 +89,7 @@ public class PreviewFragment extends Fragment {
         rtb = (RatingBar) getView().findViewById(R.id.inRatingpreview);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 // for (DataSnapshot child : snapshot.getChildren())
