@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -116,6 +117,7 @@ import java.util.Vector;
 
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+import static android.R.attr.duration;
 import static android.R.attr.key;
 import static com.byobdev.kamal.R.id.map;
 import static com.byobdev.kamal.R.id.rangeView;
@@ -133,6 +135,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
+    long currentTime;
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     public Interests userInterests;
@@ -798,6 +801,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 } else if (opened_df) {
+                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
                     View df = findViewById(R.id.descriptionFragment);
                     df.getLocationOnScreen(fragment_pos);
                     if ((df.getHeight() + fragment_pos[1]) == maxY){
@@ -934,7 +939,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         opened_pf = false;
         on_way = false;
         back_button_active = false;
-
         setContentView(R.layout.activity_initiatives);
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
@@ -1018,6 +1022,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
+
+                                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+                                toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
                                 DF.setArguments(selectedInitiative);
                                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -1203,19 +1210,30 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         //User Auth Listener
         //Read initiatives listener
         Calendar rightNow = Calendar.getInstance();
+        currentTime= rightNow.getTimeInMillis();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        Toast toast = Toast.makeText(this, formatter.format(new Date(currentTime)), Toast.LENGTH_LONG);
+        toast.show();
+        currentTime=currentTime-currentTime%(24*60*60*1000);
+        toast = Toast.makeText(this, formatter.format(new Date(currentTime)), Toast.LENGTH_LONG);
+        toast.show();
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
         rangeview=(SimpleRangeView) findViewById(rangeView);
         rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
             @Override
             public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
-                return String.valueOf((currentHour+(12-pos)*2)%24);
+                if(pos%2==1){
+                    return "";
+                }
+                return String.valueOf((currentHour+(pos))%24);
             }
         });
         rangeview.setOnChangeRangeListener(new SimpleRangeView.OnChangeRangeListener() {
             @Override
             public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
                 timeFilterReset();
-                timeFilter((currentHour+(12-start)*2)%24,(currentHour+(12-end)*2)%24);
+                timeFilter((currentHour+(start)),(currentHour+(end)));
             }
         });
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
@@ -1225,9 +1243,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     }
 
     public void timeFilter(int start,int end){
-        if(start==end){
-            return;
-        }
+
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
         Initiative initiative;
         while (it.hasNext()) {
@@ -1236,7 +1252,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             SimpleDateFormat formatter = new SimpleDateFormat("HH");
             int horaInicio=Integer.parseInt(formatter.format(new Date(initiative.fechaInicio)));
             int horaTermino=Integer.parseInt(formatter.format(new Date(initiative.fechaFin)));
-            if(horaTermino<start || horaInicio>end){
+            if(initiative.fechaFin<currentTime+start*60*60*1000 || initiative.fechaInicio>currentTime+end*60*60*1000){
                 timeVisibilityHashmap.put(pair.getKey(),false);
                 pair.getValue().setVisible(false);
             }
@@ -1609,7 +1625,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Titulo.setTextSize(0);
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-        } else if (opened_df) {
+        } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
+            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             df.getLocationOnScreen(fragment_pos);
             if ((df.getHeight() + fragment_pos[1]) == maxY){

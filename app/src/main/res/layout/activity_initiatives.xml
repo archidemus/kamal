@@ -172,11 +172,11 @@
                 app:fixedLabelColor="@color/textDarkPrimary"
                 app:lineColor="@color/textDarkPrimary"
                 app:fixedLineColor="@color/textDarkPrimary"
-                app:count="13"
+                app:count="25"
                 app:start="0"
-                app:end="12"
+                app:end="6"
                 app:movable="true"
-                app:minDistance="2"
+                app:minDistance="1"
                 />
             <FrameLayout
                 android:id="@+id/previewFragment"
