@@ -872,6 +872,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 rangeview.setVisibility(View.VISIBLE);
             }
 
+        } else if(item.getItemId()==R.id.toolbar_help){
+            this.startActivity(new Intent(this, TutorialActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
