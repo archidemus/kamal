@@ -328,6 +328,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             markerHashMap.put(dataSnapshot.getKey(), aux);
             keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
             timeVisibilityHashmap.put(dataSnapshot.getKey(), true);
+            LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
+            if(bounds.contains(aux.getPosition())){
+                swipeMarkerList.add(aux);
+            }
+
 
 
         }
@@ -1203,14 +1208,14 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
             @Override
             public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
-                return String.valueOf((currentHour+pos*2)%24);
+                return String.valueOf((currentHour+(12-pos)*2)%24);
             }
         });
         rangeview.setOnChangeRangeListener(new SimpleRangeView.OnChangeRangeListener() {
             @Override
             public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
                 timeFilterReset();
-                timeFilter((currentHour+start*2)%24,(currentHour+end*2)%24);
+                timeFilter((currentHour+(12-start)*2)%24,(currentHour+(12-end)*2)%24);
             }
         });
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
@@ -1396,7 +1401,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             new LatLng(location.getLatitude(), location
                                     .getLongitude())));
         }
-        mCurrLocationMarker.setZIndex(100);
+        mCurrLocationMarker.setZIndex(5);
         animateMarker(mCurrLocationMarker, location);
 
     }
@@ -1447,16 +1452,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Log.e(TAG, "Style parsing failed.");
         }
 
-        //current location marker
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
                 buildGoogleApiClient();
-                //initiativesMap.setMyLocationEnabled(true);
             } else {
-                //Request Location Permission
                 checkLocationPermission();
             }
         }
