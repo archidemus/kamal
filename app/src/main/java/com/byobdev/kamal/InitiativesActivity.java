@@ -136,6 +136,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     public Interests userInterests;
+    public List<Marker> swipeMarkerList;
     public HashMap initiativeHashMap;
     public HashMap markerHashMap;
     public HashMap keywordVisibilityHashmap;
@@ -177,6 +178,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     View vista;
     TextView txtv_user, txtv_mail;
     RatingBar rtb;
+    FirebaseUser currentUser;
     ImageView img_profile;
     View linea;
     float lastCameraZoom;
@@ -477,9 +479,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if(opened_df == false){
 
             }
-            final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            currentUser = firebaseAuth.getCurrentUser();
             if (currentUser != null) {
-                userDataDB = FirebaseDatabase.getInstance().getReference("Users");
+                userDataDB = FirebaseDatabase.getInstance().getReference("Users/"+currentUser.getUid());
                 userDataDB.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -487,19 +489,19 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         // Create a LinearLayout element
                         float rating;
                         int nVotos;
-                        if(snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("rating").getValue() == null){
+                        if(snapshot.child("rating").getValue() == null){
                             rating = 0.0f;
                             nVotos=0;
-                            userDataDB.child(currentUser.getUid()).child("Nvotos").setValue(nVotos);
-                            userDataDB.child(currentUser.getUid()).child("rating").setValue(rating);
+                            userDataDB.child("Nvotos").setValue(nVotos);
+                            userDataDB.child("rating").setValue(rating);
 
                         }
                         else{
-                            rating = Float.parseFloat(snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("rating").getValue().toString());
+                            rating = Float.parseFloat(snapshot.child("rating").getValue().toString());
                         }
-                        userDataDB.child(currentUser.getUid()).child("Email").setValue(currentUser.getEmail());
-                        userDataDB.child(currentUser.getUid()).child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
-                        userDataDB.child(currentUser.getUid()).child("Name").setValue(currentUser.getDisplayName());
+                        userDataDB.child("Email").setValue(currentUser.getEmail());
+                        userDataDB.child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
+                        userDataDB.child("Name").setValue(currentUser.getDisplayName());
                         rtb.setRating(rating);
                     }
                     @Override
@@ -864,7 +866,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         } else if(item.getItemId()==R.id.time_filter){
             if(rangeview.getVisibility()==View.VISIBLE){
                 rangeview.setVisibility(View.INVISIBLE);
-                
+
             }
             else{
                 rangeview.setVisibility(View.VISIBLE);
@@ -946,6 +948,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         markerHashMap = new HashMap();
         keywordVisibilityHashmap=new HashMap();
         timeVisibilityHashmap=new HashMap();
+        swipeMarkerList = new Vector<>();
         comidaInitiativeIDList = new Vector<>();
         teatroInitiativeIDList = new Vector<>();
         deporteInitiativeIDList = new Vector<>();
