@@ -34,7 +34,7 @@ public class ListCommentFragmentActivity extends ArrayAdapter<String> {
     private ListView lista;
     private String[] respuestaLista;
     private int organizador;
-
+    
     customButtonListener customListner;
 
     public interface customButtonListener {
