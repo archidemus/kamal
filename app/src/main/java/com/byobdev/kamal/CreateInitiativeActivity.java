@@ -1,12 +1,16 @@
 package com.byobdev.kamal;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -33,8 +37,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 import android.app.ProgressDialog;
 import android.net.Uri;
+
 import com.google.firebase.storage.UploadTask;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -57,27 +63,29 @@ import java.util.Date;
 import static java.security.AccessController.getContext;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class CreateInitiativeActivity extends AppCompatActivity{
+public class CreateInitiativeActivity extends AppCompatActivity {
     EditText titulo;
     EditText description;
     Double latitud;
     Double longitud;
     String imagen;
     Spinner spinner;
-    Button button;
+    Location mLocation;
     ArrayAdapter<CharSequence> adapter;
     Place place;
-    String url;
     MenuItem check;
+    Date fechaPrueba;
 
+    private LocationManager locationManager;
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     long dateDiff;
+    String date;
 
     private DatabaseReference mDatabase;
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
     StorageReference storageRef = mStoragebase.getReferenceFromUrl("gs://prime-boulevard-168121.appspot.com/Images");
     ProgressDialog pd;
-    Uri filePath=null;
+    Uri filePath = null;
     String direccion;
     int PLACE_PICKER_REQUEST = 1;
     int PICK_IMAGE_REQUEST = 111;
@@ -89,17 +97,17 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     Button fechaInicio, fechaTermino, lugarIniciativa;
 
 
-    String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
+    String getSector(double latitude, double longitude) {
+        return Integer.toString((int) (latitude * 50)) + "," + Integer.toString((int) (longitude * 50));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_config, menu);
         check = menu.findItem(R.id.done);
-        for(int i = 0; i < menu.size(); i++){
+        for (int i = 0; i < menu.size(); i++) {
             Drawable drawable = menu.getItem(i).getIcon();
-            if(drawable != null) {
+            if (drawable != null) {
                 drawable.mutate();
                 drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
             }
@@ -121,16 +129,47 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_initiative);
-        titulo   = (EditText)findViewById(R.id.titleInput);
-        description   = (EditText)findViewById(R.id.descriptionInput);
-        fechaTermino = (Button)findViewById(R.id.btn_fechaTermino);
-        fechaInicio = (Button)findViewById(R.id.btn_fechaInicio);
-        lugarIniciativa = (Button)findViewById(R.id.button5);
-        imgView = (ImageView)findViewById(R.id.imgView);
-        fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
-        fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        titulo = (EditText) findViewById(R.id.titleInput);
+        description = (EditText) findViewById(R.id.descriptionInput);
+        fechaTermino = (Button) findViewById(R.id.btn_fechaTermino);
+        fechaInicio = (Button) findViewById(R.id.btn_fechaInicio);
+        lugarIniciativa = (Button) findViewById(R.id.button5);
+        imgView = (ImageView) findViewById(R.id.imgView);
+        locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (network_enabled) {
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (mLocation != null) {
+                date = mFormatter.format((new Date(mLocation.getTime())));
+                fechaInicio.setText(date);
+                fechaTermino.setText(date);
+
+            } else {
+                fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+                fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+
+            }
+
+        } else {
+            fechaInicio.setText(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+            fechaTermino.setText(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+
+        }
+
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -141,15 +180,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives/");
-        key=mDatabase.push().getKey();
+        key = mDatabase.push().getKey();
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando...");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
 
     }
 
@@ -158,14 +194,12 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     private SlideDateTimeListener listener = new SlideDateTimeListener() {
 
         @Override
-        public void onDateTimeSet(Date date)
-        {
-            if(dateDifference(fechaTermino.getText().toString(),date) < 0){
+        public void onDateTimeSet(Date date) {
+            if (dateDifference(fechaTermino.getText().toString(), date) < 0) {
                 fechaInicio.setText(mFormatter.format(date));
                 fechaTermino.setText(mFormatter.format(date));
 
-            }
-            else {
+            } else {
                 fechaInicio.setText(mFormatter.format(date));
             }
 
@@ -173,8 +207,7 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
         // Optional cancel listener
         @Override
-        public void onDateTimeCancel()
-        {
+        public void onDateTimeCancel() {
 
         }
     };
@@ -182,12 +215,10 @@ public class CreateInitiativeActivity extends AppCompatActivity{
     //Listener boton fecha Termino
     private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
         @Override
-        public void onDateTimeSet(Date date)
-        {
-            if(dateDifference(fechaInicio.getText().toString(),date) >=0){
+        public void onDateTimeSet(Date date) {
+            if (dateDifference(fechaInicio.getText().toString(), date) >= 0) {
                 fechaTermino.setText(fechaInicio.getText().toString());
-            }
-            else{
+            } else {
                 fechaTermino.setText(mFormatter.format(date));
             }
 
@@ -195,15 +226,36 @@ public class CreateInitiativeActivity extends AppCompatActivity{
 
         // Optional cancel listener
         @Override
-        public void onDateTimeCancel()
-        {
+        public void onDateTimeCancel() {
 
         }
     };
 
     public void createInitiative(MenuItem menuItem) throws ParseException {
         Toast.makeText(CreateInitiativeActivity.this, "Subiendo Imagen", Toast.LENGTH_SHORT).show();
-        Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // t o handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        try {
+            locationManager.requestSingleUpdate( LocationManager.NETWORK_PROVIDER, locListener, null );
+            if (mLocation!= null) {
+                date = mFormatter.format((new Date(mLocation.getTime())));
+                fechaPrueba = mFormatter.parse(date);
+            }
+            else{
+                fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+            }
+        } catch ( SecurityException e ) { e.printStackTrace(); }
+
+
+
         String fechainicioprueba = fechaInicio.getText().toString();
         if( titulo.getText().toString().equals("")){
             titulo.setError( "Título Obligatorio" );
@@ -402,19 +454,35 @@ public class CreateInitiativeActivity extends AppCompatActivity{
         onBackPressed();
         return true;
     }
-    public String getPath(Uri uri)//Se obtiene la ruta de la imagen, usando un cursor que apunta a la imagen, el cual es cerrado para evitar problemas de punteros
+
+    LocationListener locListener = new LocationListener()
     {
-        String res= null;
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if(cursor != null && cursor.moveToFirst())
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras)
         {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            res = cursor.getString(column_index);
-            cursor.close();
+            // TODO Auto-generated method stub
         }
-        return res;
-    }
+
+        @Override
+        public void onProviderEnabled(String provider)
+        {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onProviderDisabled(String provider)
+        {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            // TODO Auto-generated method stub
+            mLocation = location;
+        }
+    };
+
 
 
 }
