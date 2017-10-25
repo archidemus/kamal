@@ -50,6 +50,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -96,7 +98,7 @@ public class EditActivity extends AppCompatActivity {
     String url;
     MenuItem check;
     String estado;
-    Date fechaPrueba;
+    Date fechaPrueba = null;
     String date;
     private LocationManager locationManager;
     Location mLocation;
@@ -151,7 +153,10 @@ public class EditActivity extends AppCompatActivity {
         url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F" + i.getStringExtra("Imagen") + "?alt=media";
         imgView = (ImageView) findViewById(R.id.imgViewEdit);
         Picasso.with(this).load(url)
-                .error(R.drawable.kamal_logo).into(imgView);
+                .error(R.drawable.kamal_logo)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .into(imgView);
 
         imagenEdit = (Button) findViewById(R.id.elegirImagenEdit);
 
@@ -177,13 +182,13 @@ public class EditActivity extends AppCompatActivity {
                 R.array.Tipo_Iniciativa, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        if(i.getStringExtra("Tipo").equals("Teatro")){
+        if (i.getStringExtra("Tipo").equals("Teatro")) {
             spinner.setSelection(0);
-        }else if(i.getStringExtra("Tipo").equals("Musica")){
+        } else if (i.getStringExtra("Tipo").equals("Musica")) {
             spinner.setSelection(1);
-        }else if(i.getStringExtra("Tipo").equals("Deporte")){
+        } else if (i.getStringExtra("Tipo").equals("Deporte")) {
             spinner.setSelection(2);
-        }else{
+        } else {
             spinner.setSelection(3);
         }
 
@@ -194,7 +199,7 @@ public class EditActivity extends AppCompatActivity {
         IDanterior = i.getStringExtra("IDanterior");
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
-        key=IDanterior;
+        key = IDanterior;
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando....");
 
@@ -203,16 +208,13 @@ public class EditActivity extends AppCompatActivity {
 
         estado = i.getStringExtra("Estado");
 
-        if (estado.equals("1") || estado.equals("2")){
-            titulo.setClickable(false);
-            titulo.setFocusable(false);
+        if (estado.equals("1") || estado.equals("2")) {
+            titulo.setEnabled(false);
             titulo.setInputType(InputType.TYPE_NULL);
-            lugar.setClickable(false);
-            spinner.setClickable(false);
-           // spinner.setEnabled(false);
-            spinner.setFocusable(false);
-            fInicio.setClickable(false);
-            imagenEdit.setClickable(false);
+            lugar.setEnabled(false);
+            spinner.setEnabled(false);
+            fInicio.setEnabled(false);
+            imagenEdit.setEnabled(false);
         }
     }
 
@@ -220,21 +222,18 @@ public class EditActivity extends AppCompatActivity {
     private SlideDateTimeListener listener = new SlideDateTimeListener() {
 
         @Override
-        public void onDateTimeSet(Date date)
-        {
-            if(dateDifference(fTermino.getText().toString(),date) < 0){
+        public void onDateTimeSet(Date date) {
+            if (dateDifference(fTermino.getText().toString(), date) < 0) {
                 fInicio.setText(mFormatter.format(date));
                 fTermino.setText(mFormatter.format(date));
-            }
-            else {
+            } else {
                 fInicio.setText(mFormatter.format(date));
             }
         }
 
         // Optional cancel listener
         @Override
-        public void onDateTimeCancel()
-        {
+        public void onDateTimeCancel() {
             Toast.makeText(EditActivity.this,
                     "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
         }
@@ -244,42 +243,28 @@ public class EditActivity extends AppCompatActivity {
     private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
 
         @Override
-        public void onDateTimeSet(Date date)
-        {
-            if(dateDifference(fInicio.getText().toString(),date) >=0){
+        public void onDateTimeSet(Date date) {
+            if (dateDifference(fInicio.getText().toString(), date) >= 0) {
                 fTermino.setText(fInicio.getText().toString());
-            }
-            else{
+            } else {
                 fTermino.setText(mFormatter.format(date));
             }
         }
 
         // Optional cancel listener
         @Override
-        public void onDateTimeCancel()
-        {
+        public void onDateTimeCancel() {
             Toast.makeText(EditActivity.this,
                     "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
         }
     };
 
     public void editInitiative(MenuItem menuItem) throws ParseException {
-        Toast.makeText(EditActivity.this, "Subiendo Imagen", Toast.LENGTH_SHORT).show();
-
-
-        try {
-            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locListener, null );
-            if (mLocation!= null) {
-                date = mFormatter.format((new Date(mLocation.getTime())));
-                Toast.makeText(this, mFormatter.format((new Date(mLocation.getTime()))) + " AHAHAHAHA", Toast.LENGTH_LONG).show();
-                fechaPrueba = mFormatter.parse(date);
-            }
-            else{
-                fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
-            }
-        } catch ( SecurityException e ) { e.printStackTrace(); }
-
         String fechainicioprueba = fInicio.getText().toString();
+
+
+        setFechaPrueba();
+
 
         if( titulo.getText().toString().equals("")){
             titulo.setError( "Título Obligatorio!" );
@@ -291,10 +276,10 @@ public class EditActivity extends AppCompatActivity {
 
             description.setError("La descripción es requerida!");
 
-        }else if(estado.equals("0") || estado.equals("3")){  //Veo si está agendada o terminada
-            if(dateDifference(fechainicioprueba,fechaPrueba) <= 0) { //Compruebo hora inicio y actual
+        }else if((estado.equals("0") || estado.equals("3")) && (dateDifference(fechainicioprueba,fechaPrueba) <= 0)){  //Veo si está agendada o terminada
+
                 Toast.makeText(this, "La fecha de inicio tiene que ser mayor a la actual", Toast.LENGTH_LONG).show();
-            }
+
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
         }else{
@@ -496,5 +481,30 @@ public class EditActivity extends AppCompatActivity {
             mLocation = location;
         }
     };
+
+    private void setFechaPrueba() throws ParseException {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        try {
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locListener, null);
+            if (mLocation != null) {
+                date = mFormatter.format((new Date(mLocation.getTime())));
+                fechaPrueba = mFormatter.parse(date);
+
+            } else {
+                fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+            }
+        }catch ( SecurityException e ) { e.printStackTrace(); }
+
+
+    }
 
 }

@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -65,6 +67,8 @@ public class ListAdapter extends ArrayAdapter<String>{
             Picasso.with(this.getContext())
                     .load(url)
                     .error(R.drawable.kamal_logo)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(viewHolder.imageView);
             convertView.setTag(viewHolder);
         } else {

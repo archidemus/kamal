@@ -96,7 +96,7 @@
                         android:layout_weight="1.05"
                         android:gravity="center"
                         android:minWidth="120dp"
-                        android:transitionGroup="false" />
+                        />
                 </LinearLayout>
             </LinearLayout>
 

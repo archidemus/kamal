@@ -232,31 +232,9 @@ public class CreateInitiativeActivity extends AppCompatActivity {
     };
 
     public void createInitiative(MenuItem menuItem) throws ParseException {
-        Toast.makeText(CreateInitiativeActivity.this, "Subiendo Imagen", Toast.LENGTH_SHORT).show();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // t o handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        try {
-            locationManager.requestSingleUpdate( LocationManager.NETWORK_PROVIDER, locListener, null );
-            if (mLocation!= null) {
-                date = mFormatter.format((new Date(mLocation.getTime())));
-                fechaPrueba = mFormatter.parse(date);
-            }
-            else{
-                fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
-            }
-        } catch ( SecurityException e ) { e.printStackTrace(); }
-
-
-
         String fechainicioprueba = fechaInicio.getText().toString();
+        setFechaPrueba();
+
         if( titulo.getText().toString().equals("")){
             titulo.setError( "Título Obligatorio" );
 
@@ -269,6 +247,8 @@ public class CreateInitiativeActivity extends AppCompatActivity {
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fechaTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
         }else{
+            Toast.makeText(this, "y no here", Toast.LENGTH_LONG).show();
+
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             String fechaInit = fechaInicio.getText().toString();
             String fechaFin = fechaTermino.getText().toString();
@@ -484,5 +464,28 @@ public class CreateInitiativeActivity extends AppCompatActivity {
     };
 
 
+    private void setFechaPrueba() throws ParseException {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // t o handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        try {
+            locationManager.requestSingleUpdate( LocationManager.NETWORK_PROVIDER, locListener, null );
+            if (mLocation!= null) {
+                date = mFormatter.format((new Date(mLocation.getTime())));
+                fechaPrueba = mFormatter.parse(date);
+            }
+            else{
+                fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+            }
+        } catch ( SecurityException e ) { e.printStackTrace(); }
 
+
+    }
 }

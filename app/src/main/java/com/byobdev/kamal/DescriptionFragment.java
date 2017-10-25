@@ -36,6 +36,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -205,6 +207,8 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
                     Picasso.with(DescriptionFragment.this.getContext())
                             .load(orgImage)
                             .error(R.drawable.kamal_not_found)
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .networkPolicy(NetworkPolicy.NO_CACHE)
                             .into(OrgImage);
                 }
             }
