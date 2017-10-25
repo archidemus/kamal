@@ -10,4 +10,5 @@
     <color name="textLightSecondary">#9E9E9E</color>
     <color name="textLightPrimary">#ffffff</color>
     <color name="titleMenuBackground">#E0E0E0</color>
+    <color name="lineColor">#c3a2b6</color>
 </resources>

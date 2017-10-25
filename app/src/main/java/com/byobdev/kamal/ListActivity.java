@@ -247,6 +247,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     intentMain2.putExtra("Direccion",snapshot.child("Direccion").getValue().toString());
                     intentMain2.putExtra("Imagen",snapshot.child("image").getValue().toString());
                     intentMain2.putExtra("IDanterior",snapshot.getKey());
+                    intentMain2.putExtra("Estado",snapshot.child("Estado").getValue().toString());
                     intentMain2.putExtra("Sector",Sector);
 
                 ListActivity.this.startActivity(intentMain2);
