@@ -887,6 +887,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 timeFilter(lastTimeFilterStart,lastTimeFilterEnd);
             }
 
+        } else if(item.getItemId()==R.id.toolbar_help){
+            this.startActivity(new Intent(this, TutorialActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
