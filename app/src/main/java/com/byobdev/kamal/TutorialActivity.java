@@ -15,28 +15,19 @@ import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 public class TutorialActivity extends AppIntro2 {
+    int firstId;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Note here that we DO NOT use setContentView();
-
-        // Add your slide fragments here.
-        // AppIntro will automatically generate the dots indicator and buttons.
-        // addSlide(firstFragment);
-        // addSlide(secondFragment);
-        // addSlide(thirdFragment);
-        // addSlide(fourthFragment);
-
-        // Instead of fragments, you can also use our default slide
-        // Just set a title, description, background and image. AppIntro will do the rest.
-        addSlide(AppIntroFragment.newInstance("Encuentra", "Entérate de lo que ocurre a tu alrededor. Las marcas en el mapa te dirán la categoría", R.mipmap.ic_launcher, getResources().getColor(R.color.Primary)));
-        addSlide(AppIntroFragment.newInstance("Marcas", "Los colores indican el estado de la iniciativa", R.mipmap.ic_launcher, getResources().getColor(R.color.Primary)));
-        addSlide(AppIntroFragment.newInstance("Filtra por palabra", "Escribe lo que necesitas y te diremos si alguien cerca lo tiene", R.mipmap.ic_launcher, getResources().getColor(R.color.Primary)));
-        addSlide(AppIntroFragment.newInstance("¿Tienes tiempo libre?", "Explora lo que ocurrirá en el día con nuestra linea de tiempo", R.mipmap.ic_launcher, getResources().getColor(R.color.Primary)));
-        // OPTIONAL METHODS
-        // Override bar/separator color.
+        addSlide(AppIntroFragment.newInstance("Encuentra", "Entérate de lo que ocurre a tu alrededor. Las marcas en el mapa te dirán la categoría", R.drawable.ic_helpimages1, getResources().getColor(R.color.Primary)));
+        addSlide(AppIntroFragment.newInstance("Marcas", "Los colores indican el estado de la iniciativa", R.drawable.ic_helpimages2, getResources().getColor(R.color.Primary)));
+        addSlide(AppIntroFragment.newInstance("Filtra", "Por categoría o palabra clave usando los íconos en la barra superior", R.drawable.ic_helpimages3, getResources().getColor(R.color.Primary)));
+        addSlide(AppIntroFragment.newInstance("¿Tienes tiempo libre?", "Ve que ocurrirá a esa hora usando la línea de tiempo. Elige un rango de tiempo y muevelo a lo largo del día.", R.mipmap.ic_launcher, getResources().getColor(R.color.Primary)));
         setBarColor(getResources().getColor(R.color.Primary));
+
+        firstId = getLayoutId();
     }
 
     @Override
@@ -58,6 +49,15 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
-        // Do something when the slide changes.
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (firstId != getLayoutId()){
+            super.onBackPressed();
+        } else {
+            this.startActivity(new Intent(this, InitiativesActivity.class));
+            finish();
+        }
     }
 }
