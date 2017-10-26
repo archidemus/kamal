@@ -16,13 +16,7 @@
         android:id="@+id/toolbar_filter"
         android:icon="@drawable/ic_filter"
         android:title="Filtrar"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/toolbar_help"
-        android:icon="@drawable/ic_help_circle_outline"
-        android:title="Ir"
-        app:showAsAction="always|withText"
-        />
+        app:showAsAction="always|withText"/>
     <item
         android:id="@+id/toolbar_ir"
         android:title="Ir"
@@ -30,6 +24,7 @@
     <item
         android:id="@+id/toolbar_help"
         android:icon="@drawable/ic_help_circle_outline"
-        android:title="Ayuda"
-        app:showAsAction="ifRoom"/>
+        android:title="Ir"
+        app:showAsAction="always|withText"
+        />
 </menu>
