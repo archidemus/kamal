@@ -12,6 +12,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -56,5 +57,6 @@ dependencies {
     compile 'me.bendik.simplerangeview:simplerangeview:0.1.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+    compile 'com.github.apl-devs:appintro:v4.2.2'
 }
 apply plugin: 'com.google.gms.google-services'

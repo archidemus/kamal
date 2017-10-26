@@ -23,7 +23,12 @@ public class SplashActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             } else {
-                startActivity(new Intent(SplashActivity.this, InitiativesActivity.class));
+
+                if (getSharedPreferences("com.byobdev.kamal", MODE_PRIVATE).getBoolean("firstrun", true)) {
+                    startActivity(new Intent(this, TutorialActivity.class));
+                    getSharedPreferences("com.byobdev.kamal", MODE_PRIVATE).edit().putBoolean("firstrun", false).apply();
+                } else
+                    startActivity(new Intent(SplashActivity.this, InitiativesActivity.class));
                 finish();
             }
         }
