@@ -311,7 +311,10 @@ public class EditActivity extends AppCompatActivity {
                 imageEdit = key;
             }
 
-            Initiative initiative = new Initiative(titulo.getText().toString(), nombre, description.getText().toString(), latitud, longitud, imageEdit, FirebaseAuth.getInstance().getCurrentUser().getUid(), interest, direccion.toString(), feI, feT);
+
+
+
+            Initiative initiative = new Initiative(titulo.getText().toString(), nombre, description.getText().toString(), latitud, longitud, imageEdit, FirebaseAuth.getInstance().getCurrentUser().getUid(), interest, direccion.toString(), feI, feT, setEstado(estado));
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
 
@@ -508,6 +511,15 @@ public class EditActivity extends AppCompatActivity {
         }catch ( SecurityException e ) { e.printStackTrace(); }
 
 
+    }
+
+    private int setEstado(String estado){
+        if (estado.equals("1") || estado.equals("2")){
+            return Integer.parseInt(estado);
+        }
+        else {
+            return 0;
+        }
     }
 
 }

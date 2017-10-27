@@ -268,7 +268,7 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             if (interest.equals("Música")){
                 interest = "Musica";
             }
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT,0);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
 
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
