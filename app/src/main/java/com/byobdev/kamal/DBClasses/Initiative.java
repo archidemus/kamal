@@ -35,7 +35,7 @@ public class Initiative {
         this.Direccion = direccion;
         this.fechaInicio = fInicio;
         this.fechaFin = fTermino;
-        this.Estado=0;
+        this.Estado = 0;
         //this.FechaInicio=fechainicio;
         //this.FechaFin=fechafin;
     }

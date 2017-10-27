@@ -282,9 +282,10 @@ public class EditActivity extends AppCompatActivity {
 
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
+        }else if(lugar.getText().toString().isEmpty()){
+            Toast.makeText(this, "Se necesita de una dirección", Toast.LENGTH_LONG).show();
         }else{
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-
 
             String fechaInit = fInicio.getText().toString();
             String fechaFin = fTermino.getText().toString();
@@ -302,13 +303,15 @@ public class EditActivity extends AppCompatActivity {
                 interest = "Musica";
             }
             Intent i = getIntent();
+
+
             FirebaseDatabase.getInstance().getReference("Initiatives").child(i.getStringExtra("Sector")).child(IDanterior).removeValue();
 
             if(imagen != null){
                 imageEdit = key;
             }
 
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,imageEdit ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
+            Initiative initiative = new Initiative(titulo.getText().toString(), nombre, description.getText().toString(), latitud, longitud, imageEdit, FirebaseAuth.getInstance().getCurrentUser().getUid(), interest, direccion.toString(), feI, feT);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
 
