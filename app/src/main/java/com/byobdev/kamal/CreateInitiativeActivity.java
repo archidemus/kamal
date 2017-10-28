@@ -246,6 +246,8 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             Toast.makeText(this,"No puede crear una Iniciativa antes de la fecha actual",Toast.LENGTH_LONG).show();
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fechaTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
+        }else if(lugarIniciativa.getText().toString().isEmpty()){
+            Toast.makeText(this, "Se necesita de una dirección", Toast.LENGTH_LONG).show();
         }else{
 
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
@@ -266,7 +268,7 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             if (interest.equals("Música")){
                 interest = "Musica";
             }
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT,0);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
 
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -274,6 +276,10 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             userInitiatives.child(key).child("image").setValue(key);
+            userInitiatives.child(key).child("Direccion").setValue(direccion.toString());
+            userInitiatives.child(key).child("fechaInicio").setValue(feI);
+            userInitiatives.child(key).child("fechaFin").setValue(feT);
+
 
             key2=mDatabase.push().getKey();
             DatabaseReference comments = FirebaseDatabase.getInstance().getReference("Comments/");

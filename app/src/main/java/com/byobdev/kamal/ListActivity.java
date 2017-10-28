@@ -32,8 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import com.byobdev.kamal.ListAdapter.customButtonListener;
@@ -56,6 +59,9 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
     String[] keyLista;
     String[] descriptionLista;
     String[] imageLista;
+    String[] fechaILista;
+    String[] fechaTLista;
+    String[] direccionLista;
     ListView lista;
     int position;
     int prevPosition=-1;
@@ -169,6 +175,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
         getSupportActionBar().setHomeAsUpIndicator(upArrow);
         final LinearLayout ll = (LinearLayout) findViewById(R.id.linear);
         Intent i=getIntent();
+
         lista = (ListView) findViewById(R.id.mobile_list);
         mDatabase = FirebaseDatabase.getInstance().getReference("UserInitiatives").child(i.getStringExtra("UserID"));
         final int[] k = {0};
@@ -183,11 +190,16 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     k[0] = 1;
 
                 }
+                DateFormat formatter = new SimpleDateFormat("E, d MMM • HH:mm");
+                DateFormat formatter1 = new SimpleDateFormat("E, d MMM • HH:mm");
                 completarLista = new String[t];
                 keyLista = new String[t];
                 SectorLista = new String[t];
                 descriptionLista = new String[t];
                 imageLista = new String[t];
+                fechaILista = new String[t];
+                fechaTLista = new String[t];
+                direccionLista = new String[t];
                 t=0;
                 for (final DataSnapshot child : snapshot.getChildren()) {
                     // Create a LinearLayout element
@@ -196,6 +208,9 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     keyLista[t] = child.getKey().toString();
                     descriptionLista[t] = child.child("Descripcion").getValue().toString();
                     imageLista[t] = child.child("image").getValue().toString();
+                    fechaILista[t] = formatter.format(new Date(Long.valueOf(child.child("fechaInicio").getValue().toString()).longValue()));
+                    fechaTLista[t] = formatter1.format(new Date(Long.valueOf(child.child("fechaFin").getValue().toString()).longValue()));
+                    direccionLista[t] = child.child("Direccion").getValue().toString();
                     t++;
 
                 }
@@ -209,7 +224,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     ArrayList<String> dataItems = new ArrayList<String>();
                     List<String> dataTemp = Arrays.asList(completarLista);
                     dataItems.addAll(dataTemp);
-                    adapter = new com.byobdev.kamal.ListAdapter(ListActivity.this, dataItems,keyLista, SectorLista,descriptionLista,imageLista,lista);
+                    adapter = new com.byobdev.kamal.ListAdapter(ListActivity.this, dataItems,keyLista, SectorLista,descriptionLista,imageLista,lista, fechaILista, fechaTLista, direccionLista);
                     adapter.setCustomButtonListner(ListActivity.this);
                     lista.setAdapter(adapter);
                 }
@@ -269,15 +284,20 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
     public void getPosition1234(int position) {
 
         lista.getChildAt(0).setBackgroundResource(R.color.textLightPrimary);
-        lista.getChildAt(1).setBackgroundResource(R.color.textLightPrimary);
-        lista.getChildAt(2).setBackgroundResource(R.color.textLightPrimary);
-        lista.getChildAt(3).setBackgroundResource(R.color.textLightPrimary);
-        lista.getChildAt(4).setBackgroundResource(R.color.textLightPrimary);
-        if(lista.getChildAt(5)!=null){
-            lista.getChildAt(5).setBackgroundResource(R.color.textLightPrimary);
-        }
-        if(prevPosition!=-1){
-            //lista.getChildAt(prevPosition).setBackgroundResource(0);
+        if(lista.getChildAt(1)!=null){
+            lista.getChildAt(1).setBackgroundResource(R.color.textLightPrimary);
+            if(lista.getChildAt(2)!=null){
+                lista.getChildAt(2).setBackgroundResource(R.color.textLightPrimary);
+                if(lista.getChildAt(3)!=null){
+                    lista.getChildAt(3).setBackgroundResource(R.color.textLightPrimary);
+                    if(lista.getChildAt(4)!=null){
+                        lista.getChildAt(4).setBackgroundResource(R.color.textLightPrimary);
+                        if(lista.getChildAt(5)!=null){
+                            lista.getChildAt(5).setBackgroundResource(R.color.textLightPrimary);
+                        }
+                    }
+                }
+            }
         }
         if(position == prevPosition && selected){
 
