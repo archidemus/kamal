@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -29,8 +28,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -47,14 +44,13 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.util.Calendar;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -78,7 +74,6 @@ import com.byobdev.kamal.AppHelpers.ConnectivityStatus;
 import com.byobdev.kamal.AppHelpers.NotificationHelper;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
-import com.byobdev.kamal.DBClasses.User;
 import com.byobdev.kamal.NotificationServices.MyFirebaseInstanceIDService;
 import com.byobdev.kamal.NotificationServices.MyFirebaseMessagingService;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
@@ -105,7 +100,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.DateFormat;
@@ -120,13 +114,10 @@ import java.util.Vector;
 
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import static android.R.attr.duration;
-import static android.R.attr.key;
 import static com.byobdev.kamal.R.id.map;
 import static com.byobdev.kamal.R.id.rangeView;
+import static com.byobdev.kamal.R.id.time_filter_menu;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
-import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
-import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 import static java.lang.Integer.parseInt;
 
 import com.google.android.gms.location.LocationListener;
@@ -192,6 +183,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     View linea;
     float lastCameraZoom;
     SimpleRangeView rangeview;
+    LinearLayout timeFilterMenu;
     int currentHour;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
@@ -783,71 +775,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             if (back_button_active) {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                OvershootInterpolator interpolator;
-                interpolator = new OvershootInterpolator(1);
-                Display mdisp = getWindowManager().getDefaultDisplay();
-                Point mdispSize = new Point();
-                mdisp.getSize(mdispSize);
-                int maxY = mdispSize.y;
-                float currentPosition;
-                int fragment_pos[] = new int[2];
-
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else if (polylineActive && initiativePath != null) {
-                    initiativePath.remove();
-                    polylineActive = false;
-                    on_way = false;
-                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                    Titulo.setText("");
-                    Titulo.setTextSize(0);
-                    toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
-                    initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                } else if (opened_df) {
-                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
-                    View df = findViewById(R.id.descriptionFragment);
-                    df.getLocationOnScreen(fragment_pos);
-                    if ((df.getHeight() + fragment_pos[1]) == maxY) {
-                        descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
-                        opened_df = false;
-                        initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                        TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                        Titulo.setText("");
-                        Titulo.setTextSize(0);
-                        uiSettings.setAllGesturesEnabled(true);
-                        uiSettings.setMyLocationButtonEnabled(true);
-                    }
-                } else if (opened_pf) {
-                    View pf = findViewById(R.id.previewFragment);
-                    pf.getLocationOnScreen(fragment_pos);
-                    if ((pf.getHeight() + fragment_pos[1]) == maxY) {
-                        previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
-                        opened_pf = false;
-                        toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
-                        toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
-                        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                        upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                        back_button_active = false;
-                    }
-                } else if (opened_bottom) {
-                    View ob = findViewById(R.id.bottom_menu);
-                    ob.getLocationOnScreen(fragment_pos);
-                    if ((ob.getHeight() + fragment_pos[1]) == maxY) {
-                        vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-                        opened_bottom = false;
-                        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                        upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                        back_button_active = false;
-                    }
-                } else {
-                    return super.onOptionsItemSelected(item);
-                }
+                onBackPressed();
             } else {
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
@@ -877,13 +805,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
-        } else if (item.getItemId() == R.id.time_filter) {
-            if (rangeview.getVisibility() == View.VISIBLE) {
-                rangeview.setVisibility(View.INVISIBLE);
+        } else if (item.getItemId() == R.id.time_filter_menu) {
+            if (timeFilterMenu.getVisibility() == View.VISIBLE) {
+                timeFilterMenu.setVisibility(View.INVISIBLE);
                 timeFilterReset();
 
             } else {
-                rangeview.setVisibility(View.VISIBLE);
+                timeFilterMenu.setVisibility(View.VISIBLE);
                 timeFilter(lastTimeFilterStart,lastTimeFilterEnd);
             }
 
@@ -1031,7 +959,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             if (!opened_df && !on_way) {
 
                                 toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                                toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+                                toolbar.getMenu().findItem(R.id.time_filter_menu).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
                                 DF.setArguments(selectedInitiative);
                                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -1239,6 +1167,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
         rangeview=(SimpleRangeView) findViewById(rangeView);
+        timeFilterMenu = (LinearLayout) findViewById(time_filter_menu);
         lastTimeFilterStart=Time+(currentHour)*60*60*1000;
         lastTimeFilterEnd=Time+(currentHour+(6))*60*60*1000;
         rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
@@ -1647,7 +1576,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter_menu).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             df.getLocationOnScreen(fragment_pos);
             if ((df.getHeight() + fragment_pos[1]) == maxY){

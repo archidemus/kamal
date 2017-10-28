@@ -58,6 +58,7 @@ dependencies {
     compile 'com.github.apl-devs:appintro:v4.2.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC0'
-    compile 'com.github.apl-devs:appintro:v4.2.2'
+    compile 'rongi.rotate-layout:rotate-layout:3.0.0'
+
 }
 apply plugin: 'com.google.gms.google-services'
