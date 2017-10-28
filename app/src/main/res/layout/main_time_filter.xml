@@ -17,21 +17,24 @@
             android:rotation="90"
             app:srcCompat="@drawable/ic_arrow_left"
             android:tint="@color/Primary"
-            android:id="@+id/toPreviousDay"/>
+            android:id="@+id/toPreviousDay"
+            android:onClick="prevDay"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:rotation="-90"
             app:srcCompat="@drawable/ic_arrow_left"
             android:tint="@color/Primary"
-            android:id="@+id/toNextDay"/>
+            android:id="@+id/toNextDay"
+            android:onClick="nextDay"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:rotation="90"
             app:srcCompat="@drawable/ic_reload"
             android:tint="@color/Primary"
-            android:id="@+id/toCurrentDate"/>
+            android:id="@+id/toCurrentDate"
+            android:onClick="actualDay"/>
     </LinearLayout>
     <com.github.rongi.rotate_layout.layout.RotateLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -45,26 +48,247 @@
             android:text="19 OCT"
             android:id="@+id/fromDate"/>
     </com.github.rongi.rotate_layout.layout.RotateLayout>
-    <me.bendik.simplerangeview.SimpleRangeView
-        android:id="@+id/rangeView"
+    <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="0dp"
-        android:rotation="0"
-        android:layout_gravity="center_vertical"
-        app:labelColor="@color/lineColor"
-        app:fixedLabelColor="@color/lineColor"
-        app:lineColor="@color/lineColor"
-        app:activeLabelColor="@color/Primary"
-        app:activeLineColor="@color/Primary"
-        app:activeThumbColor="@color/Primary"
-        app:fixedLineColor="@color/lineColor"
-        app:activeThumbLabelColor="@color/Primary"
-        app:count="25"
-        app:start="0"
-        app:end="6"
-        app:movable="true"
-        app:minDistance="1"
-        android:layout_weight="1"/>
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp">
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="01:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="03:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="05:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="07:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="09:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="11:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="01:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="02:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="05:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="07:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="09:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="11:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+            <com.github.rongi.rotate_layout.layout.RotateLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:angle="-90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_weight="1">
+                <TextView
+                    android:id="@+id/time13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="01:00"
+                    android:textSize="12sp"/>
+            </com.github.rongi.rotate_layout.layout.RotateLayout>
+
+        </LinearLayout>
+        <me.bendik.simplerangeview.SimpleRangeView
+            android:id="@+id/rangeView"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:rotation="0"
+            android:layout_gravity="center_vertical"
+            app:labelColor="@color/lineColor"
+            app:fixedLabelColor="@color/lineColor"
+            app:lineColor="@color/lineColor"
+            app:activeLabelColor="@color/Primary"
+            app:activeLineColor="@color/Primary"
+            app:activeThumbColor="@color/Primary"
+            app:fixedLineColor="@color/lineColor"
+            app:activeThumbLabelColor="@color/Primary"
+            app:count="25"
+            app:start="0"
+            app:end="6"
+            app:movable="true"
+            app:minDistance="1"/>
+    </LinearLayout>
     <com.github.rongi.rotate_layout.layout.RotateLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
@@ -77,6 +301,6 @@
             android:id="@+id/toDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="20 OCT"/>
+            android:text="20 OCT" />
     </com.github.rongi.rotate_layout.layout.RotateLayout>
 </LinearLayout>

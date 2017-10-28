@@ -123,14 +123,17 @@ import static java.lang.Integer.parseInt;
 import com.google.android.gms.location.LocationListener;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import me.bendik.simplerangeview.SimpleRangeView;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-    long Time;
+    long Time;//Current time without minutes and seconds for the time filter
+    long initialTime;//Initial time without minutes and seconds for the time filter
     long currentTime;
+    SimpleDateFormat timelineFormatter;//Formatter for timeline month and day
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     public Interests userInterests;
@@ -144,6 +147,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public List<String> teatroInitiativeIDList;
     public List<String> musicaInitiativeIDList;
     SearchView search;
+    TextView fromDate;
+    TextView toDate;
     public boolean comidaOn = true;
     public boolean deporteOn = true;
     public boolean teatroOn = true;
@@ -165,6 +170,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
     //Others
+
     FrameLayout previewFragment;
     FrameLayout descriptionFragment;
     Bundle selectedInitiative;
@@ -246,7 +252,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if (markerHashMap.get(dataSnapshot.getKey()) != null) {
                 return;
             }
-
+            boolean typeVisibility;
             if (initiative.Tipo.equals("Comida")) {
 
                 if (initiative.Estado == 0) {//aun no inicia
@@ -265,7 +271,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker))
                     );
                 }
-                aux.setVisible(comidaOn);
+                typeVisibility=comidaOn;
                 comidaInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Deporte")) {
                 if (initiative.Estado == 0) {//aun no inicia
@@ -284,7 +290,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker))
                     );
                 }
-                aux.setVisible(deporteOn);
+                typeVisibility=deporteOn;;
                 deporteInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Teatro")) {
                 if (initiative.Estado == 0) {//aun no inicia
@@ -303,7 +309,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker))
                     );
                 }
-                aux.setVisible(teatroOn);
+                typeVisibility=teatroOn;
                 teatroInitiativeIDList.add(dataSnapshot.getKey());
             } else {//musica
                 if (initiative.Estado == 0) {//aun no inicia
@@ -322,17 +328,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker))
                     );
                 }
-                aux.setVisible(musicaOn);
+                typeVisibility=musicaOn;
                 musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
             initiativeHashMap.put(aux.getId(), initiative);
             markerHashMap.put(dataSnapshot.getKey(), aux);
-            keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
-            timeVisibilityHashmap.put(dataSnapshot.getKey(), true);
-            LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
-            if (bounds.contains(aux.getPosition())) {
-                swipeMarkerList.add(aux);
+            boolean visibleByTime=true;
+            boolean visibleByKeyword=true;
+            if(timeFilterMenu.getVisibility() == View.VISIBLE){
+                if(initiative.fechaFin<lastTimeFilterStart || initiative.fechaInicio>lastTimeFilterEnd){
+                    visibleByTime=false;
+                }
+                else{
+                    visibleByTime=true;
+                }
             }
+            if(!search.isIconified()){
+                if(initiative.Descripcion.contains(search.getQuery().toString()) || initiative.Titulo.contains(search.getQuery().toString())){
+                    visibleByKeyword=true;
+
+                }
+                else{
+                    visibleByKeyword=false;
+                }
+
+            }
+            keywordVisibilityHashmap.put(dataSnapshot.getKey(), visibleByKeyword);
+            timeVisibilityHashmap.put(dataSnapshot.getKey(), visibleByTime);
+            aux.setVisible(typeVisibility && visibleByKeyword && visibleByTime);
+            //LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
 
 
         }
@@ -805,7 +829,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
-        } else if (item.getItemId() == R.id.time_filter_menu) {
+        } else if (item.getItemId() == R.id.time_filter) {
             if (timeFilterMenu.getVisibility() == View.VISIBLE) {
                 timeFilterMenu.setVisibility(View.INVISIBLE);
                 timeFilterReset();
@@ -912,7 +936,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
         //PreviewFragment
         previewFragment = (FrameLayout) findViewById(R.id.previewFragment);
-        previewFragment.setOnTouchListener(new View.OnTouchListener() {
+        previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Display mdisp = getWindowManager().getDefaultDisplay();
@@ -957,9 +981,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
-
                                 toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                                toolbar.getMenu().findItem(R.id.time_filter_menu).setVisible(false);
+                                toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
                                 DF.setArguments(selectedInitiative);
                                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -976,7 +999,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 uiSettings.setAllGesturesEnabled(false);
                                 uiSettings.setMyLocationButtonEnabled(false);
                                 opened_df = true;
-
                             }
                         }
                         return true;
@@ -1162,15 +1184,20 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         Time = cal.getTimeInMillis();
-
-
-
+        initialTime=Time;
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
         rangeview=(SimpleRangeView) findViewById(rangeView);
         timeFilterMenu = (LinearLayout) findViewById(time_filter_menu);
         lastTimeFilterStart=Time+(currentHour)*60*60*1000;
         lastTimeFilterEnd=Time+(currentHour+(6))*60*60*1000;
+        timelineFormatter=new SimpleDateFormat("dd MMM");
+        fromDate=(TextView) findViewById(R.id.fromDate);
+        toDate=(TextView) findViewById(R.id.toDate);
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+
         rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+
             @Override
             public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
                 if(pos%2==1){
@@ -1183,7 +1210,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
                 timeFilterReset();
-                SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 timeFilter((Time+(currentHour+(start))*60*60*1000),(Time+(currentHour+(end))*60*60*1000));
             }
         });
@@ -1191,6 +1217,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     }
 
     public void timeFilter(long start,long end){
+        timeFilterReset();
         lastTimeFilterStart=start;
         lastTimeFilterEnd=end;
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
@@ -1198,9 +1225,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            SimpleDateFormat formatter = new SimpleDateFormat("HH");
-            int horaInicio=Integer.parseInt(formatter.format(new Date(initiative.fechaInicio)));
-            int horaTermino=Integer.parseInt(formatter.format(new Date(initiative.fechaFin)));
             if(initiative.fechaFin<start || initiative.fechaInicio>end){
                 timeVisibilityHashmap.put(pair.getKey(),false);
                 pair.getValue().setVisible(false);
@@ -1232,6 +1256,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         }
+    }
+
+    public void prevDay(View view){
+        if(Time!=initialTime){
+            Time-=24*60*60*1000;
+            fromDate.setText(timelineFormatter.format(Time));
+            toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+            timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
+        }
+    }
+    public void nextDay(View view){
+        Time+=24*60*60*1000;
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
+    }
+    public void actualDay(View view){
+        Time=initialTime;
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
     }
 
     @Override
@@ -1576,7 +1621,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-            toolbar.getMenu().findItem(R.id.time_filter_menu).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             df.getLocationOnScreen(fragment_pos);
             if ((df.getHeight() + fragment_pos[1]) == maxY){
