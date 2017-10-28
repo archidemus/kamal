@@ -123,14 +123,17 @@ import static java.lang.Integer.parseInt;
 import com.google.android.gms.location.LocationListener;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import me.bendik.simplerangeview.SimpleRangeView;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-    long Time;
+    long Time;//Current time without minutes and seconds for the time filter
+    long initialTime;//Initial time without minutes and seconds for the time filter
     long currentTime;
+    SimpleDateFormat timelineFormatter;//Formatter for timeline month and day
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     public Interests userInterests;
@@ -144,6 +147,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public List<String> teatroInitiativeIDList;
     public List<String> musicaInitiativeIDList;
     SearchView search;
+    TextView fromDate;
+    TextView toDate;
     public boolean comidaOn = true;
     public boolean deporteOn = true;
     public boolean teatroOn = true;
@@ -165,6 +170,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
     //Others
+
     FrameLayout previewFragment;
     FrameLayout descriptionFragment;
     Bundle selectedInitiative;
@@ -1162,15 +1168,20 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         Time = cal.getTimeInMillis();
-
-
-
+        initialTime=Time;
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
         rangeview=(SimpleRangeView) findViewById(rangeView);
         timeFilterMenu = (LinearLayout) findViewById(time_filter_menu);
         lastTimeFilterStart=Time+(currentHour)*60*60*1000;
         lastTimeFilterEnd=Time+(currentHour+(6))*60*60*1000;
+        timelineFormatter=new SimpleDateFormat("dd MMM");
+        fromDate=(TextView) findViewById(R.id.fromDate);
+        toDate=(TextView) findViewById(R.id.toDate);
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+
         rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+
             @Override
             public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
                 if(pos%2==1){
@@ -1183,7 +1194,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
                 timeFilterReset();
-                SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 timeFilter((Time+(currentHour+(start))*60*60*1000),(Time+(currentHour+(end))*60*60*1000));
             }
         });
@@ -1198,9 +1208,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            SimpleDateFormat formatter = new SimpleDateFormat("HH");
-            int horaInicio=Integer.parseInt(formatter.format(new Date(initiative.fechaInicio)));
-            int horaTermino=Integer.parseInt(formatter.format(new Date(initiative.fechaFin)));
             if(initiative.fechaFin<start || initiative.fechaInicio>end){
                 timeVisibilityHashmap.put(pair.getKey(),false);
                 pair.getValue().setVisible(false);
@@ -1232,6 +1239,24 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         }
+    }
+
+    public void prevDay(View view){
+        if(Time!=initialTime){
+            Time-=24*60*60*1000;
+            fromDate.setText(timelineFormatter.format(Time));
+            toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        }
+    }
+    public void nextDay(View view){
+        Time+=24*60*60*1000;
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+    }
+    public void actualDay(View view){
+        Time=initialTime;
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
     }
 
     @Override

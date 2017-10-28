@@ -17,21 +17,24 @@
             android:rotation="90"
             app:srcCompat="@drawable/ic_arrow_left"
             android:tint="@color/Primary"
-            android:id="@+id/toPreviousDay"/>
+            android:id="@+id/toPreviousDay"
+            android:onClick="prevDay"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:rotation="-90"
             app:srcCompat="@drawable/ic_arrow_left"
             android:tint="@color/Primary"
-            android:id="@+id/toNextDay"/>
+            android:id="@+id/toNextDay"
+            android:onClick="nextDay"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:rotation="90"
             app:srcCompat="@drawable/ic_reload"
             android:tint="@color/Primary"
-            android:id="@+id/toCurrentDate"/>
+            android:id="@+id/toCurrentDate"
+            android:onClick="actualDay"/>
     </LinearLayout>
     <com.github.rongi.rotate_layout.layout.RotateLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -77,6 +80,6 @@
             android:id="@+id/toDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="20 OCT"/>
+            android:text="20 OCT" />
     </com.github.rongi.rotate_layout.layout.RotateLayout>
 </LinearLayout>
