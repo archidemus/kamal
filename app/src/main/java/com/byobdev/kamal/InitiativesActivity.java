@@ -252,7 +252,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if (markerHashMap.get(dataSnapshot.getKey()) != null) {
                 return;
             }
-
+            boolean typeVisibility;
             if (initiative.Tipo.equals("Comida")) {
 
                 if (initiative.Estado == 0) {//aun no inicia
@@ -271,7 +271,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker))
                     );
                 }
-                aux.setVisible(comidaOn);
+                typeVisibility=comidaOn;
                 comidaInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Deporte")) {
                 if (initiative.Estado == 0) {//aun no inicia
@@ -290,7 +290,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker))
                     );
                 }
-                aux.setVisible(deporteOn);
+                typeVisibility=deporteOn;;
                 deporteInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Teatro")) {
                 if (initiative.Estado == 0) {//aun no inicia
@@ -309,7 +309,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker))
                     );
                 }
-                aux.setVisible(teatroOn);
+                typeVisibility=teatroOn;
                 teatroInitiativeIDList.add(dataSnapshot.getKey());
             } else {//musica
                 if (initiative.Estado == 0) {//aun no inicia
@@ -328,17 +328,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker))
                     );
                 }
-                aux.setVisible(musicaOn);
+                typeVisibility=musicaOn;
                 musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
             initiativeHashMap.put(aux.getId(), initiative);
             markerHashMap.put(dataSnapshot.getKey(), aux);
-            keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
-            timeVisibilityHashmap.put(dataSnapshot.getKey(), true);
-            LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
-            if (bounds.contains(aux.getPosition())) {
-                swipeMarkerList.add(aux);
+            boolean visibleByTime=true;
+            boolean visibleByKeyword=true;
+            if(timeFilterMenu.getVisibility() == View.VISIBLE){
+                if(initiative.fechaFin<lastTimeFilterStart || initiative.fechaInicio>lastTimeFilterEnd){
+                    visibleByTime=false;
+                }
+                else{
+                    visibleByTime=true;
+                }
             }
+            if(!search.isIconified()){
+                if(initiative.Descripcion.contains(search.getQuery().toString()) || initiative.Titulo.contains(search.getQuery().toString())){
+                    visibleByKeyword=true;
+
+                }
+                else{
+                    visibleByKeyword=false;
+                }
+
+            }
+            keywordVisibilityHashmap.put(dataSnapshot.getKey(), visibleByKeyword);
+            timeVisibilityHashmap.put(dataSnapshot.getKey(), visibleByTime);
+            aux.setVisible(typeVisibility && visibleByKeyword && visibleByTime);
+            //LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
 
 
         }
@@ -1201,6 +1219,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     }
 
     public void timeFilter(long start,long end){
+        timeFilterReset();
         lastTimeFilterStart=start;
         lastTimeFilterEnd=end;
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
@@ -1246,17 +1265,20 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Time-=24*60*60*1000;
             fromDate.setText(timelineFormatter.format(Time));
             toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+            timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
         }
     }
     public void nextDay(View view){
         Time+=24*60*60*1000;
         fromDate.setText(timelineFormatter.format(Time));
         toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
     }
     public void actualDay(View view){
         Time=initialTime;
         fromDate.setText(timelineFormatter.format(Time));
         toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
     }
 
     @Override
