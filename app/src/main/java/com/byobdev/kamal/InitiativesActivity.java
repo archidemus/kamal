@@ -936,7 +936,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
         //PreviewFragment
         previewFragment = (FrameLayout) findViewById(R.id.previewFragment);
-        previewFragment.setOnTouchListener(new View.OnTouchListener() {
+        previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Display mdisp = getWindowManager().getDefaultDisplay();
@@ -981,7 +981,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
-
                                 toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
                                 toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
@@ -1000,7 +999,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 uiSettings.setAllGesturesEnabled(false);
                                 uiSettings.setMyLocationButtonEnabled(false);
                                 opened_df = true;
-
                             }
                         }
                         return true;
