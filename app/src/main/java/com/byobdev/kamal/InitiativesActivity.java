@@ -1212,7 +1212,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         Time = cal.getTimeInMillis();
         initialTime=Time;
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
-        //setTimeLabels(currentHour);
+        setTimeLabels(currentHour);
         rangeview=(SimpleRangeView) findViewById(rangeView);
         timeFilterMenu = (LinearLayout) findViewById(time_filter_menu);
         lastTimeFilterStart=Time+(currentHour)*60*60*1000;

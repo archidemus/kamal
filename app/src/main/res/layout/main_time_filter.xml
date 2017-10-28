@@ -303,13 +303,4 @@
             android:layout_height="match_parent"
             android:text="20 OCT" />
     </com.github.rongi.rotate_layout.layout.RotateLayout>
-    <com.github.rongi.rotate_layout.layout.RotateLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:angle="-90"
-        android:layout_gravity="center_vertical"
-        android:layout_marginRight="4dp"
-        android:layout_marginEnd="4dp">
-    </com.github.rongi.rotate_layout.layout.RotateLayout>
 </LinearLayout>
