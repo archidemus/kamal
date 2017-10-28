@@ -6,8 +6,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +50,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -55,7 +62,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static android.R.string.no;
 import static com.byobdev.kamal.R.id.imgViewEdit;
+import static com.byobdev.kamal.R.id.none;
 
 /**
  * Created by crono on 03-09-17.
@@ -72,27 +81,30 @@ public class EditActivity extends AppCompatActivity {
     private SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     Place place;
     private DatabaseReference mDatabase;
-    private DatabaseReference mDatabase2;
     private FirebaseStorage mStoragebase = FirebaseStorage.getInstance();
     StorageReference storageRef = mStoragebase.getReferenceFromUrl("gs://prime-boulevard-168121.appspot.com/Images");
     ProgressDialog pd;
     Uri filePath;
     String direccion;
     int PLACE_PICKER_REQUEST = 1;
-    int PICK_IMAGE_REQUEST = 111;
     ImageView imgView;
     String key;
     String imageEdit;
     String IDanterior;
     Date dateInits, dateFins;
     long dateDiff;
-    Button fInicio, fTermino,lugar;
+    Button fInicio, fTermino, lugar, imagenEdit;
     final Calendar calendar2 = Calendar.getInstance();
     String url;
     MenuItem check;
+    String estado;
+    Date fechaPrueba = null;
+    String date;
+    private LocationManager locationManager;
+    Location mLocation;
 
-    String getSector(double latitude, double longitude){
-        return Integer.toString((int)(latitude*50))+","+Integer.toString((int)(longitude*50));
+    String getSector(double latitude, double longitude) {
+        return Integer.toString((int) (latitude * 50)) + "," + Integer.toString((int) (longitude * 50));
     }
 
 
@@ -100,9 +112,9 @@ public class EditActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_config, menu);
         check = menu.findItem(R.id.done);
-        for(int i = 0; i < menu.size(); i++){
+        for (int i = 0; i < menu.size(); i++) {
             Drawable drawable = menu.getItem(i).getIcon();
-            if(drawable != null) {
+            if (drawable != null) {
                 drawable.mutate();
                 drawable.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
             }
@@ -126,26 +138,43 @@ public class EditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_initiative);
-        titulo   = (EditText)findViewById(R.id.titleInput_edit);
+        titulo = (EditText) findViewById(R.id.titleInput_edit);
         Intent i = getIntent();
         titulo.setText(i.getStringExtra("Titulo"));
-        description   = (EditText)findViewById(R.id.descriptionInput_edit);
+        description = (EditText) findViewById(R.id.descriptionInput_edit);
         description.setText(i.getStringExtra("Descripcion"));
 
-        fInicio = (Button)findViewById(R.id.btn_fechaInicio_edit);
-        fTermino = (Button)findViewById(R.id.btn_fechaTermino_edit);
+        fInicio = (Button) findViewById(R.id.btn_fechaInicio_edit);
+        fTermino = (Button) findViewById(R.id.btn_fechaTermino_edit);
         String dateF2 = mFormatter.format(new Date(Long.parseLong(i.getStringExtra("duracion"))));
         fTermino.setText(dateF2);
         String dateI2 = mFormatter.format(new Date(Long.parseLong(i.getStringExtra("hinicio"))));
         fInicio.setText(dateI2);
-        url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F"+i.getStringExtra("Imagen")+"?alt=media";
-        imgView = (ImageView)findViewById(imgViewEdit);
+        url = "https://firebasestorage.googleapis.com/v0/b/prime-boulevard-168121.appspot.com/o/Images%2F" + i.getStringExtra("Imagen") + "?alt=media";
+        imgView = (ImageView) findViewById(R.id.imgViewEdit);
         Picasso.with(this).load(url)
-                .error(R.drawable.kamal_logo).into(imgView);
+                .error(R.drawable.kamal_logo)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .into(imgView);
 
+        imagenEdit = (Button) findViewById(R.id.elegirImagenEdit);
 
-        lugar = (Button)findViewById(R.id.btn_place_edit);
+        lugar = (Button) findViewById(R.id.btn_place_edit);
         lugar.setText(i.getStringExtra("Direccion"));
+        locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
 
         //para agregar la lista de tipo de iniciativa
         spinner = (Spinner) findViewById(R.id.spinner_edit);
@@ -153,13 +182,13 @@ public class EditActivity extends AppCompatActivity {
                 R.array.Tipo_Iniciativa, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        if(i.getStringExtra("Tipo").equals("Teatro")){
+        if (i.getStringExtra("Tipo").equals("Teatro")) {
             spinner.setSelection(0);
-        }else if(i.getStringExtra("Tipo").equals("Musica")){
+        } else if (i.getStringExtra("Tipo").equals("Musica")) {
             spinner.setSelection(1);
-        }else if(i.getStringExtra("Tipo").equals("Deporte")){
+        } else if (i.getStringExtra("Tipo").equals("Deporte")) {
             spinner.setSelection(2);
-        }else{
+        } else {
             spinner.setSelection(3);
         }
 
@@ -170,33 +199,41 @@ public class EditActivity extends AppCompatActivity {
         IDanterior = i.getStringExtra("IDanterior");
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives");
-        key=IDanterior;
+        key = IDanterior;
         pd = new ProgressDialog(this);
         pd.setMessage("Cargando....");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_edit);
         setSupportActionBar(toolbar);
+
+        estado = i.getStringExtra("Estado");
+
+        if (estado.equals("1") || estado.equals("2")) {
+            titulo.setEnabled(false);
+            titulo.setInputType(InputType.TYPE_NULL);
+            lugar.setEnabled(false);
+            spinner.setEnabled(false);
+            fInicio.setEnabled(false);
+            imagenEdit.setEnabled(false);
+        }
     }
 
     //Listener boton fecha Inicio
     private SlideDateTimeListener listener = new SlideDateTimeListener() {
 
         @Override
-        public void onDateTimeSet(Date date)
-        {
-            if(dateDifference(fTermino.getText().toString(),date) < 0){
+        public void onDateTimeSet(Date date) {
+            if (dateDifference(fTermino.getText().toString(), date) < 0) {
                 fInicio.setText(mFormatter.format(date));
                 fTermino.setText(mFormatter.format(date));
-            }
-            else {
+            } else {
                 fInicio.setText(mFormatter.format(date));
             }
         }
 
         // Optional cancel listener
         @Override
-        public void onDateTimeCancel()
-        {
+        public void onDateTimeCancel() {
             Toast.makeText(EditActivity.this,
                     "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
         }
@@ -206,30 +243,28 @@ public class EditActivity extends AppCompatActivity {
     private SlideDateTimeListener listener2 = new SlideDateTimeListener() {
 
         @Override
-        public void onDateTimeSet(Date date)
-        {
-            if(dateDifference(fInicio.getText().toString(),date) >=0){
+        public void onDateTimeSet(Date date) {
+            if (dateDifference(fInicio.getText().toString(), date) >= 0) {
                 fTermino.setText(fInicio.getText().toString());
-            }
-            else{
+            } else {
                 fTermino.setText(mFormatter.format(date));
             }
         }
 
         // Optional cancel listener
         @Override
-        public void onDateTimeCancel()
-        {
+        public void onDateTimeCancel() {
             Toast.makeText(EditActivity.this,
                     "Ha cancelado la selección", Toast.LENGTH_SHORT).show();
         }
     };
 
     public void editInitiative(MenuItem menuItem) throws ParseException {
-        Toast.makeText(EditActivity.this, "Subiendo Imagen", Toast.LENGTH_SHORT).show();
-
-        Date fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d",calendar2.get(Calendar.DAY_OF_MONTH),calendar2.get(Calendar.MONTH)+1,calendar2.get(Calendar.YEAR),calendar2.get(Calendar.HOUR_OF_DAY),calendar2.get(Calendar.MINUTE)));
         String fechainicioprueba = fInicio.getText().toString();
+
+
+        setFechaPrueba();
+
 
         if( titulo.getText().toString().equals("")){
             titulo.setError( "Título Obligatorio!" );
@@ -241,8 +276,10 @@ public class EditActivity extends AppCompatActivity {
 
             description.setError("La descripción es requerida!");
 
-        }else if(dateDifference(fechainicioprueba,fechaPrueba) <= 0){
-            Toast.makeText(this,"La fecha de inicio tiene que ser mayor a la actual",Toast.LENGTH_LONG).show();
+        }else if((estado.equals("0") || estado.equals("3")) && (dateDifference(fechainicioprueba,fechaPrueba) <= 0)){  //Veo si está agendada o terminada
+
+                Toast.makeText(this, "La fecha de inicio tiene que ser mayor a la actual", Toast.LENGTH_LONG).show();
+
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
         }else{
@@ -415,6 +452,59 @@ public class EditActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    LocationListener locListener = new LocationListener()
+    {
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras)
+        {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onProviderEnabled(String provider)
+        {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onProviderDisabled(String provider)
+        {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            // TODO Auto-generated method stub
+            mLocation = location;
+        }
+    };
+
+    private void setFechaPrueba() throws ParseException {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        try {
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locListener, null);
+            if (mLocation != null) {
+                date = mFormatter.format((new Date(mLocation.getTime())));
+                fechaPrueba = mFormatter.parse(date);
+
+            } else {
+                fechaPrueba = mFormatter.parse(String.format("%02d/%02d/%d %02d:%02d", calendar2.get(Calendar.DAY_OF_MONTH), calendar2.get(Calendar.MONTH) + 1, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.HOUR_OF_DAY), calendar2.get(Calendar.MINUTE)));
+            }
+        }catch ( SecurityException e ) { e.printStackTrace(); }
+
+
     }
 
 }

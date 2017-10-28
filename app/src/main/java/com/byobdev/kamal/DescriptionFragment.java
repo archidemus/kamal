@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -36,6 +38,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -185,7 +189,7 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
         final double distanceInMeters = loc1.distanceTo(loc2);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -205,6 +209,8 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
                     Picasso.with(DescriptionFragment.this.getContext())
                             .load(orgImage)
                             .error(R.drawable.kamal_not_found)
+                            .memoryPolicy(MemoryPolicy.NO_CACHE)
+                            .networkPolicy(NetworkPolicy.NO_CACHE)
                             .into(OrgImage);
                 }
             }

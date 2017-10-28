@@ -1,6 +1,9 @@
 package com.byobdev.kamal;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -15,6 +18,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -50,8 +55,8 @@ public class ListAdapter extends ArrayAdapter<String>{
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if (convertView == null) {
+        final ViewHolder viewHolder;
+
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.activity_listview, null);
             viewHolder = new ViewHolder();
@@ -65,19 +70,29 @@ public class ListAdapter extends ArrayAdapter<String>{
             Picasso.with(this.getContext())
                     .load(url)
                     .error(R.drawable.kamal_logo)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(viewHolder.imageView);
             convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+
         final String temp = getItem(position);
         viewHolder.text.setText(temp);
+        viewHolder.ll.setBackgroundColor(Color.WHITE);
         viewHolder.descripcion.setText(descripcionLista[position]);
         viewHolder.ll.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if(customListner!=null){
-                    customListner.getPosition1234(position);}
+
+                    int colorID = ((ColorDrawable) viewHolder.ll.getBackground()).getColor();
+                    if(colorID == Color.LTGRAY){
+                        customListner.getPosition1234(position);
+                    }else{
+                        customListner.getPosition1234(position);
+                        viewHolder.ll.setBackgroundColor(Color.LTGRAY);
+                    }
+
+                    }
 
             }
         });

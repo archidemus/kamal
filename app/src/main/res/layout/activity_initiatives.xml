@@ -160,6 +160,29 @@
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
+            <me.bendik.simplerangeview.SimpleRangeView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/rangeView"
+                android:layout_marginLeft="120dp"
+                android:layout_marginTop="200dp"
+                android:layout_width="417dp"
+                android:layout_height="wrap_content"
+                android:rotation="270"
+                android:visibility="invisible"
+                app:labelColor="@color/lineColor"
+                app:fixedLabelColor="@color/lineColor"
+                app:lineColor="@color/lineColor"
+                app:activeLabelColor="@color/Primary"
+                app:activeLineColor="@color/Primary"
+                app:activeThumbColor="@color/Primary"
+                app:fixedLineColor="@color/lineColor"
+                app:activeThumbLabelColor="@color/Primary"
+                app:count="25"
+                app:start="0"
+                app:end="6"
+                app:movable="true"
+                app:minDistance="1"
+                />
             <FrameLayout
                 android:id="@+id/previewFragment"
                 android:layout_width="match_parent"
@@ -176,6 +199,7 @@
                 android:background="@color/textLightPrimary"
                 android:translationY="400dp"
                 />
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -2,6 +2,7 @@ package com.byobdev.kamal;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 public class PreviewFragment extends Fragment {
@@ -31,13 +34,24 @@ public class PreviewFragment extends Fragment {
     String image;
     Button Editar;
     RatingBar rtb;
+    boolean searchViewOpened;
+    String searchViewText;
     private DatabaseReference mDatabase;
-
+    SearchView search;
+    MenuItem searchItem;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.toolbar_filter).setVisible(false);
-        menu.findItem(R.id.keyword_filter).setVisible(false);
         menu.findItem(R.id.toolbar_ir).setVisible(true);
+        searchViewText=getArguments().getString("searchViewText");
+        searchViewOpened=getArguments().getBoolean("searchViewOpened");
+        searchItem=menu.findItem(R.id.keyword_filter);
+        search=(SearchView)menu.findItem(R.id.keyword_filter).getActionView();
+        if(searchViewOpened){
+            search.setIconified(false);
+            search.setQuery(searchViewText,false);
+
+        }
     }
 
     @Override
@@ -77,7 +91,7 @@ public class PreviewFragment extends Fragment {
         rtb = (RatingBar) getView().findViewById(R.id.inRatingpreview);
 
         mDatabase = FirebaseDatabase.getInstance().getReference("Users/"+getArguments().getString("Uid"));
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 // for (DataSnapshot child : snapshot.getChildren())
@@ -109,6 +123,8 @@ public class PreviewFragment extends Fragment {
                     .fit()
                     .centerCrop()
                     .error(R.drawable.kamal_not_found)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+                    .networkPolicy(NetworkPolicy.NO_CACHE)
                     .into(Image);
         }
     }
