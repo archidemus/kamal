@@ -805,7 +805,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
-        } else if (item.getItemId() == R.id.time_filter_menu) {
+        } else if (item.getItemId() == R.id.time_filter) {
             if (timeFilterMenu.getVisibility() == View.VISIBLE) {
                 timeFilterMenu.setVisibility(View.INVISIBLE);
                 timeFilterReset();
@@ -959,7 +959,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             if (!opened_df && !on_way) {
 
                                 toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                                toolbar.getMenu().findItem(R.id.time_filter_menu).setVisible(false);
+                                toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
                                 DF.setArguments(selectedInitiative);
                                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -1576,7 +1576,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-            toolbar.getMenu().findItem(R.id.time_filter_menu).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             df.getLocationOnScreen(fragment_pos);
             if ((df.getHeight() + fragment_pos[1]) == maxY){
