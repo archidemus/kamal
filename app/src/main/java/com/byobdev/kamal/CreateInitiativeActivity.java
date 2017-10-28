@@ -246,8 +246,9 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             Toast.makeText(this,"No puede crear una Iniciativa antes de la fecha actual",Toast.LENGTH_LONG).show();
         }else if(dateDifference(fechainicioprueba,mFormatter.parse(fechaTermino.getText().toString())) == 0) {
             Toast.makeText(this, "No puede crear una Iniciativa sin duración", Toast.LENGTH_LONG).show();
+        }else if(lugarIniciativa.getText().toString().isEmpty()){
+            Toast.makeText(this, "Se necesita de una dirección", Toast.LENGTH_LONG).show();
         }else{
-            Toast.makeText(this, "y no here", Toast.LENGTH_LONG).show();
 
             String nombre = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
             String fechaInit = fechaInicio.getText().toString();
@@ -267,7 +268,7 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             if (interest.equals("Música")){
                 interest = "Musica";
             }
-            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT);
+            Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT,0);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);
 
             DatabaseReference userInitiatives = FirebaseDatabase.getInstance().getReference("UserInitiatives/"+FirebaseAuth.getInstance().getCurrentUser().getUid());
