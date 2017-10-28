@@ -170,7 +170,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
     //Others
-
+    List<TextView> timeLabels;
     FrameLayout previewFragment;
     FrameLayout descriptionFragment;
     Bundle selectedInitiative;
@@ -912,6 +912,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
 
+        initTimeLabels();
         initiativeHashMap = new HashMap();
         markerHashMap = new HashMap();
         keywordVisibilityHashmap = new HashMap();
@@ -936,7 +937,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
         //PreviewFragment
         previewFragment = (FrameLayout) findViewById(R.id.previewFragment);
-        previewFragment.setOnTouchListener(new View.OnTouchListener() {
+        previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Display mdisp = getWindowManager().getDefaultDisplay();
@@ -981,7 +982,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
-
                                 toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
                                 toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
@@ -1000,7 +1000,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 uiSettings.setAllGesturesEnabled(false);
                                 uiSettings.setMyLocationButtonEnabled(false);
                                 opened_df = true;
-
                             }
                         }
                         return true;
@@ -1166,6 +1165,31 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         vista = findViewById(R.id.bottom_menu);
 
     }
+    public void initTimeLabels(){
+        timeLabels=new Vector<>();
+        timeLabels.add((TextView) findViewById(R.id.time1));
+        timeLabels.add((TextView) findViewById(R.id.time2));
+        timeLabels.add((TextView) findViewById(R.id.time3));
+        timeLabels.add((TextView) findViewById(R.id.time4));
+        timeLabels.add((TextView) findViewById(R.id.time5));
+        timeLabels.add((TextView) findViewById(R.id.time6));
+        timeLabels.add((TextView) findViewById(R.id.time7));
+        timeLabels.add((TextView) findViewById(R.id.time8));
+        timeLabels.add((TextView) findViewById(R.id.time9));
+        timeLabels.add((TextView) findViewById(R.id.time10));
+        timeLabels.add((TextView) findViewById(R.id.time11));
+        timeLabels.add((TextView) findViewById(R.id.time12));
+        timeLabels.add((TextView) findViewById(R.id.time13));
+    }
+    public void setTimeLabels(int start){
+        int counter=0;
+        String text;
+        for(TextView timeLabel:timeLabels){
+            text=Integer.toString((start+counter)%24)+":00";
+            timeLabel.setText(text);
+            counter+=2;
+        }
+    }
 
     @Override
     public void onStart() {
@@ -1188,6 +1212,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         Time = cal.getTimeInMillis();
         initialTime=Time;
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+        //setTimeLabels(currentHour);
         rangeview=(SimpleRangeView) findViewById(rangeView);
         timeFilterMenu = (LinearLayout) findViewById(time_filter_menu);
         lastTimeFilterStart=Time+(currentHour)*60*60*1000;
@@ -1198,7 +1223,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         fromDate.setText(timelineFormatter.format(Time));
         toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
 
-        rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+        /*rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
 
             @Override
             public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
@@ -1207,7 +1232,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 return String.valueOf((currentHour+(pos))%24);
             }
-        });
+        });*/
         rangeview.setOnChangeRangeListener(new SimpleRangeView.OnChangeRangeListener() {
             @Override
             public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
