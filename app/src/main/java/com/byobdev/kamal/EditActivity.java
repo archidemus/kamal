@@ -215,6 +215,9 @@ public class EditActivity extends AppCompatActivity {
             spinner.setEnabled(false);
             fInicio.setEnabled(false);
             imagenEdit.setEnabled(false);
+            if (estado.equals("2")){
+                fTermino.setEnabled(false);
+            }
         }
     }
 
