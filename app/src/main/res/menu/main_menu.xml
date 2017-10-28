@@ -8,12 +8,22 @@
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
     <item
+        android:id="@+id/time_filter"
+        android:icon="@drawable/ic_access_time_black_24px"
+        android:title="Filtrar por Tiempo"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/toolbar_filter"
-        android:icon="@drawable/ic_tune"
+        android:icon="@drawable/ic_filter"
         android:title="Filtrar"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always|withText"/>
     <item
         android:id="@+id/toolbar_ir"
+        android:title="Ir"
+        app:showAsAction="always|withText"/>
+    <item
+        android:id="@+id/toolbar_help"
+        android:icon="@drawable/ic_help_circle_outline"
         android:title="Ir"
         app:showAsAction="always|withText"
         />

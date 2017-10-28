@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
@@ -267,17 +268,25 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
     @Override
     public void getPosition1234(int position) {
 
+        lista.getChildAt(0).setBackgroundResource(R.color.textLightPrimary);
+        lista.getChildAt(1).setBackgroundResource(R.color.textLightPrimary);
+        lista.getChildAt(2).setBackgroundResource(R.color.textLightPrimary);
+        lista.getChildAt(3).setBackgroundResource(R.color.textLightPrimary);
+        lista.getChildAt(4).setBackgroundResource(R.color.textLightPrimary);
+        if(lista.getChildAt(5)!=null){
+            lista.getChildAt(5).setBackgroundResource(R.color.textLightPrimary);
+        }
         if(prevPosition!=-1){
-            lista.getChildAt(prevPosition).setBackgroundResource(0);
+            //lista.getChildAt(prevPosition).setBackgroundResource(0);
         }
         if(position == prevPosition && selected){
-            lista.getChildAt(prevPosition).setBackgroundResource(0);
+
             edit.setVisible(false);
             delete.setVisible(false);
             selected=false;
         }
         else if(position == prevPosition && !selected){
-            lista.getChildAt(prevPosition).setBackgroundResource(R.color.gray_holo_light);
+           //lista.getChildAt(prevPosition).setBackgroundResource(R.color.gray_holo_light);
             edit.setVisible(true);
             delete.setVisible(true);
             selected=true;
@@ -285,7 +294,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
         else{
             this.position=position;
             this.prevPosition=this.position;
-            lista.getChildAt(position).setBackgroundResource(R.color.gray_holo_light);
+            //lista.getChildAt(position).setBackgroundResource(R.color.gray_holo_light);
             edit.setVisible(true);
             delete.setVisible(true);
             selected=true;
@@ -294,6 +303,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
 
 
     }
+
 
 
 

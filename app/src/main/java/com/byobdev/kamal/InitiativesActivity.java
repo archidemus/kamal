@@ -16,6 +16,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -46,11 +47,15 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.ParseException;
+import java.util.Calendar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -115,24 +120,34 @@ import java.util.Vector;
 
 import com.google.android.gms.maps.model.MapStyleOptions;
 
+import static android.R.attr.duration;
 import static android.R.attr.key;
 import static com.byobdev.kamal.R.id.map;
+import static com.byobdev.kamal.R.id.rangeView;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 import static java.lang.Integer.parseInt;
+
 import com.google.android.gms.location.LocationListener;
+
+import org.jetbrains.annotations.NotNull;
+
+import me.bendik.simplerangeview.SimpleRangeView;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-
+    long Time;
+    long currentTime;
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     public Interests userInterests;
+    public List<Marker> swipeMarkerList;
     public HashMap initiativeHashMap;
     public HashMap markerHashMap;
     public HashMap keywordVisibilityHashmap;
+    public HashMap timeVisibilityHashmap;
     public List<String> comidaInitiativeIDList;
     public List<String> deporteInitiativeIDList;
     public List<String> teatroInitiativeIDList;
@@ -143,6 +158,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean teatroOn = true;
     public boolean musicaOn = true;
     public int authListenerCounter = 0;
+    long lastTimeFilterStart;
+    long lastTimeFilterEnd;
     //current position marker
     LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;
@@ -170,9 +187,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     View vista;
     TextView txtv_user, txtv_mail;
     RatingBar rtb;
+    FirebaseUser currentUser;
     ImageView img_profile;
     View linea;
     float lastCameraZoom;
+    SimpleRangeView rangeview;
+    int currentHour;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
     //User Interests Listener
@@ -293,7 +313,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 aux.setVisible(teatroOn);
                 teatroInitiativeIDList.add(dataSnapshot.getKey());
-            } else{//musica
+            } else {//musica
                 if (initiative.Estado == 0) {//aun no inicia
                     aux = initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
@@ -316,6 +336,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativeHashMap.put(aux.getId(), initiative);
             markerHashMap.put(dataSnapshot.getKey(), aux);
             keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
+            timeVisibilityHashmap.put(dataSnapshot.getKey(), true);
+            LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
+            if (bounds.contains(aux.getPosition())) {
+                swipeMarkerList.add(aux);
+            }
 
 
         }
@@ -361,6 +386,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 initiativeHashMap.remove(aux.getId());
                 markerHashMap.remove(dataSnapshot.getKey());
                 keywordVisibilityHashmap.remove(dataSnapshot.getKey());
+                timeVisibilityHashmap.remove(dataSnapshot.getKey());
                 aux.remove();
                 if (initiative.Tipo.equals("Comida")) {
                     for (int i = 0; i < comidaInitiativeIDList.size(); i++) {
@@ -405,6 +431,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativeHashMap.remove(aux.getId());
             markerHashMap.remove(dataSnapshot.getKey());
             keywordVisibilityHashmap.remove(dataSnapshot.getKey());
+            timeVisibilityHashmap.remove(dataSnapshot.getKey());
             aux.remove();
             if (initiative.Tipo.equals("Comida")) {
                 for (int i = 0; i < comidaInitiativeIDList.size(); i++) {
@@ -462,12 +489,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            if(opened_df == false){
+            if (opened_df == false) {
 
             }
-            final FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+            currentUser = firebaseAuth.getCurrentUser();
             if (currentUser != null) {
-                userDataDB = FirebaseDatabase.getInstance().getReference("Users");
+                userDataDB = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
                 userDataDB.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -475,21 +502,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         // Create a LinearLayout element
                         float rating;
                         int nVotos;
-                        if(snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("rating").getValue() == null){
+                        if (snapshot.child("rating").getValue() == null) {
                             rating = 0.0f;
-                            nVotos=0;
-                            userDataDB.child(currentUser.getUid()).child("Nvotos").setValue(nVotos);
-                            userDataDB.child(currentUser.getUid()).child("rating").setValue(rating);
+                            nVotos = 0;
+                            userDataDB.child("Nvotos").setValue(nVotos);
+                            userDataDB.child("rating").setValue(rating);
 
+                        } else {
+                            rating = Float.parseFloat(snapshot.child("rating").getValue().toString());
                         }
-                        else{
-                            rating = Float.parseFloat(snapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("rating").getValue().toString());
-                        }
-                        userDataDB.child(currentUser.getUid()).child("Email").setValue(currentUser.getEmail());
-                        userDataDB.child(currentUser.getUid()).child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
-                        userDataDB.child(currentUser.getUid()).child("Name").setValue(currentUser.getDisplayName());
+                        userDataDB.child("Email").setValue(currentUser.getEmail());
+                        userDataDB.child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
+                        userDataDB.child("Name").setValue(currentUser.getDisplayName());
                         rtb.setRating(rating);
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         System.out.println("The read failed: " + databaseError.getCode());
@@ -563,45 +590,44 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         return Integer.toString((int) (latitude * 50)) + "," + Integer.toString((int) (longitude * 50));
     }
 
-    public void filterByKeyword(String keyword){
+    public void filterByKeyword(String keyword) {
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
         Initiative initiative;
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            if(!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) && !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())){
-                keywordVisibilityHashmap.put(pair.getKey(),false);
+            if (!initiative.Titulo.toLowerCase().contains(keyword.toLowerCase()) && !initiative.Descripcion.toLowerCase().contains(keyword.toLowerCase())) {
+                keywordVisibilityHashmap.put(pair.getKey(), false);
                 pair.getValue().setVisible(false);
             }
 
         }
     }
-    public void resetFilter(){
+
+    public void resetFilter() {
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
         Initiative initiative;
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            if(!(boolean)keywordVisibilityHashmap.get(pair.getKey())){
-                if(initiative.Tipo.equals("Comida")){
-                    pair.getValue().setVisible(comidaOn);
+            if (!(boolean) keywordVisibilityHashmap.get(pair.getKey())) {
+                if (initiative.Tipo.equals("Comida")) {
+                    pair.getValue().setVisible(comidaOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
+                } else if (initiative.Tipo.equals("Musica")) {
+                    pair.getValue().setVisible(musicaOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
+                } else if (initiative.Tipo.equals("Deporte")) {
+                    pair.getValue().setVisible(deporteOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
+                } else if (initiative.Tipo.equals("Teatro")) {
+                    pair.getValue().setVisible(teatroOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
                 }
-                else if(initiative.Tipo.equals("Musica")){
-                    pair.getValue().setVisible(musicaOn);
-                }
-                else if(initiative.Tipo.equals("Deporte")){
-                    pair.getValue().setVisible(deporteOn);
-                }
-                else if(initiative.Tipo.equals("Teatro")){
-                    pair.getValue().setVisible(teatroOn);
-                }
-                keywordVisibilityHashmap.put(pair.getKey(),true);
+                keywordVisibilityHashmap.put(pair.getKey(), true);
             }
 
 
         }
 
     }
+
     void removeListeners() {
         initiativeHashMap.clear();
         markerHashMap.clear();
@@ -664,6 +690,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         for (String aux : keys) {
             markerHashMap.remove(aux);
             keywordVisibilityHashmap.remove(aux);
+            timeVisibilityHashmap.remove(aux);
+
         }
         for (String aux : markerIds) {
             initiativeHashMap.remove(aux);
@@ -777,9 +805,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
                     initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 } else if (opened_df) {
+                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
                     View df = findViewById(R.id.descriptionFragment);
                     df.getLocationOnScreen(fragment_pos);
-                    if ((df.getHeight() + fragment_pos[1]) == maxY){
+                    if ((df.getHeight() + fragment_pos[1]) == maxY) {
                         descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
                         opened_df = false;
                         initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
@@ -792,7 +822,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 } else if (opened_pf) {
                     View pf = findViewById(R.id.previewFragment);
                     pf.getLocationOnScreen(fragment_pos);
-                    if ((pf.getHeight() + fragment_pos[1]) == maxY){
+                    if ((pf.getHeight() + fragment_pos[1]) == maxY) {
                         previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                         opened_pf = false;
                         toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
@@ -806,7 +836,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 } else if (opened_bottom) {
                     View ob = findViewById(R.id.bottom_menu);
                     ob.getLocationOnScreen(fragment_pos);
-                    if ((ob.getHeight() + fragment_pos[1]) == maxY){
+                    if ((ob.getHeight() + fragment_pos[1]) == maxY) {
                         vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                         opened_bottom = false;
                         toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
@@ -847,6 +877,18 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
+        } else if (item.getItemId() == R.id.time_filter) {
+            if (rangeview.getVisibility() == View.VISIBLE) {
+                rangeview.setVisibility(View.INVISIBLE);
+                timeFilterReset();
+
+            } else {
+                rangeview.setVisibility(View.VISIBLE);
+                timeFilter(lastTimeFilterStart,lastTimeFilterEnd);
+            }
+
+        } else if(item.getItemId()==R.id.toolbar_help){
+            this.startActivity(new Intent(this, TutorialActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -855,7 +897,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.toolbar_ir).setVisible(false);
-        search=(SearchView)menu.findItem(R.id.keyword_filter).getActionView();
+        search = (SearchView) menu.findItem(R.id.keyword_filter).getActionView();
         //search.setIconifiedByDefault(false);
         search.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
@@ -904,7 +946,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         opened_pf = false;
         on_way = false;
         back_button_active = false;
-
         setContentView(R.layout.activity_initiatives);
         startService(new Intent(getBaseContext(), MyFirebaseInstanceIDService.class));
         startService(new Intent(getBaseContext(), MyFirebaseMessagingService.class));
@@ -921,7 +962,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         initiativeHashMap = new HashMap();
         markerHashMap = new HashMap();
-        keywordVisibilityHashmap=new HashMap();
+        keywordVisibilityHashmap = new HashMap();
+        timeVisibilityHashmap = new HashMap();
+        swipeMarkerList = new Vector<>();
         comidaInitiativeIDList = new Vector<>();
         teatroInitiativeIDList = new Vector<>();
         deporteInitiativeIDList = new Vector<>();
@@ -986,6 +1029,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
+
+                                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+                                toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
                                 DF.setArguments(selectedInitiative);
                                 FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
@@ -1080,7 +1126,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     comidaOn = true;
                     for (String aux : comidaInitiativeIDList) {
-                        ((Marker) markerHashMap.get(aux)).setVisible(true);
+                        Marker aux4=(Marker) markerHashMap.get(aux);
+                        aux4.setVisible((boolean)keywordVisibilityHashmap.get(aux)&&(boolean)timeVisibilityHashmap.get(aux));
                     }
                 }
                 return false;
@@ -1100,7 +1147,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     deporteOn = true;
                     for (String aux : deporteInitiativeIDList) {
-                        ((Marker) markerHashMap.get(aux)).setVisible(true);
+                        Marker aux4=(Marker) markerHashMap.get(aux);
+                        aux4.setVisible((boolean)keywordVisibilityHashmap.get(aux)&&(boolean)timeVisibilityHashmap.get(aux));
                     }
                 }
                 return false;
@@ -1120,7 +1168,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     teatroOn = true;
                     for (String aux : teatroInitiativeIDList) {
-                        ((Marker) markerHashMap.get(aux)).setVisible(true);
+                        Marker aux4=(Marker) markerHashMap.get(aux);
+                        aux4.setVisible((boolean)keywordVisibilityHashmap.get(aux)&&(boolean)timeVisibilityHashmap.get(aux));
                     }
                 }
                 return false;
@@ -1140,7 +1189,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
                     musicaOn = true;
                     for (String aux : musicaInitiativeIDList) {
-                        ((Marker) markerHashMap.get(aux)).setVisible(true);
+                        Marker aux4=(Marker) markerHashMap.get(aux);
+                        aux4.setVisible((boolean)keywordVisibilityHashmap.get(aux) && (boolean)timeVisibilityHashmap.get(aux));
                     }
                 }
                 return false;
@@ -1170,10 +1220,89 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         super.onStart();
         //User Auth Listener
         //Read initiatives listener
+        Calendar rightNow = Calendar.getInstance();
+        currentTime = rightNow.getTimeInMillis();
+        LocationManager locationManager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+        SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Time = cal.getTimeInMillis();
+
+
+
+        currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+        rangeview=(SimpleRangeView) findViewById(rangeView);
+        lastTimeFilterStart=Time+(currentHour)*60*60*1000;
+        lastTimeFilterEnd=Time+(currentHour+(6))*60*60*1000;
+        rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+            @Override
+            public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
+                if(pos%2==1){
+                    return "";
+                }
+                return String.valueOf((currentHour+(pos))%24);
+            }
+        });
+        rangeview.setOnChangeRangeListener(new SimpleRangeView.OnChangeRangeListener() {
+            @Override
+            public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
+                timeFilterReset();
+                SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                timeFilter((Time+(currentHour+(start))*60*60*1000),(Time+(currentHour+(end))*60*60*1000));
+            }
+        });
         FirebaseAuth.getInstance().addAuthStateListener(authListener);
-        //initiativesDB.addListenerForSingleValueEvent(initiativesInitListener);
-        //initiativesDB = FirebaseDatabase.getInstance().getReference("Initiatives");
-        //initiativesDB.addChildEventListener(initiativesListener);
+    }
+
+    public void timeFilter(long start,long end){
+        lastTimeFilterStart=start;
+        lastTimeFilterEnd=end;
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        Initiative initiative;
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
+            SimpleDateFormat formatter = new SimpleDateFormat("HH");
+            int horaInicio=Integer.parseInt(formatter.format(new Date(initiative.fechaInicio)));
+            int horaTermino=Integer.parseInt(formatter.format(new Date(initiative.fechaFin)));
+            if(initiative.fechaFin<start || initiative.fechaInicio>end){
+                timeVisibilityHashmap.put(pair.getKey(),false);
+                pair.getValue().setVisible(false);
+            }
+
+        }
+    }
+    public void timeFilterReset(){
+        Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
+        Initiative initiative;
+        while (it.hasNext()) {
+            Map.Entry<String, Marker> pair = it.next();
+            initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
+            if(!(boolean)timeVisibilityHashmap.get(pair.getKey())){
+                if(initiative.Tipo.equals("Comida")){
+                    pair.getValue().setVisible(comidaOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                else if(initiative.Tipo.equals("Musica")){
+                    pair.getValue().setVisible(musicaOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                else if(initiative.Tipo.equals("Deporte")){
+                    pair.getValue().setVisible(deporteOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                else if(initiative.Tipo.equals("Teatro")){
+                    pair.getValue().setVisible(teatroOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
+                }
+                timeVisibilityHashmap.put(pair.getKey(),true);
+            }
+
+
+        }
     }
 
     @Override
@@ -1308,7 +1437,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             new LatLng(location.getLatitude(), location
                                     .getLongitude())));
         }
-        mCurrLocationMarker.setZIndex(100);
+        mCurrLocationMarker.setZIndex(5);
         animateMarker(mCurrLocationMarker, location);
 
     }
@@ -1359,16 +1488,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Log.e(TAG, "Style parsing failed.");
         }
 
-        //current location marker
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
                 buildGoogleApiClient();
-                //initiativesMap.setMyLocationEnabled(true);
             } else {
-                //Request Location Permission
                 checkLocationPermission();
             }
         }
@@ -1520,7 +1645,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Titulo.setTextSize(0);
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-        } else if (opened_df) {
+        } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
+            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             df.getLocationOnScreen(fragment_pos);
             if ((df.getHeight() + fragment_pos[1]) == maxY){
