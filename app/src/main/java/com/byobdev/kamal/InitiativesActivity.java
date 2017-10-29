@@ -1480,11 +1480,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativePath.remove();
             polylineActive = false;
         }
-        OvershootInterpolator interpolator;
-        interpolator = new OvershootInterpolator(1);
-        descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
-        opened_df = false;
+        descriptionFragment.setVisibility(View.GONE);
         toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+        toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
+        toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+        toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
         GoogleDirection.withServerKey(getString(R.string.google_maps_key))
                 .from(new LatLng(start.getLatitud(), start.getLongitud()))
                 .to(lastMarkerPosition)
@@ -1547,7 +1547,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
             Titulo.setText("");
             Titulo.setTextSize(0);
+            if (opened_df) {descriptionFragment.setVisibility(View.VISIBLE);}
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
