@@ -182,7 +182,7 @@ public class EditActivity extends AppCompatActivity {
                 R.array.Tipo_Iniciativa, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        if (i.getStringExtra("Tipo").equals("Teatro")) {
+        if (i.getStringExtra("Tipo").equals("Entretencion")) {
             spinner.setSelection(0);
         } else if (i.getStringExtra("Tipo").equals("Musica")) {
             spinner.setSelection(1);
