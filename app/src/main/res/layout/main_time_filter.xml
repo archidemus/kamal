@@ -39,6 +39,7 @@
                 android:id="@+id/toCurrentDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_marginRight="20dp"
                 android:onClick="actualDay"
                 android:rotation="90"
