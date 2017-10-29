@@ -814,19 +814,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if (opened_bottom) {
                 vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = false;
-                toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                back_button_active = false;
             } else {
                 vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = true;
-                toolbar.setNavigationIcon(R.drawable.ic_back);
-                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_back);
-                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                back_button_active = true;
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
@@ -941,23 +931,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (!opened_df && !on_way) {
-                    opened_df = true;
-                    mapFragment.getView().setClickable(false);
-                    uiSettings.setAllGesturesEnabled(false);
-                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
-                    descriptionFragment.setVisibility(View.VISIBLE);
-                    DescriptionFragment DF = new DescriptionFragment();
-                    DF.setArguments(selectedInitiative);
-                    FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                    trans.replace(R.id.descriptionFragment, DF);
-                    trans.commit();
-                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                    Titulo.setText(selectedInitiative.getString("Titulo"));
-                    Titulo.setTextSize(25);
-                    initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                    initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_UP:
+                        if (!opened_df && !on_way && (event.getActionMasked() == MotionEvent.ACTION_UP)) {
+                            opened_df = true;
+                            mapFragment.getView().setClickable(false);
+                            uiSettings.setAllGesturesEnabled(false);
+                            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
+                            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+                            toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+                            descriptionFragment.setVisibility(View.VISIBLE);
+                            DescriptionFragment DF = new DescriptionFragment();
+                            DF.setArguments(selectedInitiative);
+                            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                            trans.replace(R.id.descriptionFragment, DF);
+                            trans.commit();
+                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                            Titulo.setText(selectedInitiative.getString("Titulo"));
+                            Titulo.setTextSize(25);
+                            initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                            initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+                        }
                 }
                 return true;
             }
@@ -1558,6 +1552,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             descriptionFragment.setVisibility(View.GONE);
             opened_df = false;
@@ -1574,7 +1569,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if ((pf.getHeight() + fragment_pos[1]) == maxY){
                 previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                 opened_pf = false;
-                toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
                 toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
