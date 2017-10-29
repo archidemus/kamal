@@ -27,7 +27,7 @@
     <string name="autentication_error">Fallo en la Autentificación.</string>
     <string name="no_internet">Sin Conexión a Internet.</string>
     <string-array name="Tipo_Iniciativa">
-        <item>Teatro</item>
+        <item>Entretención</item>
         <item>Música</item>
         <item>Deporte</item>
         <item>Comida</item>
