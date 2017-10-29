@@ -1524,7 +1524,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
                     @Override
                     public void onDirectionFailure(Throwable t) {
-                        // Do something
+                        polylineActive = false;
                     }
                 });
 
@@ -1543,8 +1543,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         int fragment_pos[] = new int[2];
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!polylineActive && initiativePath == null) {
-            return;
         } else if (on_way && initiativePath != null) {
             initiativePath.remove();
             polylineActive = false;
@@ -1564,6 +1562,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
             }
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
+            if (!polylineActive && initiativePath == null) {
+                return;
+            }
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
@@ -1578,6 +1579,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             uiSettings.setMyLocationButtonEnabled(true);
             mapFragment.getView().setClickable(true);
         } else if (opened_pf) {
+            if (!polylineActive && initiativePath == null) {
+                return;
+            }
             View pf = findViewById(R.id.previewFragment);
             pf.getLocationOnScreen(fragment_pos);
             if ((pf.getHeight() + fragment_pos[1]) == maxY){
@@ -1593,7 +1597,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         } else if (opened_bottom) {
             View ob = findViewById(R.id.bottom_menu);
             ob.getLocationOnScreen(fragment_pos);
-            if ((ob.getHeight() + fragment_pos[1]) == maxY){
                 vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = false;
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
@@ -1601,7 +1604,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                 getSupportActionBar().setHomeAsUpIndicator(upArrow);
                 back_button_active = false;
-            }
         } else {
             super.onBackPressed();
         }
