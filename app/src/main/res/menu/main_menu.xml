@@ -20,6 +20,7 @@
     <item
         android:id="@+id/toolbar_ir"
         android:title="Ir"
+        android:visible="false"
         app:showAsAction="always|withText"/>
     <item
         android:id="@+id/toolbar_help"

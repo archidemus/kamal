@@ -276,6 +276,10 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             userInitiatives.child(key).child("Descripcion").setValue(description.getText().toString());
             userInitiatives.child(key).child("Titulo").setValue(titulo.getText().toString());
             userInitiatives.child(key).child("image").setValue(key);
+            userInitiatives.child(key).child("Direccion").setValue(direccion.toString());
+            userInitiatives.child(key).child("fechaInicio").setValue(feI);
+            userInitiatives.child(key).child("fechaFin").setValue(feT);
+
 
             key2=mDatabase.push().getKey();
             DatabaseReference comments = FirebaseDatabase.getInstance().getReference("Comments/");
@@ -287,6 +291,7 @@ public class CreateInitiativeActivity extends AppCompatActivity {
                 finish();
             }
             else{
+                pd.show();
                 StorageReference childRef = storageRef.child(key);
                 //uploading the image
                 final UploadTask uploadTask = childRef.putFile(filePath);
