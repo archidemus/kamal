@@ -41,7 +41,6 @@ public class PreviewFragment extends Fragment {
     MenuItem searchItem;
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.toolbar_filter).setVisible(false);
         menu.findItem(R.id.toolbar_ir).setVisible(true);
         searchViewText=getArguments().getString("searchViewText");
         searchViewOpened=getArguments().getBoolean("searchViewOpened");
@@ -50,6 +49,7 @@ public class PreviewFragment extends Fragment {
         if(searchViewOpened){
             search.setIconified(false);
             search.setQuery(searchViewText,false);
+
 
         }
     }
