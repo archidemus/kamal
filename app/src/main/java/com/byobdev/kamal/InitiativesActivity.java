@@ -902,6 +902,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         final View iniciativaComida = findViewById(R.id.botonComida);
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
+        final View iniciativaDeportesIcon = findViewById(R.id.botonDeportesIcon);
+        final View iniciativaComidaIcon = findViewById(R.id.botonComidaIcon);
+        final View iniciativaTeatroIcon = findViewById(R.id.botonTeatroIcon);
+        final View iniciativaMusicaIcon = findViewById(R.id.botonMusicaIcon);
 
         initTimeLabels();
         initiativeHashMap = new HashMap();
@@ -971,13 +975,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (comidaOn) {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaComidaIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     comidaOn = false;
                     for (String aux : comidaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaComidaIcon.setBackgroundResource(R.drawable.layout_circle);
                     comidaOn = true;
                     for (String aux : comidaInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -992,13 +996,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (deporteOn) {
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaDeportesIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     deporteOn = false;
                     for (String aux : deporteInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaDeportesIcon.setBackgroundResource(R.drawable.layout_circle);
                     deporteOn = true;
                     for (String aux : deporteInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -1013,13 +1017,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (teatroOn) {
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaTeatroIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     teatroOn = false;
                     for (String aux : teatroInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaTeatroIcon.setBackgroundResource(R.drawable.layout_circle);
                     teatroOn = true;
                     for (String aux : teatroInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -1034,13 +1038,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (musicaOn) {
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaMusicaIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     musicaOn = false;
                     for (String aux : musicaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaMusicaIcon.setBackgroundResource(R.drawable.layout_circle);
                     musicaOn = true;
                     for (String aux : musicaInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
