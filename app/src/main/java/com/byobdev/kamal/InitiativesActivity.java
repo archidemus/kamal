@@ -1495,7 +1495,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 .transportMode(TransportMode.WALKING)
                 .language(Language.SPANISH)
                 .unit(Unit.METRIC)
-
                 .execute(new DirectionCallback() {
                     @Override
                     public void onDirectionSuccess(Direction direction, String rawBody) {
@@ -1544,19 +1543,26 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         int fragment_pos[] = new int[2];
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (polylineActive && initiativePath != null) {
+        } else if (!polylineActive && initiativePath == null) {
+            return;
+        } else if (on_way && initiativePath != null) {
             initiativePath.remove();
             polylineActive = false;
             on_way = false;
             TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
             Titulo.setText("");
             Titulo.setTextSize(0);
-            if (opened_df) {descriptionFragment.setVisibility(View.VISIBLE);}
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
-            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
-            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
-            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+            if (opened_df) {
+                descriptionFragment.setVisibility(View.VISIBLE);
+                initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+            } else {
+                toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+                toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+                initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+            }
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
