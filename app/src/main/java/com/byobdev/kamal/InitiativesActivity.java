@@ -127,6 +127,7 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
 import me.bendik.simplerangeview.SimpleRangeView;
+import retrofit2.http.HEAD;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -814,19 +815,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if (opened_bottom) {
                 vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = false;
-                toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                back_button_active = false;
             } else {
                 vista.animate().setInterpolator(interpolator).translationYBy(-vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = true;
-                toolbar.setNavigationIcon(R.drawable.ic_back);
-                final Drawable upArrow = getResources().getDrawable(R.drawable.ic_back);
-                upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                back_button_active = true;
             }
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
@@ -912,6 +903,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         final View iniciativaComida = findViewById(R.id.botonComida);
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
+        final View iniciativaDeportesIcon = findViewById(R.id.botonDeportesIcon);
+        final View iniciativaComidaIcon = findViewById(R.id.botonComidaIcon);
+        final View iniciativaTeatroIcon = findViewById(R.id.botonTeatroIcon);
+        final View iniciativaMusicaIcon = findViewById(R.id.botonMusicaIcon);
 
         initTimeLabels();
         initiativeHashMap = new HashMap();
@@ -941,23 +936,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (!opened_df && !on_way) {
-                    opened_df = true;
-                    mapFragment.getView().setClickable(false);
-                    uiSettings.setAllGesturesEnabled(false);
-                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
-                    descriptionFragment.setVisibility(View.VISIBLE);
-                    DescriptionFragment DF = new DescriptionFragment();
-                    DF.setArguments(selectedInitiative);
-                    FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                    trans.replace(R.id.descriptionFragment, DF);
-                    trans.commit();
-                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                    Titulo.setText(selectedInitiative.getString("Titulo"));
-                    Titulo.setTextSize(25);
-                    initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                    initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_UP:
+                        if (!opened_df && !on_way && (event.getActionMasked() == MotionEvent.ACTION_UP)) {
+                            opened_df = true;
+                            mapFragment.getView().setClickable(false);
+                            uiSettings.setAllGesturesEnabled(false);
+                            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
+                            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+                            toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+                            descriptionFragment.setVisibility(View.VISIBLE);
+                            DescriptionFragment DF = new DescriptionFragment();
+                            DF.setArguments(selectedInitiative);
+                            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                            trans.replace(R.id.descriptionFragment, DF);
+                            trans.commit();
+                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                            Titulo.setText(selectedInitiative.getString("Titulo"));
+                            Titulo.setTextSize(25);
+                            initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                            initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+                        }
                 }
                 return true;
             }
@@ -977,13 +976,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (comidaOn) {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaComidaIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     comidaOn = false;
                     for (String aux : comidaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaComida.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaComidaIcon.setBackgroundResource(R.drawable.layout_circle);
                     comidaOn = true;
                     for (String aux : comidaInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -998,13 +997,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (deporteOn) {
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaDeportesIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     deporteOn = false;
                     for (String aux : deporteInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaDeportes.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaDeportesIcon.setBackgroundResource(R.drawable.layout_circle);
                     deporteOn = true;
                     for (String aux : deporteInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -1019,13 +1018,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (teatroOn) {
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaTeatroIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     teatroOn = false;
                     for (String aux : teatroInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaTeatro.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaTeatroIcon.setBackgroundResource(R.drawable.layout_circle);
                     teatroOn = true;
                     for (String aux : teatroInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -1040,13 +1039,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (musicaOn) {
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightPrimary));
+                    iniciativaMusicaIcon.setBackgroundResource(R.drawable.layout_circle_no_touch);
                     musicaOn = false;
                     for (String aux : musicaInitiativeIDList) {
                         ((Marker) markerHashMap.get(aux)).setVisible(false);
                     }
                 } else {
-                    iniciativaMusica.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.textLightSecondary));
+                    iniciativaMusicaIcon.setBackgroundResource(R.drawable.layout_circle);
                     musicaOn = true;
                     for (String aux : musicaInitiativeIDList) {
                         Marker aux4=(Marker) markerHashMap.get(aux);
@@ -1486,13 +1485,10 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             initiativePath.remove();
             polylineActive = false;
         }
-        OvershootInterpolator interpolator;
-        interpolator = new OvershootInterpolator(1);
-        descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
-        opened_df = false;
+        descriptionFragment.setVisibility(View.GONE);
         toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+        toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
         toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
-        toolbar.getMenu().findItem(R.id.toolbar_help).setVisible(false);
         toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
         GoogleDirection.withServerKey(getString(R.string.google_maps_key))
                 .from(new LatLng(start.getLatitud(), start.getLongitud()))
@@ -1500,7 +1496,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 .transportMode(TransportMode.WALKING)
                 .language(Language.SPANISH)
                 .unit(Unit.METRIC)
-
                 .execute(new DirectionCallback() {
                     @Override
                     public void onDirectionSuccess(Direction direction, String rawBody) {
@@ -1530,7 +1525,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
                     @Override
                     public void onDirectionFailure(Throwable t) {
-                        // Do something
+                        polylineActive = false;
                     }
                 });
 
@@ -1549,7 +1544,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         int fragment_pos[] = new int[2];
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (polylineActive && initiativePath != null) {
+        } else if (on_way && initiativePath != null) {
             initiativePath.remove();
             polylineActive = false;
             on_way = false;
@@ -1557,15 +1552,23 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Titulo.setText("");
             Titulo.setTextSize(0);
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
-            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
-            toolbar.getMenu().findItem(R.id.toolbar_help).setVisible(true);
-            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-
-
-            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+            if (opened_df) {
+                descriptionFragment.setVisibility(View.VISIBLE);
+                initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+            } else {
+                toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
+                toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+                initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+            }
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
+            if (!polylineActive && initiativePath == null) {
+                return;
+            }
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
             descriptionFragment.setVisibility(View.GONE);
             opened_df = false;
@@ -1585,7 +1588,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if ((pf.getHeight() + fragment_pos[1]) == maxY){
                 previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
                 opened_pf = false;
-                toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
                 toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
                 final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
@@ -1596,7 +1598,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         } else if (opened_bottom) {
             View ob = findViewById(R.id.bottom_menu);
             ob.getLocationOnScreen(fragment_pos);
-            if ((ob.getHeight() + fragment_pos[1]) == maxY){
                 vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
                 opened_bottom = false;
                 toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
@@ -1604,7 +1605,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
                 getSupportActionBar().setHomeAsUpIndicator(upArrow);
                 back_button_active = false;
-            }
         } else {
             super.onBackPressed();
         }

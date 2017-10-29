@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView
     android:id="@+id/bottom_menu"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="120dp"
     android:layout_gravity="bottom"
     android:gravity="center"
     card_view:cardElevation="8dp"
@@ -12,31 +12,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/tools">
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:background="@color/textLightPrimary">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="5dp"
+            android:text="Iniciativas de categoria"
+            android:textColor="@color/Primary"
+            android:layout_gravity="top"/>
+    </RelativeLayout>
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/textLightPrimary"
-        android:gravity="center">
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scrollbarSize="0dp">
+        android:layout_gravity="bottom">
+
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:weightSum="4"
                 android:orientation="horizontal" >
                 <LinearLayout
                     android:id="@+id/botonComida"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@color/textLightSecondary">
+                    android:padding="1dp">
                     <ImageView
+                        android:id="@+id/botonComidaIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/layout_circle"
                         app:srcCompat="@drawable/ic_bottom_food" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -49,12 +67,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@color/textLightSecondary">
+                    android:layout_gravity="bottom"
+                    android:padding="1dp">
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/botonDeportesIcon"
+                        android:background="@drawable/layout_circle"
                         app:srcCompat="@drawable/ic_bottom_sport" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -67,12 +88,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@color/textLightSecondary">
+                    android:layout_gravity="bottom"
+                    android:padding="1dp">
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/botonTeatroIcon"
+                        android:background="@drawable/layout_circle"
                         app:srcCompat="@drawable/ic_bottom_theater" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -85,12 +109,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@color/textLightSecondary">
+                    android:layout_gravity="bottom"
+                    android:padding="1dp">
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:id="@+id/botonMusicaIcon"
+                        android:background="@drawable/layout_circle"
                         app:srcCompat="@drawable/ic_bottom_music" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -99,6 +126,6 @@
                         android:textColor="@color/textDarkPrimary" />
                 </LinearLayout>
             </LinearLayout>
-        </HorizontalScrollView>
+
     </LinearLayout>
 </android.support.v7.widget.CardView>
