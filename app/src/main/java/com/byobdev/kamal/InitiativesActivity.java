@@ -34,6 +34,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -946,13 +947,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     uiSettings.setAllGesturesEnabled(false);
                     toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
                     toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+                    descriptionFragment.setVisibility(View.VISIBLE);
                     DescriptionFragment DF = new DescriptionFragment();
                     DF.setArguments(selectedInitiative);
                     FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
                     trans.replace(R.id.descriptionFragment, DF);
-                    OvershootInterpolator interpolator;
-                    interpolator = new OvershootInterpolator(1);
-                    descriptionFragment.animate().setInterpolator(interpolator).translationYBy(-descriptionFragment.getMeasuredHeight()).setDuration(600);
                     trans.commit();
                     TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
                     Titulo.setText(selectedInitiative.getString("Titulo"));
@@ -1560,18 +1559,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
-            df.getLocationOnScreen(fragment_pos);
-            if ((df.getHeight() + fragment_pos[1]) == maxY){
-                descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
-                opened_df = false;
-                initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                Titulo.setText("");
-                Titulo.setTextSize(0);
-                uiSettings.setAllGesturesEnabled(true);
-                uiSettings.setMyLocationButtonEnabled(true);
-                mapFragment.getView().setClickable(true);
-            }
+            descriptionFragment.setVisibility(View.GONE);
+            opened_df = false;
+            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+            Titulo.setText("");
+            Titulo.setTextSize(0);
+            uiSettings.setAllGesturesEnabled(true);
+            uiSettings.setMyLocationButtonEnabled(true);
+            mapFragment.getView().setClickable(true);
         } else if (opened_pf) {
             View pf = findViewById(R.id.previewFragment);
             pf.getLocationOnScreen(fragment_pos);
