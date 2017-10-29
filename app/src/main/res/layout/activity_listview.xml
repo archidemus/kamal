@@ -8,7 +8,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:id="@+id/lllista">
-
     <ImageView
         android:id="@+id/childImage"
         android:layout_width="100dp"
@@ -19,24 +18,67 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="@+id/childImage">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="105dp">
 
+            <TextView
+                android:id="@+id/hILista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textAllCaps="true"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/rate_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" → "
+                android:textAllCaps="true"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/hTLista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textAllCaps="true"
+                android:textSize="12sp"/>
+        </LinearLayout>
         <TextView
             android:id="@+id/childTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textSize="20dp"
+            android:layout_marginTop="10dp"
             android:textStyle="bold"
             android:layout_marginLeft="105dp"/>
+        <TextView
+            android:id="@+id/inPlaceLista"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"
+            android:ellipsize="marquee"
+            android:maxLines="2"
+            android:text="Lugar"
+            android:layout_below="@+id/childTextView"
+            android:layout_marginLeft="105dp"
+            android:textSize="12sp"/>
         <TextView
             android:id="@+id/descrip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_below="@+id/childTextView"
+            android:layout_below="@+id/inPlaceLista"
             android:layout_marginLeft="105dp"
             android:textSize="10sp"/>
 
 
     </RelativeLayout>
+
+
 
 
 </RelativeLayout>

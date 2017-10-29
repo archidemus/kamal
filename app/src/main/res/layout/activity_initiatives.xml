@@ -86,8 +86,8 @@
                 android:layout_height="400dp"
                 android:layout_gravity="bottom"
                 android:background="@color/textLightPrimary"
-                android:translationY="400dp"
-                android:layout_alignParentBottom="true"/>
+                android:layout_alignParentBottom="true"
+                android:visibility="gone"/>
             <ImageButton
                 android:layout_width="47dp"
                 android:layout_height="wrap_content"

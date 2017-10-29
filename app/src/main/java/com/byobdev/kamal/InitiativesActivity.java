@@ -34,6 +34,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -940,121 +941,29 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Display mdisp = getWindowManager().getDefaultDisplay();
-                Point mdispSize = new Point();
-                mdisp.getSize(mdispSize);
-                int maxY = mdispSize.y;
-                float currentPosition;
-                int fragment_pos[] = new int[2];
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mLastPosY = event.getY();
-                        return true;
-                    case (MotionEvent.ACTION_MOVE):
-                        if (!on_way) {
-                            currentPosition = event.getY();
-                            float deltaY = mLastPosY - currentPosition;
-                            float transY = View.TRANSLATION_Y.get(v);
-                            transY -= deltaY;
-                            if (transY < 0) {
-                                transY = 0;
-                            }
-                            v.setTranslationY(transY);
-                        }
-                        return true;
-                    case (MotionEvent.ACTION_UP):
-                        v.getLocationOnScreen(fragment_pos);
-                        if (((fragment_pos[1] + v.getHeight()) > maxY + 1) && !on_way) {
-                            OvershootInterpolator interpolator;
-                            interpolator = new OvershootInterpolator(1);
-                            previewFragment.animate().setInterpolator(interpolator).translationY(previewFragment.getMeasuredHeight()).setDuration(600);
-                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                            Titulo.setText("");
-                            MenuItem item = toolbar.getMenu().findItem(R.id.toolbar_filter);
-                            item.setVisible(true);
-                            Titulo.setTextSize(0);
-                            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
-                            toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                            final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                            upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                            getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                            opened_pf = false;
-                            back_button_active = false;
-                        } else { //Cuando toca el preview
-                            if (!opened_df && !on_way) {
-                                toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                                toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
-                                DescriptionFragment DF = new DescriptionFragment();
-                                DF.setArguments(selectedInitiative);
-                                FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                                trans.replace(R.id.descriptionFragment, DF);
-                                OvershootInterpolator interpolator;
-                                interpolator = new OvershootInterpolator(1);
-                                descriptionFragment.animate().setInterpolator(interpolator).translationYBy(-descriptionFragment.getMeasuredHeight()).setDuration(600);
-                                trans.commit();
-                                TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                                Titulo.setText(selectedInitiative.getString("Titulo"));
-                                Titulo.setTextSize(25);
-                                initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                                initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
-                                uiSettings.setAllGesturesEnabled(false);
-                                uiSettings.setMyLocationButtonEnabled(false);
-                                opened_df = true;
-                            }
-                        }
-                        return true;
-                    default:
-                        return v.onTouchEvent(event);
+                if (!opened_df && !on_way) {
+                    opened_df = true;
+                    mapFragment.getView().setClickable(false);
+                    uiSettings.setAllGesturesEnabled(false);
+                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+                    descriptionFragment.setVisibility(View.VISIBLE);
+                    DescriptionFragment DF = new DescriptionFragment();
+                    DF.setArguments(selectedInitiative);
+                    FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+                    trans.replace(R.id.descriptionFragment, DF);
+                    trans.commit();
+                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+                    Titulo.setText(selectedInitiative.getString("Titulo"));
+                    Titulo.setTextSize(25);
+                    initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+                    initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
                 }
+                return true;
             }
         });
         //DescriptionFragment
         descriptionFragment = (FrameLayout) findViewById(R.id.descriptionFragment);
-        descriptionFragment.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Display mdisp = getWindowManager().getDefaultDisplay();
-                Point mdispSize = new Point();
-                mdisp.getSize(mdispSize);
-                int maxY = mdispSize.y;
-                float currentPosition;
-                int fragment_pos[] = new int[2];
-                int bottom_pos[] = new int[2];
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        mLastPosY = event.getY();
-                        return true;
-                    case (MotionEvent.ACTION_MOVE):
-                        currentPosition = event.getY();
-                        float deltaY = mLastPosY - currentPosition;
-                        float transY = View.TRANSLATION_Y.get(v);
-                        transY -= deltaY;
-                        if (transY < 0) {
-                            transY = 0;
-                        }
-                        v.setTranslationY(transY);
-                        return true;
-                    case (MotionEvent.ACTION_UP):
-                        v.getLocationOnScreen(fragment_pos);
-                        if (((fragment_pos[1] + v.getHeight()) > maxY + 1) && !on_way) {
-                            OvershootInterpolator interpolator;
-                            interpolator = new OvershootInterpolator(1);
-                            descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
-                            opened_df = false;
-                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                            Titulo.setText("");
-                            Titulo.setTextSize(0);
-                            toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
-                            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                            uiSettings.setAllGesturesEnabled(true);
-                            uiSettings.setMyLocationButtonEnabled(true);
-                        }
-                        return true;
-                    default:
-                        return v.onTouchEvent(event);
-                }
-            }
-        });
 
         //Menu
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -1513,7 +1422,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //Agrego datos del pin
-                if(marker.getId().equals(mCurrLocationMarker.getId())){
+                if(marker.getId().equals(mCurrLocationMarker.getId()) || opened_df){
                     return false;
                 }
                 OvershootInterpolator interpolator;
@@ -1650,17 +1559,15 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             View df = findViewById(R.id.descriptionFragment);
-            df.getLocationOnScreen(fragment_pos);
-            if ((df.getHeight() + fragment_pos[1]) == maxY){
-                descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
-                opened_df = false;
-                initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                Titulo.setText("");
-                Titulo.setTextSize(0);
-                uiSettings.setAllGesturesEnabled(true);
-                uiSettings.setMyLocationButtonEnabled(true);
-            }
+            descriptionFragment.setVisibility(View.GONE);
+            opened_df = false;
+            initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+            Titulo.setText("");
+            Titulo.setTextSize(0);
+            uiSettings.setAllGesturesEnabled(true);
+            uiSettings.setMyLocationButtonEnabled(true);
+            mapFragment.getView().setClickable(true);
         } else if (opened_pf) {
             View pf = findViewById(R.id.previewFragment);
             pf.getLocationOnScreen(fragment_pos);
