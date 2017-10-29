@@ -73,7 +73,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="01:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -89,7 +90,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="03:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -105,7 +107,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="05:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -121,7 +124,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="07:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -137,7 +141,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="09:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -153,7 +158,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="11:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -169,7 +175,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="01:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -185,7 +192,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="02:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -201,7 +209,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="05:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -217,7 +226,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="07:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -233,7 +243,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="09:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -249,7 +260,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="11:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -265,7 +277,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="01:00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/PrimaryDark"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
 
         </LinearLayout>
