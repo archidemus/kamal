@@ -291,6 +291,7 @@ public class CreateInitiativeActivity extends AppCompatActivity {
                 finish();
             }
             else{
+                pd.show();
                 StorageReference childRef = storageRef.child(key);
                 //uploading the image
                 final UploadTask uploadTask = childRef.putFile(filePath);

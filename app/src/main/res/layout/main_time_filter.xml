@@ -11,30 +11,41 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:orientation="vertical">
-        <ImageView
+
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:rotation="90"
-            app:srcCompat="@drawable/ic_arrow_left"
-            android:tint="@color/Primary"
-            android:id="@+id/toPreviousDay"
-            android:onClick="prevDay"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:rotation="-90"
-            app:srcCompat="@drawable/ic_arrow_left"
-            android:tint="@color/Primary"
-            android:id="@+id/toNextDay"
-            android:onClick="nextDay"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:rotation="90"
-            app:srcCompat="@drawable/ic_reload"
-            android:tint="@color/Primary"
-            android:id="@+id/toCurrentDate"
-            android:onClick="actualDay"/>
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:rotation="90"
+                android:layout_marginLeft="20dp"
+                app:srcCompat="@drawable/ic_arrow_left"
+                android:tint="@color/Primary"
+                android:id="@+id/toPreviousDay"
+                android:onClick="prevDay"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:rotation="-90"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="30dp"
+                app:srcCompat="@drawable/ic_arrow_left"
+                android:tint="@color/Primary"
+                android:id="@+id/toNextDay"
+                android:onClick="nextDay"/>
+
+            <ImageView
+                android:id="@+id/toCurrentDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:onClick="actualDay"
+                android:rotation="90"
+                android:tint="@color/Primary"
+                app:srcCompat="@drawable/ic_reload" />
+        </RelativeLayout>
+
     </LinearLayout>
     <com.github.rongi.rotate_layout.layout.RotateLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
