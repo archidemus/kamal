@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="15dp"
-            android:text="Teatro"
+            android:text="Entretención"
             android:textSize="18sp"/>
 
         <CheckBox
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="15dp"
-            android:text="Musica"
+            android:text="Música"
             android:textSize="18sp"/>
 
         <CheckBox
