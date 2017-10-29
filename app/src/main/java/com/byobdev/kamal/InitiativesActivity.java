@@ -1581,8 +1581,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             mapFragment.getView().setClickable(true);
         } else if(!search.isIconified()){
             search.setIconified(true);
-
-        }else if (opened_pf) {
+            
+        } else if (opened_pf) {
+            if (!polylineActive && initiativePath == null) {
+                return;
+            }
             View pf = findViewById(R.id.previewFragment);
             pf.getLocationOnScreen(fragment_pos);
             if ((pf.getHeight() + fragment_pos[1]) == maxY){
