@@ -178,7 +178,6 @@ public class CreateInitiativeActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-
         mDatabase = FirebaseDatabase.getInstance().getReference("Initiatives/");
         key = mDatabase.push().getKey();
         pd = new ProgressDialog(this);
@@ -266,6 +265,9 @@ public class CreateInitiativeActivity extends AppCompatActivity {
             long feT=dateFins.getTime();
             String interest = spinner.getSelectedItem().toString();
             if (interest.equals("Música")){
+                interest = "Musica";
+            }
+            else if (interest.equals("Entretención")){
                 interest = "Musica";
             }
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT,0);

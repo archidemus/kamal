@@ -218,13 +218,13 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
                 }
                 if (userInterests.Teatro) {
-                    FirebaseMessaging.getInstance().subscribeToTopic("Teatro");
+                    FirebaseMessaging.getInstance().subscribeToTopic("Entretencion");
                 } else {
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("Entretencion");
                 }
             } else {
                 userInterests = new Interests(false, false, false, false, false, true, false);
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("Teatro");
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("Entretencion");
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("Comida");
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("Deporte");
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("Musica");
@@ -293,7 +293,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 typeVisibility=deporteOn;;
                 deporteInitiativeIDList.add(dataSnapshot.getKey());
-            } else if (initiative.Tipo.equals("Teatro")) {
+            } else if (initiative.Tipo.equals("Entretencion")) {
                 if (initiative.Estado == 0) {//aun no inicia
                     aux = initiativesMap.addMarker(new MarkerOptions()
                             .position(new LatLng(initiative.Latitud, initiative.Longitud))
@@ -374,7 +374,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgraymarker));
                 } else if (initiative.Tipo.equals("Deporte")) {
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgraymarker));
-                } else if (initiative.Tipo.equals("Teatro")) {
+                } else if (initiative.Tipo.equals("Entretencion")) {
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergraymarker));
                 } else {//musica
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgraymarker));
@@ -384,7 +384,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodgreenmarker));
                 } else if (initiative.Tipo.equals("Deporte")) {
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportgreenmarker));
-                } else if (initiative.Tipo.equals("Teatro")) {
+                } else if (initiative.Tipo.equals("Entretencion")) {
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theatergreenmarker));
                 } else {//musica
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicgreenmarker));
@@ -394,7 +394,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker));
                 } else if (initiative.Tipo.equals("Deporte")) {
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker));
-                } else if (initiative.Tipo.equals("Teatro")) {
+                } else if (initiative.Tipo.equals("Entretencion")) {
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker));
                 } else {//musica
                     aux.setIcon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker));
@@ -419,7 +419,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             break;
                         }
                     }
-                } else if (initiative.Tipo.equals("Teatro")) {
+                } else if (initiative.Tipo.equals("Entretencion")) {
                     for (int i = 0; i < teatroInitiativeIDList.size(); i++) {
                         if (teatroInitiativeIDList.get(i).equals(dataSnapshot.getKey())) {
                             teatroInitiativeIDList.remove(i);
@@ -464,7 +464,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                         break;
                     }
                 }
-            } else if (initiative.Tipo.equals("Teatro")) {
+            } else if (initiative.Tipo.equals("Entretencion")) {
                 for (int i = 0; i < teatroInitiativeIDList.size(); i++) {
                     if (teatroInitiativeIDList.get(i).equals(dataSnapshot.getKey())) {
                         teatroInitiativeIDList.remove(i);
@@ -634,7 +634,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                     pair.getValue().setVisible(musicaOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
                 } else if (initiative.Tipo.equals("Deporte")) {
                     pair.getValue().setVisible(deporteOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
-                } else if (initiative.Tipo.equals("Teatro")) {
+                } else if (initiative.Tipo.equals("Entretencion")) {
                     pair.getValue().setVisible(teatroOn && (boolean) timeVisibilityHashmap.get(pair.getKey()));
                 }
                 keywordVisibilityHashmap.put(pair.getKey(), true);
@@ -687,7 +687,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             break;
                         }
                     }
-                } else if (initiative.Tipo.equals("Teatro")) {
+                } else if (initiative.Tipo.equals("Entretencion")) {
                     for (int i = 0; i < teatroInitiativeIDList.size(); i++) {
                         if (teatroInitiativeIDList.get(i).equals(pair.getKey())) {
                             teatroInitiativeIDList.remove(i);
@@ -1178,7 +1178,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 else if(initiative.Tipo.equals("Deporte")){
                     pair.getValue().setVisible(deporteOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
                 }
-                else if(initiative.Tipo.equals("Teatro")){
+                else if(initiative.Tipo.equals("Entretencion")){
                     pair.getValue().setVisible(teatroOn && (boolean)keywordVisibilityHashmap.get(pair.getKey()));
                 }
                 timeVisibilityHashmap.put(pair.getKey(),true);
@@ -1485,6 +1485,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         descriptionFragment.animate().setInterpolator(interpolator).translationY(descriptionFragment.getMeasuredHeight()).setDuration(600);
         opened_df = false;
         toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
+        toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+        toolbar.getMenu().findItem(R.id.toolbar_help).setVisible(false);
+        toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
         GoogleDirection.withServerKey(getString(R.string.google_maps_key))
                 .from(new LatLng(start.getLatitud(), start.getLongitud()))
                 .to(lastMarkerPosition)
@@ -1548,6 +1551,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             Titulo.setText("");
             Titulo.setTextSize(0);
             toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
+            toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
+            toolbar.getMenu().findItem(R.id.toolbar_help).setVisible(true);
+            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
+
+
             initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
