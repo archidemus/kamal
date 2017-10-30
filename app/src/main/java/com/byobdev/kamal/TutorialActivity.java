@@ -25,7 +25,7 @@ public class TutorialActivity extends AppIntro2 {
         addSlide(AppIntroFragment.newInstance("Encuentra", "Entérate de lo que ocurre a tu alrededor. Las marcas en el mapa te dirán la categoría", R.drawable.ic_helpimages1, getResources().getColor(R.color.Primary)));
         addSlide(AppIntroFragment.newInstance("Marcas", "Los colores indican el estado de la iniciativa", R.drawable.ic_helpimages2, getResources().getColor(R.color.Primary)));
         addSlide(AppIntroFragment.newInstance("Filtra", "Por categoría o palabra clave usando los íconos en la barra superior", R.drawable.ic_helpimages3, getResources().getColor(R.color.Primary)));
-        addSlide(AppIntroFragment.newInstance("¿Tienes tiempo libre?", "Ve que ocurrirá a esa hora usando la línea de tiempo. Elige un rango de tiempo y muevelo a lo largo del día.", R.mipmap.ic_launcher, getResources().getColor(R.color.Primary)));
+        addSlide(AppIntroFragment.newInstance("¿Tienes tiempo libre?", "Ve que ocurrirá a esa hora usando la línea de tiempo. Elige un rango de tiempo y muevelo a lo largo del día.", R.drawable.ic_helpimages4, getResources().getColor(R.color.Primary)));
 
         setBarColor(getResources().getColor(R.color.Primary));
 

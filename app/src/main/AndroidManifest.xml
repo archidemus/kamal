@@ -94,6 +94,7 @@
         <activity
             android:name=".TutorialActivity"
             android:label="@string/title_activity_tutorial"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
     </application>
