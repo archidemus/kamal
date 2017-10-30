@@ -1581,7 +1581,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             mapFragment.getView().setClickable(true);
         } else if(!search.isIconified()){
             search.setIconified(true);
-            
         } else if (opened_pf) {
             if (!polylineActive && initiativePath == null) {
                 return;
@@ -1617,7 +1616,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onPause() {
         super.onPause();
-        if (mGoogleApiClient != null) {
+        /*if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -1629,7 +1628,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             } else {
                 getFragmentManager().popBackStack();
             }
-        }
+        }*/
         //getApplicationContext().unregisterReceiver(receiver);
 
     }
