@@ -49,7 +49,7 @@ public class PreviewFragment extends Fragment {
         if(searchViewOpened){
             search.setIconified(false);
             search.setQuery(searchViewText,false);
-
+            search.clearFocus();
 
         }
     }
