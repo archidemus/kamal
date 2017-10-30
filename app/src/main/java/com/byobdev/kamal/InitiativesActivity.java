@@ -592,6 +592,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
         }
     };
+    private boolean gettingDirection = false;
 
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
@@ -1489,6 +1490,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
         toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
         toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+        gettingDirection = true;
         GoogleDirection.withServerKey(getString(R.string.google_maps_key))
                 .from(new LatLng(start.getLatitud(), start.getLongitud()))
                 .to(lastMarkerPosition)
@@ -1498,6 +1500,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 .execute(new DirectionCallback() {
                     @Override
                     public void onDirectionSuccess(Direction direction, String rawBody) {
+                        if (!gettingDirection) {return;}
                         String status = direction.getStatus();
                         if (status.equals(RequestResult.OK)) {
                             uiSettings.setAllGesturesEnabled(true);
@@ -1541,6 +1544,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         int maxY = mdispSize.y;
         float currentPosition;
         int fragment_pos[] = new int[2];
+        gettingDirection = false;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (on_way && initiativePath != null) {
@@ -1562,9 +1566,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
             }
         } else if (opened_df) {//CERRAR DESCRIPTION FRAGMENT
-            if (!polylineActive && initiativePath == null) {
-                return;
-            }
             toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
             toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
@@ -1579,9 +1580,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             uiSettings.setMyLocationButtonEnabled(true);
             mapFragment.getView().setClickable(true);
         } else if (opened_pf) {
-            if (!polylineActive && initiativePath == null) {
-                return;
-            }
             View pf = findViewById(R.id.previewFragment);
             pf.getLocationOnScreen(fragment_pos);
             if ((pf.getHeight() + fragment_pos[1]) == maxY){
