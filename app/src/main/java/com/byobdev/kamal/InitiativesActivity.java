@@ -127,6 +127,7 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
 import me.bendik.simplerangeview.SimpleRangeView;
+import retrofit2.http.HEAD;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -1579,6 +1580,9 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             uiSettings.setAllGesturesEnabled(true);
             uiSettings.setMyLocationButtonEnabled(true);
             mapFragment.getView().setClickable(true);
+        } else if(!search.isIconified()){
+            search.setIconified(true);
+            
         } else if (opened_pf) {
             View pf = findViewById(R.id.previewFragment);
             pf.getLocationOnScreen(fragment_pos);
