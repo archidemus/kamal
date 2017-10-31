@@ -1200,15 +1200,28 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             fromDate.setText(timelineFormatter.format(Time));
             toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
             timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
+            if(Time==initialTime){
+                ImageView arrow=(ImageView)findViewById(R.id.toPreviousDayArrow);
+                arrow.setColorFilter(ContextCompat.getColor(this, R.color.lineColor), android.graphics.PorterDuff.Mode.SRC_IN);
+
+            }
         }
+
     }
     public void nextDay(View view){
+        if(Time==initialTime){
+            ImageView arrow=(ImageView)findViewById(R.id.toPreviousDayArrow);
+            arrow.setColorFilter(ContextCompat.getColor(this, R.color.Primary), android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
         Time+=24*60*60*1000;
         fromDate.setText(timelineFormatter.format(Time));
         toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
         timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
     }
     public void actualDay(View view){
+        ImageView arrow=(ImageView)findViewById(R.id.toPreviousDayArrow);
+        arrow.setColorFilter(ContextCompat.getColor(this, R.color.lineColor), android.graphics.PorterDuff.Mode.SRC_IN);
         Time=initialTime;
         fromDate.setText(timelineFormatter.format(Time));
         toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
