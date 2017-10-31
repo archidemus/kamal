@@ -233,7 +233,7 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
                     else  if(estado.equals("0")){
                         Calificar.setVisibility(View.INVISIBLE);
                     }
-                    else if(distanceInMeters > 100){
+                    else if(distanceInMeters > 500){
                         Calificar.setVisibility(View.INVISIBLE);
                     }
                 } else {

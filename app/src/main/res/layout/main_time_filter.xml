@@ -12,40 +12,19 @@
         android:layout_width="wrap_content"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:rotation="90"
-                android:layout_marginLeft="20dp"
-                app:srcCompat="@drawable/ic_arrow_left"
-                android:tint="@color/Primary"
-                android:id="@+id/toPreviousDay"
-                android:onClick="prevDay"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:rotation="-90"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
-                app:srcCompat="@drawable/ic_arrow_left"
-                android:tint="@color/Primary"
-                android:id="@+id/toNextDay"
-                android:onClick="nextDay"/>
+
+
 
             <ImageView
                 android:id="@+id/toCurrentDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="20dp"
+                android:layout_gravity="center_vertical"
                 android:onClick="actualDay"
                 android:rotation="90"
                 android:tint="@color/Primary"
                 app:srcCompat="@drawable/ic_reload" />
-        </RelativeLayout>
+
 
     </LinearLayout>
     <com.github.rongi.rotate_layout.layout.RotateLayout
@@ -54,11 +33,27 @@
         android:layout_height="wrap_content"
         app:angle="-90"
         android:layout_gravity="center_vertical">
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
             android:layout_height="match_parent"
-            android:text="19 OCT"
-            android:id="@+id/fromDate"/>
+            android:layout_width="wrap_content"
+            android:layout_gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_arrow_down"
+                android:tint="@color/Primary"
+                android:layout_gravity="left"
+                android:id="@+id/toPreviousDay"
+                android:onClick="prevDay"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="19 OCT"
+                android:layout_gravity="right"
+                android:id="@+id/fromDate"/>
+
+        </LinearLayout>
+
     </com.github.rongi.rotate_layout.layout.RotateLayout>
     <LinearLayout
         android:layout_height="wrap_content"
@@ -322,10 +317,25 @@
         android:layout_gravity="center_vertical"
         android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp">
-        <TextView
-            android:id="@+id/toDate"
-            android:layout_width="wrap_content"
+        <LinearLayout
             android:layout_height="match_parent"
-            android:text="20 OCT" />
+            android:layout_width="wrap_content"
+            android:layout_gravity="center">
+            <TextView
+                android:id="@+id/toDate"
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="20 OCT" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                app:srcCompat="@drawable/ic_arrow_up"
+                android:tint="@color/Primary"
+                android:id="@+id/toNextDay"
+                android:onClick="nextDay"/>
+        </LinearLayout>
+
     </com.github.rongi.rotate_layout.layout.RotateLayout>
 </LinearLayout>

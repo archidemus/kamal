@@ -63,6 +63,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
     String[] fechaTLista;
     String[] direccionLista;
     ListView lista;
+    boolean volvio = false;
     int position;
     int prevPosition=-1;
     boolean selected=false;
@@ -150,6 +151,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 editar(keyLista[position], SectorLista[position]);
+                volvio =true;
                 return true;
             }
         });
@@ -267,7 +269,7 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
                     intentMain2.putExtra("Sector",Sector);
 
                 ListActivity.this.startActivity(intentMain2);
-                finish();
+
 
 
 
@@ -324,7 +326,17 @@ public class ListActivity extends AppCompatActivity implements customButtonListe
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(volvio){
+            finish();
+            startActivity(getIntent());
 
+        }
+
+
+    }
 
 
 }
