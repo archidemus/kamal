@@ -1560,6 +1560,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 descriptionFragment.setVisibility(View.VISIBLE);
                 initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
                 initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+                mapFragment.getView().setClickable(false);
+                uiSettings.setAllGesturesEnabled(false);
             } else {
                 toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
                 toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
