@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -29,8 +28,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -47,14 +44,13 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.util.Calendar;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -78,7 +74,6 @@ import com.byobdev.kamal.AppHelpers.ConnectivityStatus;
 import com.byobdev.kamal.AppHelpers.NotificationHelper;
 import com.byobdev.kamal.DBClasses.Initiative;
 import com.byobdev.kamal.DBClasses.Interests;
-import com.byobdev.kamal.DBClasses.User;
 import com.byobdev.kamal.NotificationServices.MyFirebaseInstanceIDService;
 import com.byobdev.kamal.NotificationServices.MyFirebaseMessagingService;
 import com.byobdev.kamal.AppHelpers.LocationGPS;
@@ -105,7 +100,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.DateFormat;
@@ -120,26 +114,26 @@ import java.util.Vector;
 
 import com.google.android.gms.maps.model.MapStyleOptions;
 
-import static android.R.attr.duration;
-import static android.R.attr.key;
 import static com.byobdev.kamal.R.id.map;
 import static com.byobdev.kamal.R.id.rangeView;
+import static com.byobdev.kamal.R.id.time_filter_menu;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
-import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
-import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_RED;
 import static java.lang.Integer.parseInt;
 
 import com.google.android.gms.location.LocationListener;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import me.bendik.simplerangeview.SimpleRangeView;
 
 public class InitiativesActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
-    long Time;
+    long Time;//Current time without minutes and seconds for the time filter
+    long initialTime;//Initial time without minutes and seconds for the time filter
     long currentTime;
+    SimpleDateFormat timelineFormatter;//Formatter for timeline month and day
     public static final String PREFS_NAME = "KamalPreferences";
     private static final String TAG = InitiativesActivity.class.getSimpleName();
     public Interests userInterests;
@@ -153,6 +147,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public List<String> teatroInitiativeIDList;
     public List<String> musicaInitiativeIDList;
     SearchView search;
+    TextView fromDate;
+    TextView toDate;
     public boolean comidaOn = true;
     public boolean deporteOn = true;
     public boolean teatroOn = true;
@@ -174,6 +170,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     GoogleMap initiativesMap;
     SupportMapFragment mapFragment;
     //Others
+    List<TextView> timeLabels;
     FrameLayout previewFragment;
     FrameLayout descriptionFragment;
     Bundle selectedInitiative;
@@ -192,6 +189,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     View linea;
     float lastCameraZoom;
     SimpleRangeView rangeview;
+    LinearLayout timeFilterMenu;
     int currentHour;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
@@ -254,7 +252,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             if (markerHashMap.get(dataSnapshot.getKey()) != null) {
                 return;
             }
-
+            boolean typeVisibility;
             if (initiative.Tipo.equals("Comida")) {
 
                 if (initiative.Estado == 0) {//aun no inicia
@@ -273,7 +271,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_foodredmarker))
                     );
                 }
-                aux.setVisible(comidaOn);
+                typeVisibility=comidaOn;
                 comidaInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Deporte")) {
                 if (initiative.Estado == 0) {//aun no inicia
@@ -292,7 +290,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_sportredmarker))
                     );
                 }
-                aux.setVisible(deporteOn);
+                typeVisibility=deporteOn;;
                 deporteInitiativeIDList.add(dataSnapshot.getKey());
             } else if (initiative.Tipo.equals("Teatro")) {
                 if (initiative.Estado == 0) {//aun no inicia
@@ -311,7 +309,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_theaterredmarker))
                     );
                 }
-                aux.setVisible(teatroOn);
+                typeVisibility=teatroOn;
                 teatroInitiativeIDList.add(dataSnapshot.getKey());
             } else {//musica
                 if (initiative.Estado == 0) {//aun no inicia
@@ -330,17 +328,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             .icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_musicredmarker))
                     );
                 }
-                aux.setVisible(musicaOn);
+                typeVisibility=musicaOn;
                 musicaInitiativeIDList.add(dataSnapshot.getKey());
             }
             initiativeHashMap.put(aux.getId(), initiative);
             markerHashMap.put(dataSnapshot.getKey(), aux);
-            keywordVisibilityHashmap.put(dataSnapshot.getKey(), true);
-            timeVisibilityHashmap.put(dataSnapshot.getKey(), true);
-            LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
-            if (bounds.contains(aux.getPosition())) {
-                swipeMarkerList.add(aux);
+            boolean visibleByTime=true;
+            boolean visibleByKeyword=true;
+            if(timeFilterMenu.getVisibility() == View.VISIBLE){
+                if(initiative.fechaFin<lastTimeFilterStart || initiative.fechaInicio>lastTimeFilterEnd){
+                    visibleByTime=false;
+                }
+                else{
+                    visibleByTime=true;
+                }
             }
+            if(!search.isIconified()){
+                if(initiative.Descripcion.contains(search.getQuery().toString()) || initiative.Titulo.contains(search.getQuery().toString())){
+                    visibleByKeyword=true;
+
+                }
+                else{
+                    visibleByKeyword=false;
+                }
+
+            }
+            keywordVisibilityHashmap.put(dataSnapshot.getKey(), visibleByKeyword);
+            timeVisibilityHashmap.put(dataSnapshot.getKey(), visibleByTime);
+            aux.setVisible(typeVisibility && visibleByKeyword && visibleByTime);
+            //LatLngBounds bounds = initiativesMap.getProjection().getVisibleRegion().latLngBounds;
 
 
         }
@@ -783,71 +799,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             if (back_button_active) {
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                OvershootInterpolator interpolator;
-                interpolator = new OvershootInterpolator(1);
-                Display mdisp = getWindowManager().getDefaultDisplay();
-                Point mdispSize = new Point();
-                mdisp.getSize(mdispSize);
-                int maxY = mdispSize.y;
-                float currentPosition;
-                int fragment_pos[] = new int[2];
-
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else if (polylineActive && initiativePath != null) {
-                    initiativePath.remove();
-                    polylineActive = false;
-                    on_way = false;
-                    TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                    Titulo.setText("");
-                    Titulo.setTextSize(0);
-                    toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(true);
-                    initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                } else if (opened_df) {
-                    toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(true);
-                    toolbar.getMenu().findItem(R.id.time_filter).setVisible(true);
-                    View df = findViewById(R.id.descriptionFragment);
-                    df.getLocationOnScreen(fragment_pos);
-                    if ((df.getHeight() + fragment_pos[1]) == maxY) {
-                        descriptionFragment.animate().setInterpolator(interpolator).translationYBy(descriptionFragment.getMeasuredHeight()).setDuration(600);
-                        opened_df = false;
-                        initiativesMap.animateCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                        TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                        Titulo.setText("");
-                        Titulo.setTextSize(0);
-                        uiSettings.setAllGesturesEnabled(true);
-                        uiSettings.setMyLocationButtonEnabled(true);
-                    }
-                } else if (opened_pf) {
-                    View pf = findViewById(R.id.previewFragment);
-                    pf.getLocationOnScreen(fragment_pos);
-                    if ((pf.getHeight() + fragment_pos[1]) == maxY) {
-                        previewFragment.animate().setInterpolator(interpolator).translationYBy(previewFragment.getMeasuredHeight()).setDuration(600);
-                        opened_pf = false;
-                        toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(true);
-                        toolbar.getMenu().findItem(R.id.toolbar_ir).setVisible(false);
-                        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                        upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                        back_button_active = false;
-                    }
-                } else if (opened_bottom) {
-                    View ob = findViewById(R.id.bottom_menu);
-                    ob.getLocationOnScreen(fragment_pos);
-                    if ((ob.getHeight() + fragment_pos[1]) == maxY) {
-                        vista.animate().setInterpolator(interpolator).translationYBy(vista.getMeasuredHeight()).setDuration(600);
-                        opened_bottom = false;
-                        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
-                        final Drawable upArrow = getResources().getDrawable(R.drawable.ic_bottom_menu);
-                        upArrow.setColorFilter(getResources().getColor(R.color.textLightPrimary), PorterDuff.Mode.SRC_ATOP);
-                        getSupportActionBar().setHomeAsUpIndicator(upArrow);
-                        back_button_active = false;
-                    }
-                } else {
-                    return super.onOptionsItemSelected(item);
-                }
+                onBackPressed();
             } else {
                 if (drawer.isDrawerOpen(Gravity.LEFT)) {
                     drawer.closeDrawer(Gravity.LEFT);
@@ -878,12 +830,12 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         } else if (item.getItemId() == R.id.toolbar_ir) {
             showPath(descriptionFragment);
         } else if (item.getItemId() == R.id.time_filter) {
-            if (rangeview.getVisibility() == View.VISIBLE) {
-                rangeview.setVisibility(View.INVISIBLE);
+            if (timeFilterMenu.getVisibility() == View.VISIBLE) {
+                timeFilterMenu.setVisibility(View.INVISIBLE);
                 timeFilterReset();
 
             } else {
-                rangeview.setVisibility(View.VISIBLE);
+                timeFilterMenu.setVisibility(View.VISIBLE);
                 timeFilter(lastTimeFilterStart,lastTimeFilterEnd);
             }
 
@@ -960,6 +912,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         final View iniciativaTeatro = findViewById(R.id.botonTeatro);
         final View iniciativaMusica = findViewById(R.id.botonMusica);
 
+        initTimeLabels();
         initiativeHashMap = new HashMap();
         markerHashMap = new HashMap();
         keywordVisibilityHashmap = new HashMap();
@@ -984,7 +937,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
         //PreviewFragment
         previewFragment = (FrameLayout) findViewById(R.id.previewFragment);
-        previewFragment.setOnTouchListener(new View.OnTouchListener() {
+        previewFragment.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Display mdisp = getWindowManager().getDefaultDisplay();
@@ -1029,7 +982,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                             back_button_active = false;
                         } else { //Cuando toca el preview
                             if (!opened_df && !on_way) {
-
                                 toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
                                 toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
                                 DescriptionFragment DF = new DescriptionFragment();
@@ -1048,7 +1000,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                                 uiSettings.setAllGesturesEnabled(false);
                                 uiSettings.setMyLocationButtonEnabled(false);
                                 opened_df = true;
-
                             }
                         }
                         return true;
@@ -1214,6 +1165,31 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         vista = findViewById(R.id.bottom_menu);
 
     }
+    public void initTimeLabels(){
+        timeLabels=new Vector<>();
+        timeLabels.add((TextView) findViewById(R.id.time1));
+        timeLabels.add((TextView) findViewById(R.id.time2));
+        timeLabels.add((TextView) findViewById(R.id.time3));
+        timeLabels.add((TextView) findViewById(R.id.time4));
+        timeLabels.add((TextView) findViewById(R.id.time5));
+        timeLabels.add((TextView) findViewById(R.id.time6));
+        timeLabels.add((TextView) findViewById(R.id.time7));
+        timeLabels.add((TextView) findViewById(R.id.time8));
+        timeLabels.add((TextView) findViewById(R.id.time9));
+        timeLabels.add((TextView) findViewById(R.id.time10));
+        timeLabels.add((TextView) findViewById(R.id.time11));
+        timeLabels.add((TextView) findViewById(R.id.time12));
+        timeLabels.add((TextView) findViewById(R.id.time13));
+    }
+    public void setTimeLabels(int start){
+        int counter=0;
+        String text;
+        for(TextView timeLabel:timeLabels){
+            text=Integer.toString((start+counter)%24)+":00";
+            timeLabel.setText(text);
+            counter+=2;
+        }
+    }
 
     @Override
     public void onStart() {
@@ -1234,14 +1210,21 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         Time = cal.getTimeInMillis();
-
-
-
+        initialTime=Time;
         currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+        setTimeLabels(currentHour);
         rangeview=(SimpleRangeView) findViewById(rangeView);
+        timeFilterMenu = (LinearLayout) findViewById(time_filter_menu);
         lastTimeFilterStart=Time+(currentHour)*60*60*1000;
         lastTimeFilterEnd=Time+(currentHour+(6))*60*60*1000;
-        rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+        timelineFormatter=new SimpleDateFormat("dd MMM");
+        fromDate=(TextView) findViewById(R.id.fromDate);
+        toDate=(TextView) findViewById(R.id.toDate);
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+
+        /*rangeview.setOnRangeLabelsListener(new SimpleRangeView.OnRangeLabelsListener() {
+
             @Override
             public String getLabelTextForPosition(@NotNull SimpleRangeView rangeView, int pos, @NotNull SimpleRangeView.State state) {
                 if(pos%2==1){
@@ -1249,12 +1232,11 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 }
                 return String.valueOf((currentHour+(pos))%24);
             }
-        });
+        });*/
         rangeview.setOnChangeRangeListener(new SimpleRangeView.OnChangeRangeListener() {
             @Override
             public void onRangeChanged(@NotNull SimpleRangeView rangeView, int start, int end) {
                 timeFilterReset();
-                SimpleDateFormat mFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 timeFilter((Time+(currentHour+(start))*60*60*1000),(Time+(currentHour+(end))*60*60*1000));
             }
         });
@@ -1262,6 +1244,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     }
 
     public void timeFilter(long start,long end){
+        timeFilterReset();
         lastTimeFilterStart=start;
         lastTimeFilterEnd=end;
         Iterator<Map.Entry<String, Marker>> it = markerHashMap.entrySet().iterator();
@@ -1269,9 +1252,6 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         while (it.hasNext()) {
             Map.Entry<String, Marker> pair = it.next();
             initiative = (Initiative) initiativeHashMap.get(pair.getValue().getId());
-            SimpleDateFormat formatter = new SimpleDateFormat("HH");
-            int horaInicio=Integer.parseInt(formatter.format(new Date(initiative.fechaInicio)));
-            int horaTermino=Integer.parseInt(formatter.format(new Date(initiative.fechaFin)));
             if(initiative.fechaFin<start || initiative.fechaInicio>end){
                 timeVisibilityHashmap.put(pair.getKey(),false);
                 pair.getValue().setVisible(false);
@@ -1303,6 +1283,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
 
 
         }
+    }
+
+    public void prevDay(View view){
+        if(Time!=initialTime){
+            Time-=24*60*60*1000;
+            fromDate.setText(timelineFormatter.format(Time));
+            toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+            timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
+        }
+    }
+    public void nextDay(View view){
+        Time+=24*60*60*1000;
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
+    }
+    public void actualDay(View view){
+        Time=initialTime;
+        fromDate.setText(timelineFormatter.format(Time));
+        toDate.setText(timelineFormatter.format(Time+24*60*60*1000));
+        timeFilter(Time+(currentHour+(rangeview.getStart()))*60*60*1000,Time+(currentHour+(rangeview.getEnd()))*60*60*1000);
     }
 
     @Override

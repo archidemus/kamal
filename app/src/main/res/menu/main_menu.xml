@@ -14,7 +14,7 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/toolbar_filter"
-        android:icon="@drawable/ic_filter"
+        android:icon="@drawable/ic_filter_outline"
         android:title="Filtrar"
         app:showAsAction="always|withText"/>
     <item
