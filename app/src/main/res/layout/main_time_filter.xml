@@ -27,20 +27,24 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center_vertical"
             android:id="@+id/toPreviousDay">
+
+            <ImageView
+                android:id="@+id/toPreviousDayArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:rotation="90"
+                app:srcCompat="@drawable/ic_play_arrow_black_24px"
+                android:tint="@color/lineColor"
+                android:layout_gravity="center_vertical"
+                android:onClick="prevDay"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="19 OCT"
                 android:textAllCaps="true"
+                android:textColor="@color/Primary"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/fromDate"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_arrow_down"
-                android:tint="@color/Primary"
-                android:layout_gravity="center_vertical"
-                android:onClick="prevDay"/>
 
         </LinearLayout>
 
@@ -72,7 +76,7 @@
                     android:layout_height="match_parent"
                     android:text="01:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -89,7 +93,7 @@
                     android:layout_height="match_parent"
                     android:text="03:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -106,7 +110,7 @@
                     android:layout_height="match_parent"
                     android:text="05:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -123,7 +127,7 @@
                     android:layout_height="match_parent"
                     android:text="07:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -140,7 +144,7 @@
                     android:layout_height="match_parent"
                     android:text="09:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -157,7 +161,7 @@
                     android:layout_height="match_parent"
                     android:text="11:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -174,7 +178,7 @@
                     android:layout_height="match_parent"
                     android:text="01:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -191,7 +195,7 @@
                     android:layout_height="match_parent"
                     android:text="02:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -208,7 +212,7 @@
                     android:layout_height="match_parent"
                     android:text="05:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -225,7 +229,7 @@
                     android:layout_height="match_parent"
                     android:text="07:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -242,7 +246,7 @@
                     android:layout_height="match_parent"
                     android:text="09:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -259,7 +263,7 @@
                     android:layout_height="match_parent"
                     android:text="11:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
             <com.github.rongi.rotate_layout.layout.RotateLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -276,7 +280,7 @@
                     android:layout_height="match_parent"
                     android:text="01:00"
                     android:textSize="12sp"
-                    android:textColor="@color/PrimaryDark"/>
+                    android:textColor="@color/Primary"/>
             </com.github.rongi.rotate_layout.layout.RotateLayout>
 
         </LinearLayout>
@@ -313,20 +317,22 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center_vertical"
             android:id="@+id/toNextDay">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_play_arrow_black_24px"
+                android:tint="@color/Primary"
+                android:rotation="270"
+                android:onClick="nextDay"/>
             <TextView
                 android:id="@+id/toDate"
                 android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textAllCaps="true"
+                android:textColor="@color/Primary"
                 android:text="20 OCT" />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_arrow_up"
-                android:tint="@color/Primary"
-                android:onClick="nextDay"/>
         </LinearLayout>
 
     </com.github.rongi.rotate_layout.layout.RotateLayout>
