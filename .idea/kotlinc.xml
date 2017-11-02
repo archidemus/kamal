@@ -1,19 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-<<<<<<< HEAD
-<<<<<<< HEAD
-  <component name="Kotlin2JsCompilerArguments">
-    <option name="sourceMapEmbedSources" />
-    <option name="sourceMapPrefix" />
-=======
   <component name="KotlinCommonCompilerArguments">
     <option name="apiVersion" value="1.0" />
     <option name="languageVersion" value="1.0" />
->>>>>>> 6745eb543aaf68ba837a730af84c7550b7582d50
-=======
-  <component name="KotlinCommonCompilerArguments">
-    <option name="apiVersion" value="1.0" />
-    <option name="languageVersion" value="1.0" />
->>>>>>> 5ccfa3f7d4ca3632f484658e7872c2252ca7d66d
   </component>
 </project>

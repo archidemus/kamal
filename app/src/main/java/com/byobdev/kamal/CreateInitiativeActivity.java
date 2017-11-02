@@ -268,7 +268,7 @@ public class CreateInitiativeActivity extends AppCompatActivity {
                 interest = "Musica";
             }
             else if (interest.equals("Entretención")){
-                interest = "Musica";
+                interest = "Entretencion";
             }
             Initiative initiative=new Initiative(titulo.getText().toString(), nombre, description.getText().toString(),latitud,longitud,key ,FirebaseAuth.getInstance().getCurrentUser().getUid(),interest, direccion.toString(), feI, feT,0);
             mDatabase.child(getSector(latitud,longitud)).child(key).setValue(initiative);

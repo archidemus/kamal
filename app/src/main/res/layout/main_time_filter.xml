@@ -28,15 +28,6 @@
             android:layout_gravity="center_vertical"
             android:id="@+id/toPreviousDay">
 
-            <ImageView
-                android:id="@+id/toPreviousDayArrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:rotation="90"
-                app:srcCompat="@drawable/ic_play_arrow_black_24px"
-                android:tint="@color/lineColor"
-                android:layout_gravity="center_vertical"
-                android:onClick="prevDay"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,6 +37,15 @@
                 android:layout_gravity="center_vertical"
                 android:id="@+id/fromDate"
                 android:layout_marginRight="8dp"/>
+            <ImageView
+                android:id="@+id/toPreviousDayArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:rotation="90"
+                app:srcCompat="@drawable/ic_play_arrow_black_24px"
+                android:tint="@color/lineColor"
+                android:layout_gravity="center_vertical"
+                android:onClick="prevDay"/>
 
         </LinearLayout>
 
@@ -318,14 +318,6 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center_vertical"
             android:id="@+id/toNextDay">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_play_arrow_black_24px"
-                android:tint="@color/Primary"
-                android:rotation="270"
-                android:onClick="nextDay"/>
             <TextView
                 android:id="@+id/toDate"
                 android:layout_gravity="center_vertical"
@@ -335,6 +327,14 @@
                 android:textColor="@color/Primary"
                 android:text="20 OCT"
                 android:layout_marginRight="8dp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_play_arrow_black_24px"
+                android:tint="@color/Primary"
+                android:rotation="270"
+                android:onClick="nextDay"/>
         </LinearLayout>
 
     </com.github.rongi.rotate_layout.layout.RotateLayout>

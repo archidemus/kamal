@@ -17,11 +17,13 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Start home activity
         if (Build.VERSION.SDK_INT < 23) {
+            startActivity(new Intent(this, InitiativesActivity.class));
             firstRun();
         } else {
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             } else {
+                startActivity(new Intent(this, InitiativesActivity.class));
                 firstRun();
             }
         }
@@ -41,6 +43,7 @@ public class SplashActivity extends AppCompatActivity {
         switch (requestCode) {
             case 0: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(new Intent(this, InitiativesActivity.class));
                     firstRun();
                 } else {
                     finish();

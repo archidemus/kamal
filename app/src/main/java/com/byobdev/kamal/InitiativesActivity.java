@@ -848,6 +848,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         getMenuInflater().inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.toolbar_ir).setVisible(false);
         search = (SearchView) menu.findItem(R.id.keyword_filter).getActionView();
+        search.setQueryHint("Filtrar por palabra...");
         //search.setIconifiedByDefault(false);
         search.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
