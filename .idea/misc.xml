@@ -28,8 +28,16 @@
 <<<<<<< HEAD
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
 =======
+<<<<<<< HEAD
 =======
 >>>>>>> 0fd6c9648bbaa08c7c32b7ed0e85fc1a13cdfbc0
+=======
+<<<<<<< HEAD
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+=======
+=======
+>>>>>>> 5ccfa3f7d4ca3632f484658e7872c2252ca7d66d
+>>>>>>> c9c2a2097a1901f7495efa5e112cdb0b178bb26a
 <<<<<<< HEAD
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -51,11 +59,19 @@
 >>>>>>> 30e73ed6cf72ad8348d89fdd2dc2d5aa6f908f63
 <<<<<<< HEAD
 >>>>>>> 8d4fc4e80b3963e72c8863ad02a4c6925add2993
+<<<<<<< HEAD
+=======
+>>>>>>> 6745eb543aaf68ba837a730af84c7550b7582d50
+>>>>>>> c9c2a2097a1901f7495efa5e112cdb0b178bb26a
 =======
 =======
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
 >>>>>>> 81a1d5c3ee623da20f9b6ce33c9f540b114899e7
+<<<<<<< HEAD
 >>>>>>> 0fd6c9648bbaa08c7c32b7ed0e85fc1a13cdfbc0
+=======
+>>>>>>> 5ccfa3f7d4ca3632f484658e7872c2252ca7d66d
+>>>>>>> c9c2a2097a1901f7495efa5e112cdb0b178bb26a
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
