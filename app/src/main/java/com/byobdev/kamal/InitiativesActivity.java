@@ -195,6 +195,35 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
     int currentHour;
     String msg = "Inicia sesion para habilitar otras funciones";
     UiSettings uiSettings;
+
+    ValueEventListener userListener=new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot snapshot) {
+            // for (DataSnapshot child : snapshot.getChildren())
+            // Create a LinearLayout element
+            float rating;
+            int nVotos;
+            if (snapshot.child("rating").getValue() == null) {
+                rating = 0.0f;
+                nVotos = 0;
+                userDataDB.child("Nvotos").setValue(nVotos);
+                userDataDB.child("rating").setValue(rating);
+
+            } else {
+                rating = Float.parseFloat(snapshot.child("rating").getValue().toString());
+            }
+            userDataDB.child("Email").setValue(currentUser.getEmail());
+            userDataDB.child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
+            userDataDB.child("Name").setValue(currentUser.getDisplayName());
+            rtb.setRating(rating);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            System.out.println("The read failed: " + databaseError.getCode());
+        }
+    };
+
     //User Interests Listener
     ValueEventListener userInterestslistener = new ValueEventListener() {
         @Override
@@ -513,33 +542,8 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
             currentUser = firebaseAuth.getCurrentUser();
             if (currentUser != null) {
                 userDataDB = FirebaseDatabase.getInstance().getReference("Users/" + currentUser.getUid());
-                userDataDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        // for (DataSnapshot child : snapshot.getChildren())
-                        // Create a LinearLayout element
-                        float rating;
-                        int nVotos;
-                        if (snapshot.child("rating").getValue() == null) {
-                            rating = 0.0f;
-                            nVotos = 0;
-                            userDataDB.child("Nvotos").setValue(nVotos);
-                            userDataDB.child("rating").setValue(rating);
 
-                        } else {
-                            rating = Float.parseFloat(snapshot.child("rating").getValue().toString());
-                        }
-                        userDataDB.child("Email").setValue(currentUser.getEmail());
-                        userDataDB.child("ImageURL").setValue(currentUser.getPhotoUrl().toString());
-                        userDataDB.child("Name").setValue(currentUser.getDisplayName());
-                        rtb.setRating(rating);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        System.out.println("The read failed: " + databaseError.getCode());
-                    }
-                });
+                userDataDB.addValueEventListener(userListener);
                 //Add Read interests listener
                 userInterestsDB = FirebaseDatabase.getInstance().getReference("Interests").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 userInterestsDB.addValueEventListener(userInterestslistener);
@@ -577,6 +581,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
                 img_profile.setImageResource(android.R.color.transparent);
                 //Remove Read interests listener
                 if (authListenerCounter > 0) {
+                    userDataDB.removeEventListener(userListener);
                     userInterestsDB.removeEventListener(userInterestslistener);
                     authListenerCounter--;
                 }
