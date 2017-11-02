@@ -83,9 +83,9 @@
             <FrameLayout
                 android:id="@+id/descriptionFragment"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
-                android:background="@color/textLightPrimary"
+                android:background="@null"
                 android:layout_alignParentBottom="true"
                 android:visibility="gone"/>
             <ImageButton

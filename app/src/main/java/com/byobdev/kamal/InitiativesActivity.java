@@ -934,32 +934,31 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
         //PreviewFragment
         previewFragment = (FrameLayout) findViewById(R.id.previewFragment);
-        previewFragment.setOnTouchListener(new View.OnTouchListener(){
+        previewFragment.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getActionMasked()) {
+                Display mdisp = getWindowManager().getDefaultDisplay();
+                Point mdispSize = new Point();
+                mdisp.getSize(mdispSize);
+                int maxY = mdispSize.y;
+                float currentPosition;
+                int fragment_pos[] = new int[2];
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mLastPosY = event.getY();
+                        return true;
                     case MotionEvent.ACTION_UP:
-                        if (!opened_df && !on_way && (event.getActionMasked() == MotionEvent.ACTION_UP)) {
-                            opened_df = true;
-                            mapFragment.getView().setClickable(false);
-                            uiSettings.setAllGesturesEnabled(false);
-                            toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
-                            toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
-                            toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
-                            descriptionFragment.setVisibility(View.VISIBLE);
-                            DescriptionFragment DF = new DescriptionFragment();
-                            DF.setArguments(selectedInitiative);
-                            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-                            trans.replace(R.id.descriptionFragment, DF);
-                            trans.commit();
-                            TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
-                            Titulo.setText(selectedInitiative.getString("Titulo"));
-                            Titulo.setTextSize(25);
-                            initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
-                            initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+                        if ((event.getY() > mLastPosY) && !on_way) {
+                            onBackPressed();
+                        } else { //Cuando toca el preview
+                            if (!opened_df && !on_way) {
+                                showDescriptionFragment();
+                            }
                         }
+                        return true;
+                    default:
+                        return v.onTouchEvent(event);
                 }
-                return true;
             }
         });
         //DescriptionFragment
@@ -1090,6 +1089,27 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         timeLabels.add((TextView) findViewById(R.id.time12));
         timeLabels.add((TextView) findViewById(R.id.time13));
     }
+
+
+     public void showDescriptionFragment(){
+         opened_df = true;
+         mapFragment.getView().setClickable(false);
+         uiSettings.setAllGesturesEnabled(false);
+         toolbar.getMenu().findItem(R.id.toolbar_filter).setVisible(false);
+         toolbar.getMenu().findItem(R.id.keyword_filter).setVisible(false);
+         toolbar.getMenu().findItem(R.id.time_filter).setVisible(false);
+         descriptionFragment.setVisibility(View.VISIBLE);
+         DescriptionFragment DF = new DescriptionFragment();
+         DF.setArguments(selectedInitiative);
+         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+         trans.replace(R.id.descriptionFragment, DF);
+         trans.commit();
+         TextView Titulo = (TextView) findViewById(R.id.toolbar_title);
+         Titulo.setText(selectedInitiative.getString("Titulo"));
+         Titulo.setTextSize(25);
+         initiativesMap.moveCamera(CameraUpdateFactory.newLatLngZoom(selectedMarker.getPosition(), 15));
+         initiativesMap.animateCamera(CameraUpdateFactory.scrollBy(0, 500));
+     }
     public void setTimeLabels(int start){
         int counter=0;
         String text;

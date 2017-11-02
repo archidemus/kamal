@@ -1,237 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollViewFragment"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <RelativeLayout
+    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/mapLayer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="150dp"
+        android:background="@null"
+        android:clickable="true"
+        android:focusable="true"/>
+    <ScrollView
+        android:id="@+id/scrollViewFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/textLightPrimary">
 
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/linear1"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@color/textLightPrimary"
-            android:orientation="vertical"
-            android:weightSum="1">
-
-            <ImageView
-                android:id="@+id/inImage"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                android:scaleType="center"
-                android:src="@drawable/kamal_not_found"/>
+            android:id="@+id/fragmentContent">
 
             <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/linear1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/horizontal_margin"
-                android:paddingLeft="@dimen/vertical_margin"
-                android:paddingRight="@dimen/vertical_margin"
-                android:paddingTop="@dimen/horizontal_margin">
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/textLightPrimary"
+                android:orientation="vertical"
+                android:weightSum="1">
+                <ImageView
+                    android:id="@+id/inImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:scaleType="center"
+                    android:src="@drawable/kamal_not_found"/>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="@dimen/horizontal_margin"
+                    android:paddingLeft="@dimen/vertical_margin"
+                    android:paddingRight="@dimen/vertical_margin"
+                    android:paddingTop="@dimen/horizontal_margin">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/profile_image"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/kamal_not_found"
-                        app:civ_border_color="#FF000000"
-                        app:civ_border_width="0dp"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            xmlns:app="http://schemas.android.com/apk/res-auto"
+                            android:id="@+id/profile_image"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/kamal_not_found"
+                            app:civ_border_color="#FF000000"
+                            app:civ_border_width="0dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/horizontal_margin">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Por "
+                                android:textSize="15sp"/>
+
+                            <TextView
+                                android:id="@+id/inOrganizer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="marquee"
+                                android:maxLines="1"
+                                android:text="Organizador"
+                                android:textSize="15sp"/>
+                        </LinearLayout>
+
+                        <RatingBar
+                            android:id="@+id/inRating"
+                            style="?android:attr/ratingBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:numStars="5"
+                            android:stepSize="0.5"/>
+
+                        <TextView
+                            android:id="@+id/btn_Rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:background="@android:color/transparent"
+                            android:onClick="ratingSend"
+                            android:padding="0dp"
+                            android:text="CALIFICAR"
+                            android:textColor="@color/Primary"
+                            android:textSize="15sp"/>
+
+
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/horizontal_margin">
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Por "
-                            android:textSize="15sp"/>
-
-                        <TextView
-                            android:id="@+id/inOrganizer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="marquee"
-                            android:maxLines="1"
-                            android:text="Organizador"
-                            android:textSize="15sp"/>
-                    </LinearLayout>
-
-                    <RatingBar
-                        android:id="@+id/inRating"
-                        style="?android:attr/ratingBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:numStars="5"
-                        android:stepSize="0.5"/>
+                    android:orientation="horizontal"
+                    android:paddingLeft="@dimen/vertical_margin"
+                    android:paddingRight="@dimen/vertical_margin">
 
                     <TextView
-                        android:id="@+id/btn_Rating"
+                        android:id="@+id/hI"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:background="@android:color/transparent"
-                        android:onClick="ratingSend"
-                        android:padding="0dp"
-                        android:text="CALIFICAR"
-                        android:textColor="@color/Primary"
-                        android:textSize="15sp"/>
+                        android:text="00:00"
+                        android:textAllCaps="true"
+                        android:textSize="12sp"/>
 
+                    <TextView
+                        android:id="@+id/rate_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" → "
+                        android:textAllCaps="true"
+                        android:textSize="12sp"/>
 
+                    <TextView
+                        android:id="@+id/hT"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00:00"
+                        android:textAllCaps="true"
+                        android:textSize="12sp"/>
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/inPlace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                    android:ellipsize="marquee"
+                    android:maxLines="2"
+                    android:paddingLeft="@dimen/vertical_margin"
+                    android:paddingRight="@dimen/vertical_margin"
+                    android:text="Lugar"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/inShortDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="@dimen/vertical_margin"
+                    android:paddingRight="@dimen/vertical_margin"
+                    android:paddingTop="@dimen/horizontal_margin"
+                    android:text="Texto de prueba"
+                    android:textColor="@color/textDarkPrimary"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/vertical_margin"
+                    android:text="Comentarios"
+                    android:textColor="@color/textDarkPrimary"
+                    android:textSize="@dimen/section_title"
+                    android:textStyle="bold"/>
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:id="@+id/RelativeComments"
+                android:layout_below="@id/linear1"
                 android:paddingLeft="@dimen/vertical_margin"
                 android:paddingRight="@dimen/vertical_margin">
 
-                <TextView
-                    android:id="@+id/hI"
+                <ImageButton
+                    android:id="@+id/SendComment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00:00"
-                    android:textAllCaps="true"
-                    android:textSize="12sp"/>
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@android:color/transparent"
+                    android:clickable="true"
+                    android:paddingLeft="@dimen/horizontal_margin"
+                    android:paddingRight="@dimen/horizontal_margin"
+                    android:paddingTop="@dimen/horizontal_margin"
+                    app:srcCompat="@drawable/ic_send"/>
 
-                <TextView
-                    android:id="@+id/rate_row"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/CommentInput"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=" → "
-                    android:textAllCaps="true"
-                    android:textSize="12sp"/>
+                    android:layout_toLeftOf="@id/SendComment"
+                    android:autoLink="none"
+                    android:hint="Nuevo comentario..."
+                    android:inputType="text"
+                    android:maxLength="40"
+                    android:textSize="16sp"/>
+            </RelativeLayout>
+            <ListView
+                android:id="@+id/comment_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_below="@id/RelativeComments"
+                android:paddingLeft="@dimen/vertical_margin"
+                android:paddingRight="@dimen/vertical_margin"/>
 
-                <TextView
-                    android:id="@+id/hT"
-                    android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/linear2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/comment_list"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+
+                <Button
+                    android:id="@+id/VerComentario"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="00:00"
-                    android:textAllCaps="true"
-                    android:textSize="12sp"/>
+                    android:background="@android:color/transparent"
+                    android:onClick="VerComentarios"
+                    android:paddingLeft="@dimen/vertical_margin"
+                    android:paddingRight="@dimen/vertical_margin"
+                    android:text="VER MÁS"
+                    android:textColor="@color/Primary"/>
+
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/inPlace"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"
-                android:ellipsize="marquee"
-                android:maxLines="2"
-                android:paddingLeft="@dimen/vertical_margin"
-                android:paddingRight="@dimen/vertical_margin"
-                android:text="Lugar"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/inShortDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/vertical_margin"
-                android:paddingRight="@dimen/vertical_margin"
-                android:paddingTop="@dimen/horizontal_margin"
-                android:text="Texto de prueba"
-                android:textColor="@color/textDarkPrimary"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/vertical_margin"
-                android:text="Comentarios"
-                android:textColor="@color/textDarkPrimary"
-                android:textSize="@dimen/section_title"
-                android:textStyle="bold"/>
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/RelativeComments"
-            android:layout_below="@id/linear1"
-            android:paddingLeft="@dimen/vertical_margin"
-            android:paddingRight="@dimen/vertical_margin">
-
-            <ImageButton
-                android:id="@+id/SendComment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:background="@android:color/transparent"
-                android:clickable="true"
-                android:paddingLeft="@dimen/horizontal_margin"
-                android:paddingRight="@dimen/horizontal_margin"
-                android:paddingTop="@dimen/horizontal_margin"
-                app:srcCompat="@drawable/ic_send"/>
-
-            <EditText
-                android:id="@+id/CommentInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/SendComment"
-                android:autoLink="none"
-                android:hint="Nuevo comentario..."
-                android:inputType="text"
-                android:maxLength="40"
-                android:textSize="16sp"/>
         </RelativeLayout>
-        <ListView
-            android:id="@+id/comment_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_below="@id/RelativeComments"
-            android:paddingLeft="@dimen/vertical_margin"
-            android:paddingRight="@dimen/vertical_margin"/>
+    </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/linear2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/comment_list"
-            android:orientation="vertical"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
-
-            <Button
-                android:id="@+id/VerComentario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:onClick="VerComentarios"
-                android:paddingLeft="@dimen/vertical_margin"
-                android:paddingRight="@dimen/vertical_margin"
-                android:text="VER MÁS"
-                android:textColor="@color/Primary"/>
-
-        </LinearLayout>
-    </RelativeLayout>
-</ScrollView>
+</LinearLayout>

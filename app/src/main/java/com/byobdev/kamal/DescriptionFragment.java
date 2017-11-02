@@ -15,18 +15,23 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.FragmentManager;
@@ -52,8 +57,6 @@ import static android.R.attr.x;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class DescriptionFragment extends Fragment implements ListCommentFragmentActivity.customButtonListener {
-
-
     TextView date, creator, title;
     RatingBar rtb2;
     Location loc1, loc2;
@@ -91,7 +94,7 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
     String[] imageListaAux;
     String[] respuesaListaAux;
     int ORG=0;
-
+    FrameLayout mapLayer;
     boolean rated=false;
     float rating=0f;
     int position;
@@ -107,11 +110,24 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
         }
     };
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_description, container, false);
         ImageView i = (ImageView) rootView.findViewById(R.id.inImage);
+        mapLayer = (FrameLayout) rootView.findViewById((R.id.mapLayer));
+
+        mapLayer.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case (MotionEvent.ACTION_UP):
+                        Log.d("TOuch", "UP");
+                        getActivity().onBackPressed();
+                        return true;
+                    default:
+                        return v.onTouchEvent(event);
+                }
+            }
+        });
 
         return rootView;
     }
