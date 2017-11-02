@@ -222,12 +222,9 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
         });
         rtb.setIsIndicator(true);
 
-        FirebaseAuth.AuthStateListener authListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
-                if (firebaseAuth.getCurrentUser() != null) {
-                    if (Uid.equals(currentUser.getUid())) {
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    if (Uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                         Calificar.setVisibility(View.INVISIBLE);
                     }
                     else  if(estado.equals("0")){
@@ -239,8 +236,7 @@ public class DescriptionFragment extends Fragment implements ListCommentFragment
                 } else {
                     Calificar.setVisibility(View.INVISIBLE);
                 }
-            }
-        };
+
 
 
 
