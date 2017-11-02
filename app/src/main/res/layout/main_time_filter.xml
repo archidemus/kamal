@@ -44,7 +44,8 @@
                 android:textAllCaps="true"
                 android:textColor="@color/Primary"
                 android:layout_gravity="center_vertical"
-                android:id="@+id/fromDate"/>
+                android:id="@+id/fromDate"
+                android:layout_marginRight="8dp"/>
 
         </LinearLayout>
 
@@ -332,7 +333,8 @@
                 android:layout_height="match_parent"
                 android:textAllCaps="true"
                 android:textColor="@color/Primary"
-                android:text="20 OCT" />
+                android:text="20 OCT"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
 
     </com.github.rongi.rotate_layout.layout.RotateLayout>
