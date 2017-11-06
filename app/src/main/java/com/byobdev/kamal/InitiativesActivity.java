@@ -927,7 +927,7 @@ public class InitiativesActivity extends AppCompatActivity implements OnMapReady
         musicaInitiativeIDList = new Vector<>();
         //Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_bottom_menu);
+        toolbar.setNavigationIcon(R.drawable.ic_menu);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         TextView Titulo = (TextView) findViewById(R.id.toolbar_title);

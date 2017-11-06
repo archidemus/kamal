@@ -55,7 +55,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/layout_circle"
-                        app:srcCompat="@drawable/ic_bottom_food" />
+                        app:srcCompat="@drawable/ic_food" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/botonDeportesIcon"
                         android:background="@drawable/layout_circle"
-                        app:srcCompat="@drawable/ic_bottom_sport" />
+                        app:srcCompat="@drawable/ic_soccer" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/botonTeatroIcon"
                         android:background="@drawable/layout_circle"
-                        app:srcCompat="@drawable/ic_bottom_theater" />
+                        app:srcCompat="@drawable/ic_theater" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/botonMusicaIcon"
                         android:background="@drawable/layout_circle"
-                        app:srcCompat="@drawable/ic_bottom_music" />
+                        app:srcCompat="@drawable/ic_guitar_acoustic" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
